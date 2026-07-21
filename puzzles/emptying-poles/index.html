@@ -92,7 +92,14 @@
   <!-- React + Babel via CDN, no build step -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+  <script>
+    /* The UMD React build has no "react/jsx-runtime" module, so JSX must
+       compile to React.createElement (classic runtime, not the default). */
+    Babel.registerPreset('react-classic', {
+      presets: [[Babel.availablePresets.react, { runtime: 'classic' }]],
+    });
+  </script>
 
   <!-- MathJax for the formal proof -->
   <script>
@@ -153,6 +160,6 @@
     </details>
   </section>
 
-  <script type="text/babel" data-presets="react" src="app.jsx"></script>
+  <script type="text/babel" data-presets="react-classic" src="app.jsx"></script>
 </body>
 </html>

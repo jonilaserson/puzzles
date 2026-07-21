@@ -153,6 +153,13 @@ function App() {
       <header className="dd-head">
         <h1 className="dd-title">Emptying a Pole</h1>
         <p className="dd-rule">move discs onto a pole only if it <em>doubles</em></p>
+        <p className="dd-sub">
+          Three poles hold discs — say 3, 14 and 16. You may move discs from one pole to
+          another, but only in the exact amount that <b>doubles the receiving pole</b>: a pole
+          holding 5 discs can only receive exactly 5 more. <b>Show that from any starting
+          position you can empty one of the poles.</b> Try it below in <em>Play</em> mode —
+          then let <em>Proof</em> mode show you a strategy that never fails.
+        </p>
       </header>
 
       <section className="dd-config">
@@ -345,6 +352,10 @@ const CSS = `
 .dd-title{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(32px,6vw,52px); line-height:1; margin:0 0 8px; letter-spacing:-.015em}
 .dd-rule{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); margin:0}
 .dd-rule em{font-style:normal; color:var(--ink); font-weight:600}
+.dd-sub{font-family:'Newsreader',serif; font-size:16.5px; line-height:1.6; color:#4a4335;
+  max-width:58ch; margin:14px auto 0; text-align:left}
+.dd-sub b{font-weight:600; color:var(--ink)}
+.dd-sub em{font-style:italic}
 
 .dd-config{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:center; margin-bottom:16px}
 .dd-chip{font-family:'JetBrains Mono',monospace; font-size:12px; padding:7px 12px; height:36px; border:1px solid var(--line);
