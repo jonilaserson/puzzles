@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convolution = an elementwise product</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --x:#356a7d; --ker:#a8641f; --y:#6a4a7a; --hi:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.head{margin-bottom:32px}
+.head h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.head p{font-size:18px;line-height:1.6;color:#4a4335;margin:0;max-width:60ch}
+.head .kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+
+.controls{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:28px 0 8px}
+.controls label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase}
+select{font-family:'Newsreader',serif;font-size:15px;color:var(--ink);background:rgba(255,253,246,.7);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-left:6px;cursor:pointer}
+select:hover{border-color:var(--ink)}
+.hint{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+
+.panel{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:20px 22px;margin-bottom:10px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 4px}
+.clab{font-size:16px;line-height:1.4;margin:16px 0 6px}
+.clab:first-of-type{margin-top:10px}
+.clab .mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.clab .small{font-size:13px;color:var(--ink-soft);font-style:italic}
+.note{font-size:14px;line-height:1.55;color:#4a4335;margin:10px 0 0}
+.readout{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink-soft);margin:8px 0 0;min-height:20px}
+.readout b{color:var(--ink);font-weight:600}
+svg{width:100%;display:block}
+#sig{cursor:ns-resize;touch-action:none}
+
+.flow{display:flex;align-items:center;gap:12px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;margin:6px 0;text-transform:uppercase}
+.flow .ln{flex:1;border-top:1px dashed var(--line)}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin:0 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:11px;height:11px;border-radius:2px;display:inline-block}
+
+.match{text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2f5d3a;background:rgba(120,160,110,.14);border:1px solid #b9c9a6;border-radius:10px;padding:11px;letter-spacing:.03em}
+
+.foot{margin-top:44px;padding-top:18px;border-top:1px dashed var(--line);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--ink-soft);text-transform:uppercase;text-align:center}
+em{font-style:italic;color:var(--ink)}
+
+.deriv{margin-top:60px;border-top:1px solid var(--line);padding-top:36px}
+.deriv h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,38px);letter-spacing:-.02em;line-height:1.05;margin:0 0 12px}
+.deriv .lead{font-size:17px;line-height:1.6;color:#4a4335;margin:0 0 18px;max-width:62ch}
+.conv{border-left:2px solid var(--ker);border-radius:0;padding:2px 0 2px 18px;margin:18px 0 30px;font-size:15.5px;line-height:1.85;color:#463f31}
+.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+.steps>li{counter-increment:s;border-top:1px solid var(--line);padding:24px 0}
+.steps>li:last-child{border-bottom:1px solid var(--line)}
+.steps h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.3;margin:0 0 10px;display:flex;align-items:baseline;gap:12px}
+.steps h3 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ker);letter-spacing:.1em;flex:none}
+.steps p{font-size:15.5px;line-height:1.7;color:#463f31;margin:6px 0}
+.steps mjx-container{margin:0 !important}
+.deriv mjx-container:not([display="true"]){display:inline-block !important;text-align:left;vertical-align:baseline;margin:0 1px}
+.deriv mjx-container[display="true"]{display:block !important;text-align:center;margin:14px 0 !important;overflow-x:auto;overflow-y:hidden}
+.act{border-top:1px solid var(--line);padding:26px 0}
+.act:first-of-type{border-top:none;padding-top:6px}
+.act h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;line-height:1.3;margin:0 0 8px;display:flex;gap:12px;align-items:baseline}
+.act h3 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#a8641f;letter-spacing:.1em;flex:none}
+.act p{font-size:15.5px;line-height:1.7;color:#463f31;margin:10px 0}
+.term{color:#9a5a18;font-weight:500;border-bottom:1px dotted rgba(154,90,24,.5)}
+.fig{margin:18px auto;text-align:center}
+.fig svg{max-width:100%;height:auto;display:inline-block}
+.cap{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.03em;color:var(--ink-soft);margin-top:6px}
+.legend2{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin:14px 0 4px}
+.legend2 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+.wfig{border:1px solid var(--line);border-radius:12px;background:rgba(255,253,246,.55);padding:14px 16px;margin:18px 0}
+.wctrl{display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft)}
+.wctrl label{display:flex;align-items:center;gap:8px}
+.wctrl input[type=range]{width:118px}
+.wctrl button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 14px;border:1px solid var(--line);border-radius:7px;background:rgba(255,253,246,.7);cursor:pointer;color:var(--ink)}
+.wctrl button:hover{border-color:var(--ink)}
+.wpanels{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.wpanels svg{max-width:100%;height:auto}
+.wread{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <p class="kicker">circulants · the dft · the convolution theorem</p>
+    <h1>A convolution is an<br>elementwise product.</h1>
+    <p>Slide a kernel along a sequence and you get a convolution — the same operation as scaling each frequency on its own. Edit the signal, change the kernel, and watch the two routes land on the same <em>y</em>.</p>
+  </div>
+
+  <div class="controls">
+    <label>signal
+      <select id="sigPreset">
+        <option value="twotone">two tones</option>
+        <option value="impulse">single spike</option>
+        <option value="step">step</option>
+        <option value="square">square wave</option>
+        <option value="noise">noise</option>
+      </select>
+    </label>
+    <label>kernel
+      <select id="kerPreset">
+        <option value="identity">identity</option>
+        <option value="smooth3">smooth · 3-tap</option>
+        <option value="smooth5" selected>smooth · 5-tap</option>
+        <option value="sharpen">sharpen</option>
+        <option value="edges">edges</option>
+      </select>
+    </label>
+    <span class="hint">drag the input bars to edit</span>
+  </div>
+
+  <div class="panel">
+    <p class="eyebrow">position domain</p>
+    <p class="clab">input signal <span class="mono">x</span> <span class="small">— drag to edit</span></p>
+    <svg id="sig" viewBox="0 0 640 100" preserveAspectRatio="none"></svg>
+    <p class="clab">kernel <span class="small">— the filter weights, centered</span></p>
+    <svg id="ker" viewBox="0 0 640 72"></svg>
+    <p class="clab">output <span class="mono">y</span> = the convolution <span class="small">(slide the kernel along x)</span></p>
+    <svg id="out" viewBox="0 0 640 100" preserveAspectRatio="none"></svg>
+  </div>
+
+  <div class="flow"><span class="ln"></span><span>↓ transform both to the frequency domain</span><span class="ln"></span></div>
+
+  <div class="panel">
+    <p class="eyebrow">frequency domain</p>
+    <p class="clab"><span class="mono">①</span> frequencies in <span class="mono">x</span> &nbsp;<span class="small">magnitude |X̂|</span></p>
+    <svg id="fx" viewBox="0 0 640 92"></svg>
+    <p class="clab"><span class="mono">②</span> the kernel's multiplier per frequency &nbsp;<span class="small">gain |μ|, shown 0–1</span></p>
+    <svg id="mu" viewBox="0 0 640 92"></svg>
+    <p class="clab"><span class="mono">③</span> elementwise product <span class="mono">① × ②</span> &nbsp;<span class="small">|μ·X̂|</span></p>
+    <svg id="prod" viewBox="0 0 640 92"></svg>
+    <p class="note">Each <span class="mono">③</span> bar is exactly its <span class="mono">①</span> bar times its <span class="mono">②</span> gain — frequencies are scaled one by one, never mixed. Bars come in <em>mirror pairs</em> about frequency 16 (dashed line): because <span class="mono">x</span> and the kernel are real, frequency <span class="mono">k</span> and frequency <span class="mono">32−k</span> always carry conjugate values.</p>
+    <p class="readout" id="readout">hover a frequency to see its multiplication</p>
+  </div>
+
+  <div class="flow"><span class="ln"></span><span>↑ transform <span style="text-transform:none">③</span> back — rebuilds <span style="text-transform:none">y</span></span><span class="ln"></span></div>
+
+  <div class="panel">
+    <p class="eyebrow">back to the position domain</p>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--y)"></span>rebuilt from frequencies <span style="opacity:.6">(inverse transform of ③)</span></span>
+      <span><span class="swatch" style="background:none;border:1.5px solid var(--ink)"></span>direct convolution <span style="opacity:.6">(the y above)</span></span>
+    </div>
+    <svg id="recon" viewBox="0 0 640 100" preserveAspectRatio="none"></svg>
+    <div class="match" id="match"></div>
+  </div>
+
+  <section class="deriv">
+    <h2>The derivation</h2>
+    <p class="lead">We rewrite a convolution as a matrix product, then change to coordinates where that matrix is diagonal — a single elementwise product.</p>
+    <div class="legend2">
+      <span><span class="sw" style="background:#2f6b7c"></span>weight <em>a</em></span>
+      <span><span class="sw" style="background:#bb3b27"></span>weight <em>b</em></span>
+      <span><span class="sw" style="background:#6a4a7a"></span>weight <em>c</em></span>
+      <span><span class="sw" style="background:#a8641f"></span>frequency</span>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">01</span> A convolution blends neighbours</h3>
+      <p>In a convolution, each output blends a node with its neighbours, weighted by the <span class="term">kernel</span> \((a,b,c)\):</p>
+      <div class="fig"><svg viewBox="0 0 640 250" role="img" aria-label="Convolution on a cyclic sequence: node h2 is a weighted sum of x1 x2 x3 with weights a b c."><defs><marker id="aT" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2f6b7c"/></marker><marker id="aR" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bb3b27"/></marker><marker id="aP" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6a4a7a"/></marker></defs><line x1="70" y1="170" x2="170" y2="170" stroke="#cabf9f" stroke-width="2"/><line x1="170" y1="170" x2="270" y2="170" stroke="#3a3631" stroke-width="2.4"/><line x1="270" y1="170" x2="370" y2="170" stroke="#3a3631" stroke-width="2.4"/><line x1="370" y1="170" x2="470" y2="170" stroke="#cabf9f" stroke-width="2"/><line x1="470" y1="170" x2="570" y2="170" stroke="#cabf9f" stroke-width="2"/><path d="M570,170 C 560,255 80,255 70,170" fill="none" stroke="#d3c9b0" stroke-width="2"/><circle cx="70" cy="170" r="22" fill="#e7e0cf" stroke="#b9ad8f" stroke-width="1.5"/><text x="70" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#6c655a">x₀</text><circle cx="170" cy="170" r="22" fill="#d6e3e6" stroke="#2f6b7c" stroke-width="1.5"/><text x="170" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#234e5b">x₁</text><circle cx="270" cy="170" r="22" fill="#f3d6d1" stroke="#bb3b27" stroke-width="1.5"/><text x="270" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#7a2418">x₂</text><circle cx="370" cy="170" r="22" fill="#ddd5e3" stroke="#6a4a7a" stroke-width="1.5"/><text x="370" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#463054">x₃</text><circle cx="470" cy="170" r="22" fill="#e7e0cf" stroke="#b9ad8f" stroke-width="1.5"/><text x="470" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#6c655a">x₄</text><circle cx="570" cy="170" r="22" fill="#e7e0cf" stroke="#b9ad8f" stroke-width="1.5"/><text x="570" y="176" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#6c655a">x₅</text><circle cx="270" cy="72" r="22" fill="#d8e6d6" stroke="#3f7a4f" stroke-width="1.6"/><text x="270" y="78" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#2c5a36">y₂</text><line x1="186" y1="156" x2="252" y2="90" stroke="#2f6b7c" stroke-width="2.5" marker-end="url(#aT)"/><line x1="270" y1="146" x2="270" y2="98" stroke="#bb3b27" stroke-width="2.5" marker-end="url(#aR)"/><line x1="354" y1="156" x2="288" y2="90" stroke="#6a4a7a" stroke-width="2.5" marker-end="url(#aP)"/><text x="200" y="116" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#2f6b7c">×a</text><text x="284" y="126" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#bb3b27">×b</text><text x="332" y="116" font-family="Newsreader,serif" font-style="italic" font-size="17" fill="#6a4a7a">×c</text></svg><div class="cap">output = a·left + b·centre + c·right, on a cyclic sequence</div></div>
+      \[y_i=\color{#2f6b7c}{a}\,x_{i-1}+\color{#bb3b27}{b}\,x_i+\color{#6a4a7a}{c}\,x_{i+1}\]
+      <p>Writing every row at once, with the ends wrapping around, this is the <span class="term">circulant</span> matrix \(C\):</p>
+      \[C=\begin{bmatrix}\color{#bb3b27}{b}&\color{#6a4a7a}{c}&0&0&\color{#2f6b7c}{a}\\\color{#2f6b7c}{a}&\color{#bb3b27}{b}&\color{#6a4a7a}{c}&0&0\\0&\color{#2f6b7c}{a}&\color{#bb3b27}{b}&\color{#6a4a7a}{c}&0\\0&0&\color{#2f6b7c}{a}&\color{#bb3b27}{b}&\color{#6a4a7a}{c}\\\color{#6a4a7a}{c}&0&0&\color{#2f6b7c}{a}&\color{#bb3b27}{b}\end{bmatrix}\]
+    </div>
+
+    <div class="act">
+      <h3><span class="n">02</span> The plan</h3>
+      <p>So a convolution is a single matrix product:</p>
+      \[y=Cx.\]
+      <p>Instead of computing this directly, we will change coordinates to a space where \(C\) acts as one <span class="term">elementwise product</span>.</p>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">03</span> The shift \(S\)</h3>
+      <p>Start with the simplest circulant — the <span class="term">shift</span> \(S\), which replaces each entry with its neighbour, \((Sv)_i=v_{i+1}\):</p>
+      \[S=\begin{bmatrix}0&1&0&0&0\\0&0&1&0&0\\0&0&0&1&0\\0&0&0&0&1\\1&0&0&0&0\end{bmatrix}\]
+    </div>
+
+    <div class="act">
+      <h3><span class="n">04</span> The eigenvectors of \(S\) are waves</h3>
+      <p>Let \(v\) be an <span class="term">eigenvector</span> of \(S\) with eigenvalue \(\lambda\), so \(Sv=\lambda v\). How does \(v\) look?</p>
+      <p>The shift turns the eigen-equation into a recurrence:</p>
+      \[v_{i+1}=(Sv)_i=\lambda\,v_i.\]
+      <p>Take \(v_0=1\) (eigenvectors are fixed only up to scale), and the entries follow:</p>
+      \[v=\begin{bmatrix}1\\\lambda\\\lambda^{2}\\\lambda^{3}\\\vdots\\\lambda^{n-1}\end{bmatrix}\]
+      <p>The same shift, read at the last row, must close the loop back to \(v_0\):</p>
+      \[1=v_0=(Sv)_{n-1}=\lambda\,v_{n-1}=\lambda\cdot\lambda^{n-1}=\lambda^{n}.\]
+      <p>So \(\lambda^{n}=1\): the eigenvalues are the \(n\) <span class="term">roots of unity</span>, \(\lambda_k=e^{2\pi i k/n}\) for \(k=0,\dots,n-1\). Each eigenvector is then a wave that goes \(k\) times around the unit circle:</p>
+      \[v_k=\begin{bmatrix}1\\e^{2\pi i k/n}\\e^{2\pi i\,2k/n}\\e^{2\pi i\,3k/n}\\\vdots\\e^{2\pi i\,(n-1)k/n}\end{bmatrix}\]
+      <p>Drag \(k\), or press play to step through the entries:</p>
+      <div class="wfig">
+        <div class="wctrl">
+          <label>frequency&nbsp;k <input type="range" id="wk" min="0" max="11" value="1" step="1"><span id="wkv">1</span></label>
+          <label>step&nbsp;j <input type="range" id="wj" min="0" max="12" value="12" step="1"><span id="wjv">12</span></label>
+          <button id="wplay" type="button">play</button>
+        </div>
+        <div class="wpanels">
+          <svg id="wcirc" viewBox="0 0 240 240" role="img" aria-label="Entries of the k-th eigenvector winding around the unit circle k times."></svg>
+          <svg id="wwave" viewBox="0 0 380 240" role="img" aria-label="The same eigenvector unrolled: position j across, value up, real part a cosine."></svg>
+        </div>
+        <div class="wread" id="wread"></div>
+        <script>(function(){
+          var n=12,R=90,cx=120,cy=120,SV="http://www.w3.org/2000/svg",k=1,j=12,timer=null;
+          var elK=document.getElementById('wk'),elJ=document.getElementById('wj'),circ=document.getElementById('wcirc'),wave=document.getElementById('wwave'),read=document.getElementById('wread'),kv=document.getElementById('wkv'),jv=document.getElementById('wjv'),play=document.getElementById('wplay');
+          function E(p,a){var e=document.createElementNS(SV,p);for(var q in a)e.setAttribute(q,a[q]);return e;}
+          function clr(sv){while(sv.firstChild)sv.removeChild(sv.firstChild);}
+          function T(x,y,t,an,f,sz){var e=E('text',{x:x,y:y,'text-anchor':an||'middle','font-family':'JetBrains Mono,monospace','font-size':sz||11,fill:f||'#6c655a'});e.textContent=t;return e;}
+          function P(t){var a=2*Math.PI*k*t/n;return [cx+R*Math.cos(a),cy-R*Math.sin(a)];}
+          function drawCirc(){clr(circ);
+            circ.appendChild(E('circle',{cx:cx,cy:cy,r:R,fill:'none',stroke:'#cabf9f','stroke-width':1.2}));
+            circ.appendChild(E('line',{x1:cx-R-8,y1:cy,x2:cx+R+8,y2:cy,stroke:'#e3d9bf','stroke-width':1}));
+            circ.appendChild(E('line',{x1:cx,y1:cy-R-8,x2:cx,y2:cy+R+8,stroke:'#e3d9bf','stroke-width':1}));
+            for(var m=0;m<n;m++){var a=2*Math.PI*m/n;circ.appendChild(E('circle',{cx:cx+R*Math.cos(a),cy:cy-R*Math.sin(a),r:2,fill:'#d8cdb2'}));}
+            var d='';for(var t=0;t<=j;t++){var q=P(t);d+=(t?'L':'M')+q[0].toFixed(1)+','+q[1].toFixed(1)+' ';}
+            circ.appendChild(E('path',{d:d,fill:'none',stroke:'#2f6b7c','stroke-width':2,'stroke-linejoin':'round',opacity:0.85}));
+            for(var t=0;t<=j;t++){var q=P(t);circ.appendChild(E('circle',{cx:q[0],cy:q[1],r:2.6,fill:'#2f6b7c'}));}
+            var pc=P(j);circ.appendChild(E('line',{x1:cx,y1:cy,x2:pc[0],y2:pc[1],stroke:'#a8641f','stroke-width':2}));
+            circ.appendChild(E('circle',{cx:pc[0],cy:pc[1],r:5,fill:'#a8641f'}));
+            circ.appendChild(T(cx+R+4,cy-6,'Re','start','#9a8f74',10));
+            circ.appendChild(T(cx+6,cy-R-2,'Im','start','#9a8f74',10));}
+          function drawWave(){clr(wave);var x0=46,x1=360,yb=120,amp=80;
+            function X(t){return x0+(x1-x0)*t/n;}
+            function YR(t){return yb-amp*Math.cos(2*Math.PI*k*t/n);}
+            function YI(t){return yb-amp*Math.sin(2*Math.PI*k*t/n);}
+            wave.appendChild(E('line',{x1:x0-6,y1:yb,x2:x1+8,y2:yb,stroke:'#cabf9f','stroke-width':1}));
+            wave.appendChild(E('line',{x1:x0,y1:yb-amp-10,x2:x0,y2:yb+amp+10,stroke:'#cabf9f','stroke-width':1}));
+            wave.appendChild(T(x0-9,yb-amp+4,'+1','end'));wave.appendChild(T(x0-9,yb+amp+4,'\u22121','end'));wave.appendChild(T(x0-9,yb+4,'0','end'));
+            for(var t=0;t<=n;t+=3){wave.appendChild(E('line',{x1:X(t),y1:yb-3,x2:X(t),y2:yb+3,stroke:'#cabf9f','stroke-width':1}));wave.appendChild(T(X(t),yb+18,''+t));}
+            var di='';for(var t=0;t<=n;t++){di+=(t?'L':'M')+X(t).toFixed(1)+','+YI(t).toFixed(1)+' ';}
+            wave.appendChild(E('path',{d:di,fill:'none',stroke:'#6a4a7a','stroke-width':1.3,opacity:0.4}));
+            var dr='';for(var t=0;t<=n;t++){dr+=(t?'L':'M')+X(t).toFixed(1)+','+YR(t).toFixed(1)+' ';}
+            wave.appendChild(E('path',{d:dr,fill:'none',stroke:'#a8641f','stroke-width':1.8}));
+            for(var t=0;t<=n;t++){wave.appendChild(E('circle',{cx:X(t),cy:YR(t),r:2.5,fill:'#a8641f'}));}
+            wave.appendChild(E('line',{x1:X(j),y1:yb-amp-10,x2:X(j),y2:yb+amp+10,stroke:'#d3c9b0','stroke-width':1,'stroke-dasharray':'3 3'}));
+            wave.appendChild(E('circle',{cx:X(j),cy:YR(j),r:5,fill:'#a8641f'}));
+            wave.appendChild(T((x0+x1)/2,yb+34,'position  j','middle','#6c655a'));
+            wave.appendChild(T(x0,yb-amp-16,'value:  real (ochre),  imaginary (plum)','start','#6c655a',10));}
+          function upd(){kv.textContent=k;jv.textContent=j;drawCirc();drawWave();
+            var msg='k = '+k+'   \u00b7   step j = '+j+'/'+n+'   \u00b7   '+(k*j/n).toFixed(2)+' full turns';
+            msg+=(k>n/2)?('   \u00b7   only '+n+' samples \u2192 looks like '+(n-k)+' windings the other way  (aliasing \u2014 step 08)'):('   \u00b7   windings = '+k);
+            read.textContent=msg;}
+          elK.addEventListener('input',function(){k=+elK.value;upd();});
+          elJ.addEventListener('input',function(){j=+elJ.value;upd();});
+          play.addEventListener('click',function(){if(timer){clearInterval(timer);timer=null;play.textContent='play';return;}play.textContent='pause';j=0;elJ.value=0;timer=setInterval(function(){j++;if(j>=n){j=n;clearInterval(timer);timer=null;play.textContent='play';}elJ.value=j;upd();},240);});
+          upd();
+        })();</script>
+      </div>
+      <p>Right panel: position \(j\) across, value up; the <span style="color:#a8641f">real part</span> is the cosine.</p>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">05</span> Every convolution shares these eigenvectors</h3>
+      <p>Any convolution \(C\) with kernel \((a,b,c)\) is a <span class="term">polynomial in \(S\)</span>:</p>
+      \[C=\color{#2f6b7c}{a}\,S^{-1}+\color{#bb3b27}{b}\,I+\color{#6a4a7a}{c}\,S=p(S),\qquad p(z)=\color{#2f6b7c}{a}\,z^{-1}+\color{#bb3b27}{b}+\color{#6a4a7a}{c}\,z.\]
+      <p>So every eigenvector of \(S\) is an eigenvector of \(C\) — with eigenvalue \(p(\lambda_k)\):</p>
+      \[C\,v_k=p(S)\,v_k=p(\lambda_k)\,v_k=u_k\,v_k,\qquad u_k=\color{#2f6b7c}{a}\,\lambda_k^{-1}+\color{#bb3b27}{b}+\color{#6a4a7a}{c}\,\lambda_k.\]
+      <p>The eigenvalues of \(C\) are \((u_0,u_1,\dots,u_{n-1})\), and the eigenvectors \(v_k\) do not depend on \(C\).</p>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">06</span> So \(C\) is diagonal in the wave basis</h3>
+      <p>The waves are orthogonal — their inner product (conjugating the first) is a sum of equal arrows turning by a fixed step:</p>
+      \[\langle v_k,v_l\rangle=\sum_j \overline{e^{2\pi i kj/n}}\,e^{2\pi i lj/n}=\sum_j e^{2\pi i (l-k)j/n}=\begin{cases}n,&k=l\\ 0,&k\neq l\end{cases}\]
+      <div class="fig"><svg viewBox="0 0 440 196" role="img" aria-label="Equal vectors turning by a fixed step close to zero when frequencies differ, and align to n when equal."><defs><marker id="ph" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a8641f"/></marker></defs><line x1="110.0" y1="56.0" x2="148.1" y2="78.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><line x1="148.1" y1="78.0" x2="148.1" y2="122.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><line x1="148.1" y1="122.0" x2="110.0" y2="144.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><line x1="110.0" y1="144.0" x2="71.9" y2="122.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><line x1="71.9" y1="122.0" x2="71.9" y2="78.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><line x1="71.9" y1="78.0" x2="110.0" y2="56.0" stroke="#a8641f" stroke-width="2" marker-end="url(#ph)"/><text x="110" y="178" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6c655a">Σ = 0   ·   k ≠ l</text><line x1="330" y1="150" x2="330" y2="56" stroke="#a8641f" stroke-width="2.5" marker-end="url(#ph)"/><line x1="325" y1="136.0" x2="335" y2="136.0" stroke="#a8641f" stroke-width="1"/><line x1="325" y1="122.0" x2="335" y2="122.0" stroke="#a8641f" stroke-width="1"/><line x1="325" y1="108.0" x2="335" y2="108.0" stroke="#a8641f" stroke-width="1"/><line x1="325" y1="94.0" x2="335" y2="94.0" stroke="#a8641f" stroke-width="1"/><line x1="325" y1="80.0" x2="335" y2="80.0" stroke="#a8641f" stroke-width="1"/><text x="330" y="178" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6c655a">Σ = n   ·   k = l</text></svg><div class="cap">they close to 0 unless k = l, where they sum to n</div></div>
+      <p>Normalise them and stack them as the columns of \(\Phi\). With the eigenvectors fixed in \(\Phi\) and the eigenvalues \(u_k\) on the diagonal, \(C\) is diagonalised:</p>
+      \[C=\Phi\begin{bmatrix}u_0&0&0&0\\0&u_1&0&0\\0&0&\ddots&0\\0&0&0&u_{n-1}\end{bmatrix}\Phi^{*}.\]
+      <p>The coordinates of a signal in this basis, \(\hat{x}=\Phi^{*}x\), are its <span class="term">spectrum</span>. This change of basis is the <span class="term">discrete Fourier transform</span>; \(\Phi\) inverts it (\(\Phi^{*}\Phi=I\)).</p>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">07</span> The result: lift, scale, lower</h3>
+      <p>Computing \(Cx\) now needs no matrix multiply. Project \(x\) onto the waves to get its spectrum, multiply each coordinate by its own \(u_k\), and transform back:</p>
+      \[y=Cx=\Phi\,\Lambda\,\Phi^{*}x=\Phi\,(u\odot\hat{x}),\qquad \underbrace{\hat{x}=\Phi^{*}x}_{\text{lift}},\quad \underbrace{u\odot\hat{x}}_{\text{scale}}=\begin{bmatrix}u_0\,\hat{x}_0\\u_1\,\hat{x}_1\\u_2\,\hat{x}_2\\\vdots\\u_{n-1}\,\hat{x}_{n-1}\end{bmatrix},\quad \underbrace{\Phi\,(\cdots)}_{\text{lower}}.\]
+      <p>A diagonal matrix is exactly an elementwise product. This is the lift from the spatial to the spectral domain and back:</p>
+      <div class="fig"><svg viewBox="0 0 640 100" role="img" aria-label="Lifting from spatial to spectral: x to its spectrum via Phi-star, scale by u, back to y via Phi."><defs><marker id="pp" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6c655a"/></marker></defs><rect x="8" y="34" width="80" height="50" rx="9" fill="#dfeaec" stroke="#2f6b7c" stroke-width="1.4"/><text x="48.0" y="58" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="18" fill="#2f6b7c">x</text><text x="48.0" y="75" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#6c655a">spatial</text><line x1="92" y1="59" x2="168" y2="59" stroke="#6c655a" stroke-width="1.8" marker-end="url(#pp)"/><text x="130.0" y="28" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="#1E1B16">Φ*</text><rect x="170" y="34" width="118" height="50" rx="9" fill="#dfeaec" stroke="#2f6b7c" stroke-width="1.4"/><text x="229.0" y="58" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="18" fill="#2f6b7c">x̂</text><text x="229.0" y="75" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#6c655a">spectral</text><line x1="292" y1="59" x2="356" y2="59" stroke="#6c655a" stroke-width="1.8" marker-end="url(#pp)"/><text x="324.0" y="28" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="#1E1B16">× u</text><rect x="358" y="34" width="118" height="50" rx="9" fill="#e3dceb" stroke="#6a4a7a" stroke-width="1.4"/><text x="417.0" y="58" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="18" fill="#6a4a7a">u ⊙ x̂</text><text x="417.0" y="75" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#6c655a">spectral</text><line x1="480" y1="59" x2="538" y2="59" stroke="#6c655a" stroke-width="1.8" marker-end="url(#pp)"/><text x="509.0" y="28" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="#1E1B16">Φ</text><rect x="540" y="34" width="92" height="50" rx="9" fill="#e3dceb" stroke="#6a4a7a" stroke-width="1.4"/><text x="586.0" y="58" text-anchor="middle" font-family="Newsreader,serif" font-style="italic" font-size="18" fill="#6a4a7a">y</text><text x="586.0" y="75" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#6c655a">spatial</text></svg><div class="cap">lift to the spectrum, scale each frequency, lower back</div></div>
+    </div>
+
+    <div class="act">
+      <h3><span class="n">08</span> Real in, real out</h3>
+      <p>Mirror waves are conjugate: entry \(j\) of \(v_{n-k}\) is \(e^{2\pi i (n-k)j/n}=e^{-2\pi i kj/n}=\overline{e^{2\pi i kj/n}}\), so \(v_{n-k}=\overline{v_k}\).</p>
+      <p>For a real \(x\) and kernel, the spectra are conjugate-symmetric: \(\hat{x}_{n-k}=\overline{\hat{x}_k}\) and \(u_{n-k}=\overline{u_k}\).</p>
+      <p>So when \(\Phi\) rebuilds \(y\), the contributions from \(k\) and \(n-k\) arrive as a number and its conjugate, and fold onto the real axis:</p>
+      <div class="fig"><svg viewBox="0 0 360 230" role="img" aria-label="z and its conjugate are mirror images across the real axis; their sum lies on the real axis."><defs><marker id="pz" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6a4a7a"/></marker><marker id="pi" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1E1B16"/></marker></defs><line x1="30" y1="120" x2="345" y2="120" stroke="#d8cdb2" stroke-width="1"/><line x1="110" y1="20" x2="110" y2="212" stroke="#d8cdb2" stroke-width="1"/><line x1="200" y1="65" x2="288" y2="120" stroke="#c9bfa6" stroke-width="1" stroke-dasharray="3 3"/><line x1="200" y1="175" x2="288" y2="120" stroke="#c9bfa6" stroke-width="1" stroke-dasharray="3 3"/><line x1="110" y1="120" x2="200" y2="65" stroke="#6a4a7a" stroke-width="2.4" marker-end="url(#pz)"/><line x1="110" y1="120" x2="200" y2="175" stroke="#6a4a7a" stroke-width="2.4" stroke-dasharray="5 3" marker-end="url(#pz)"/><line x1="110" y1="120" x2="284" y2="120" stroke="#1E1B16" stroke-width="2.4" marker-end="url(#pi)"/><text x="208" y="60" font-family="Newsreader,serif" font-style="italic" font-size="16" fill="#6a4a7a">z</text><text x="208" y="185" font-family="Newsreader,serif" font-style="italic" font-size="16" fill="#6a4a7a">z̄</text><text x="250" y="112" font-family="Newsreader,serif" font-style="italic" font-size="15" fill="#1E1B16">z + z̄</text></svg><div class="cap">z + z̄ = 2·Re z — imaginary parts cancel</div></div>
+    </div>
+    <div class="act">
+      <h3><span class="n">09</span> When does this save work?</h3>
+      <p>As dense matrix products, the lift \(\Phi^{*}\) and the lower \(\Phi\) each cost \(O(n^{2})\) — no cheaper than \(Cx\) directly.</p>
+      <p>The saving comes from the <span class="term">fast Fourier transform</span>: it computes \(\Phi^{*}x\) and \(\Phi(\cdot)\) in \(O(n\log n)\), reusing the structure of the roots of unity.</p>
+      <p>The costs to compare: short \(k\)-tap kernel \(O(nk)\); dense \(C\) directly \(O(n^{2})\); via FFT \(O(n\log n)\).</p>
+      <p>So transform when the kernel is long (\(k\gtrsim\log n\)); for a tiny kernel, just convolve.</p>
+      <p>The deeper payoff is reuse — once \(C\) is diagonal, hard matrix jobs become elementwise:</p>
+      <p>apply \(C\) \(m\) times \(\to u_k^{m}\); &nbsp; invert or deconvolve \(\to x=\Phi(\hat b / u)\) in \(O(n\log n)\), not \(O(n^{3})\).</p>
+      <p>On a general graph there is no FFT, so spectral methods skip the transform and apply \(p(S)\) directly — the polynomial of step 05, run forward.</p>
+    </div>
+  </section>
+
+  <div class="foot">spatial · spectral · the same operation</div>
+</div>
+
+<script>
+(function(){
+  const N=32, NS="http://www.w3.org/2000/svg";
+  const cs=getComputedStyle(document.documentElement);
+  const C_X=cs.getPropertyValue('--x').trim(), C_KER=cs.getPropertyValue('--ker').trim(),
+        C_Y=cs.getPropertyValue('--y').trim(), C_HI=cs.getPropertyValue('--hi').trim(),
+        C_LINE=cs.getPropertyValue('--line').trim(), C_SOFT=cs.getPropertyValue('--ink-soft').trim(),
+        C_INK=cs.getPropertyValue('--ink').trim();
+  const MONO="'JetBrains Mono',monospace";
+  let x=new Array(N).fill(0), w=[0,0,1,0,0];
+  const slot=640/N, bw=12, off=(slot-bw)/2;
+
+  function dft(re,im){const oR=Array(N).fill(0),oI=Array(N).fill(0);
+    for(let k=0;k<N;k++){let sr=0,si=0;for(let j=0;j<N;j++){const a=-2*Math.PI*k*j/N,c=Math.cos(a),s=Math.sin(a);sr+=re[j]*c-im[j]*s;si+=re[j]*s+im[j]*c;}oR[k]=sr;oI[k]=si;}return[oR,oI];}
+  function idft(re,im){const oR=Array(N).fill(0),oI=Array(N).fill(0);
+    for(let j=0;j<N;j++){let sr=0,si=0;for(let k=0;k<N;k++){const a=2*Math.PI*k*j/N,c=Math.cos(a),s=Math.sin(a);sr+=re[k]*c-im[k]*s;si+=re[k]*s+im[k]*c;}oR[j]=sr/N;oI[j]=si/N;}return[oR,oI];}
+  const mag=(re,im)=>re.map((r,k)=>Math.hypot(r,im[k]));
+  function kernelH(){const h=Array(N).fill(0);for(let d=-2;d<=2;d++)h[((-d)%N+N)%N]=w[d+2];return h;}
+  function convolve(){const h=kernelH(),y=Array(N).fill(0);
+    for(let i=0;i<N;i++){let s=0;for(let m=0;m<N;m++)s+=h[m]*x[((i-m)%N+N)%N];y[i]=s;}return y;}
+
+  const clear=s=>{while(s.firstChild)s.removeChild(s.firstChild)};
+  function rect(x0,y0,wd,ht,fill,stroke){const r=document.createElementNS(NS,"rect");r.setAttribute("x",x0);r.setAttribute("y",y0);r.setAttribute("width",wd);r.setAttribute("height",Math.max(0,ht));r.setAttribute("rx",1.5);if(fill)r.setAttribute("fill",fill);else r.setAttribute("fill","none");if(stroke){r.setAttribute("stroke",stroke);r.setAttribute("stroke-width","1.4");}return r;}
+  function ln(x1,y1,x2,y2,col,dash){const l=document.createElementNS(NS,"line");l.setAttribute("x1",x1);l.setAttribute("y1",y1);l.setAttribute("x2",x2);l.setAttribute("y2",y2);l.setAttribute("stroke",col);l.setAttribute("stroke-width","1");if(dash)l.setAttribute("stroke-dasharray",dash);return l;}
+  function txt(x0,y0,s,col,size,anchor){const t=document.createElementNS(NS,"text");t.setAttribute("x",x0);t.setAttribute("y",y0);t.setAttribute("fill",col);t.setAttribute("font-size",size||10);t.setAttribute("font-family",MONO);t.setAttribute("text-anchor",anchor||"middle");t.textContent=s;return t;}
+
+  function drawSigned(svg,vals,color,fixed){clear(svg);const mid=50;let mx=fixed||0;if(!fixed)for(const v of vals)mx=Math.max(mx,Math.abs(v));mx=mx||1;svg.appendChild(ln(0,mid,640,mid,C_LINE));
+    vals.forEach((v,i)=>{const h=Math.abs(v)/mx*(mid-4);svg.appendChild(rect(i*slot+off,v>=0?mid-h:mid,bw,h,color));});}
+
+  function drawRecon(svg,recon,spatial){clear(svg);const mid=50;let mx=0;for(const v of spatial)mx=Math.max(mx,Math.abs(v));mx=mx||1;svg.appendChild(ln(0,mid,640,mid,C_LINE));
+    recon.forEach((v,i)=>{const h=Math.abs(v)/mx*(mid-4);svg.appendChild(rect(i*slot+off,v>=0?mid-h:mid,bw,h,C_Y));});
+    spatial.forEach((v,i)=>{const h=Math.abs(v)/mx*(mid-4);svg.appendChild(rect(i*slot+off+1,v>=0?mid-h:mid,bw-2,h,null,C_INK));});}
+
+  const stores={fx:[],mu:[],prod:[]};
+  function drawMag(svg,heights,color,key){clear(svg);const base=70;stores[key]=[];
+    svg.appendChild(ln(16*slot+slot/2,2,16*slot+slot/2,base,C_LINE,"3 3"));
+    svg.appendChild(ln(0,base,640,base,C_LINE));
+    heights.forEach((hn,i)=>{const h=hn*(base-3);const r=rect(i*slot+off,base-h,bw,h,color);r.style.cursor="pointer";r.dataset.k=i;svg.appendChild(r);stores[key].push(r);});
+    [0,4,8,12,16,20,24,28].forEach(k=>svg.appendChild(txt(k*slot+slot/2,86,k,C_SOFT,10)));}
+
+  function drawKernel(){const svg=document.getElementById("ker");clear(svg);const mid=34,cx=320,s=48;let mx=0;for(const v of w)mx=Math.max(mx,Math.abs(v));mx=mx||1;svg.appendChild(ln(0,mid,640,mid,C_LINE));
+    for(let d=-2;d<=2;d++){const v=w[d+2],h=Math.abs(v)/mx*(mid-12),X=cx+d*s-bw/2;svg.appendChild(rect(X,v>=0?mid-h:mid,bw,h,C_KER));svg.appendChild(txt(cx+d*s,66,(Math.round(v*100)/100),C_SOFT,11));}}
+
+  let cache={fx:[],gn:[],pn:[]};
+  function recompute(){
+    drawSigned(document.getElementById("sig"),x,C_X,1.1);
+    drawKernel();
+    const y=convolve();
+    drawSigned(document.getElementById("out"),y,C_Y);
+    const[xr,xi]=dft(x,Array(N).fill(0));
+    const[hr,hi]=dft(kernelH(),Array(N).fill(0));
+    const Xm=mag(xr,xi), Mu=mag(hr,hi);
+    const maxX=Math.max(...Xm)||1, maxMu=Math.max(...Mu)||1;
+    const xn=Xm.map(v=>v/maxX), gn=Mu.map(v=>v/maxMu), pn=xn.map((v,k)=>v*gn[k]);
+    drawMag(document.getElementById("fx"),xn,C_X,"fx");
+    drawMag(document.getElementById("mu"),gn,C_KER,"mu");
+    drawMag(document.getElementById("prod"),pn,C_Y,"prod");
+    cache={fx:xn,gn:gn,pn:pn};
+    const re=xr.map((r,k)=>r*hr[k]-xi[k]*hi[k]), im=xr.map((r,k)=>r*hi[k]+xi[k]*hr[k]);
+    const yr=idft(re,im)[0];
+    drawRecon(document.getElementById("recon"),yr,y);
+    let diff=0,imax=0;for(let i=0;i<N;i++){diff=Math.max(diff,Math.abs(yr[i]-y[i]));imax=Math.max(imax,Math.abs(idft(re,im)[1][i]));}
+    document.getElementById("match").innerHTML="✓ both routes agree — largest gap "+diff.toExponential(0)+" · leftover imaginary part "+imax.toExponential(0);
+    wire();
+  }
+
+  function hl(k){["fx","mu","prod"].forEach((key,ci)=>{const base=[C_X,C_KER,C_Y][ci];const km=(N-k)%N;stores[key].forEach((r,i)=>r.setAttribute("fill",(k!=null&&(i===k||i===km))?C_HI:base));});
+    const r=document.getElementById("readout");
+    if(k==null){r.textContent="hover a frequency to see its multiplication";return;}
+    const a=cache.fx[k].toFixed(2),b=cache.gn[k].toFixed(2),c=cache.pn[k].toFixed(2),km=(N-k)%N;
+    r.innerHTML="freq <b>"+k+"</b>"+(km!==k?" (mirror "+km+")":"")+": &nbsp;|X̂| "+a+" &nbsp;×&nbsp; gain "+b+" &nbsp;=&nbsp; <b>"+c+"</b>";}
+  function wire(){["fx","mu","prod"].forEach(key=>{stores[key].forEach(r=>r.onmouseenter=()=>hl(+r.dataset.k));const svg=document.getElementById(key);svg.onmouseleave=()=>hl(null);});}
+
+  const sigSvg=document.getElementById("sig");let drag=false;
+  function setFrom(e){const b=sigSvg.getBoundingClientRect();const px=(e.clientX-b.left)/b.width*640;const i=Math.max(0,Math.min(N-1,Math.floor(px/slot)));const mid=b.top+b.height/2;let v=(mid-e.clientY)/(b.height/2)*1.1;v=Math.max(-1.1,Math.min(1.1,v));x[i]=Math.round(v*100)/100;recompute();}
+  sigSvg.addEventListener("pointerdown",e=>{drag=true;sigSvg.setPointerCapture(e.pointerId);setFrom(e);});
+  sigSvg.addEventListener("pointermove",e=>{if(drag)setFrom(e);});
+  sigSvg.addEventListener("pointerup",()=>drag=false);
+  sigSvg.addEventListener("pointercancel",()=>drag=false);
+
+  function loadSig(n){x=Array(N).fill(0);
+    if(n==="twotone")for(let j=0;j<N;j++)x[j]=0.6*Math.sin(2*Math.PI*2*j/N)+0.35*Math.sin(2*Math.PI*7*j/N);
+    else if(n==="impulse")x[N/2]=1;
+    else if(n==="step")for(let j=0;j<N;j++)x[j]=j<N/2?0.8:-0.2;
+    else if(n==="square")for(let j=0;j<N;j++)x[j]=(Math.floor(j/4)%2===0)?0.8:-0.8;
+    else if(n==="noise")for(let j=0;j<N;j++)x[j]=Math.round((Math.random()*2-1)*100)/100;}
+  function loadKer(n){
+    if(n==="identity")w=[0,0,1,0,0];
+    else if(n==="smooth3")w=[0,1/3,1/3,1/3,0];
+    else if(n==="smooth5")w=[.2,.2,.2,.2,.2];
+    else if(n==="sharpen")w=[0,-0.5,2,-0.5,0];
+    else if(n==="edges")w=[0,-0.5,0,0.5,0];}
+  document.getElementById("sigPreset").addEventListener("change",e=>{loadSig(e.target.value);recompute();});
+  document.getElementById("kerPreset").addEventListener("change",e=>{loadKer(e.target.value);recompute();});
+
+  loadSig("twotone");loadKer("smooth5");recompute();
+})();
+</script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],processEscapes:false},svg:{fontCache:'global'}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+</body>
+</html>

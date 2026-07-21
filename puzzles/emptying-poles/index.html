@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emptying a pole — doubling disc transfers</title>
+  <style>
+    /* Reset and page chrome around the React app */
+    *{box-sizing:border-box}
+    html,body{margin:0; padding:0}
+    body{
+      font-family:'Newsreader',Georgia,serif;
+      background:#FBF7EC;
+      color:#1E1B16;
+      -webkit-font-smoothing:antialiased;
+    }
+    .back-link{
+      position:fixed; top:18px; left:20px; z-index:100;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.12em;
+      color:#6c655a; text-decoration:none;
+      padding:6px 10px; border-radius:6px;
+      transition:.15s;
+    }
+    .back-link:hover{color:#1E1B16; background:rgba(255,253,246,.7)}
+
+    #app:empty::before{
+      content:"loading…";
+      display:block; padding:80px 0; text-align:center;
+      font-family:'JetBrains Mono',monospace; font-size:12px;
+      letter-spacing:.1em; color:#6c655a;
+    }
+
+    /* Formal proof section */
+    .formal{
+      max-width:680px;
+      margin:30px auto 80px;
+      padding:0 clamp(20px,5vw,40px);
+    }
+    .formal details{
+      border:1px solid #ddd2b8;
+      border-radius:14px;
+      background:rgba(255,253,246,.55);
+      overflow:hidden;
+    }
+    .formal summary{
+      cursor:pointer;
+      padding:18px 24px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.18em;
+      color:#6c655a;
+      text-transform:uppercase;
+      list-style:none;
+      user-select:none;
+      transition:.15s;
+    }
+    .formal summary::-webkit-details-marker{display:none}
+    .formal summary::after{
+      content:"+ open";
+      float:right;
+      font-weight:600;
+      color:#1E1B16;
+    }
+    .formal details[open] summary::after{content:"− close"}
+    .formal summary:hover{background:#fffdf6}
+    .formal-body{
+      padding:8px 28px 28px;
+      font-family:'Newsreader',serif;
+      font-size:15px; line-height:1.65;
+      color:#3a342a;
+      border-top:1px dashed #ddd2b8;
+    }
+    .formal-body h3{
+      font-family:'Fraunces',serif; font-weight:600;
+      font-size:17px; margin:22px 0 8px;
+      color:#1E1B16;
+    }
+    .formal-body h3:first-child{margin-top:18px}
+    .formal-body p{margin:0 0 12px}
+    .formal-body b{font-weight:600; color:#1E1B16}
+    .formal-body em{font-style:italic}
+    .formal-body ul{margin:0 0 12px; padding-left:22px}
+    .formal-body li{margin-bottom:4px}
+    .formal-body code{
+      font-family:'JetBrains Mono',monospace;
+      font-size:.9em;
+      background:#F4ECD8;
+      padding:1px 5px; border-radius:4px;
+    }
+  </style>
+
+  <!-- React + Babel via CDN, no build step -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- MathJax for the formal proof -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+  <a class="back-link" href="../../">← all puzzles</a>
+
+  <div id="app"></div>
+
+  <section class="formal">
+    <details>
+      <summary>The formal proof</summary>
+      <div class="formal-body">
+
+        <h3>Setup</h3>
+        <p>Label the three poles and let their disc counts be $a \le b \le c$. The move is: choose a "receiver" pole holding $y$ discs and a "donor" pole holding $\ge y$ discs; transfer $y$ discs from donor to receiver, so the receiver now holds $2y$. (A pole already at $0$ means we are done, so assume all counts are $\ge 1$.)</p>
+        <p>I'll prove the statement by <b>infinite descent on the minimum pile</b>: I'll show that whenever the smallest pile has $a \ge 1$ discs, a finite sequence of legal moves produces a configuration whose smallest pile has <em>strictly fewer</em> than $a$ discs. Since the minimum is a non-negative integer that strictly decreases, it must eventually reach $0$ — an empty pole.</p>
+
+        <h3>One round: shrinking the minimum</h3>
+        <p>Let the piles be $a \le b \le c$ with $a \ge 1$. Divide:</p>
+        <p>$$b = qa + r,\qquad q = \lfloor b/a\rfloor \ge 1,\qquad 0 \le r &lt; a,$$</p>
+        <p>and write $q$ in binary: $q = \sum_{i=0}^{k}\epsilon_i 2^i$ with $\epsilon_i\in\{0,1\}$ and <b>leading bit $\epsilon_k = 1$</b> (so $2^k \le q$).</p>
+
+        <p><b>The moves.</b> Always use pile $A$ (the smallest) as the receiver. Since $A$ starts at $a$ and is doubled each step, before step $i$ it holds exactly $2^i a$. For $i = 0,1,\dots,k$ in order, double $A$ once, taking the required $2^i a$ discs:</p>
+        <ul>
+          <li>from pile $B$ if $\epsilon_i = 1$,</li>
+          <li>from pile $C$ if $\epsilon_i = 0$.</li>
+        </ul>
+
+        <p><b>Why every move is legal.</b> Picture $B$'s starting count as one chunk of size $a\cdot 2^j$ for each set bit of $q$, plus the leftover $r$:</p>
+        <p>$$b = r + \sum_{j:\,\epsilon_j=1} a\cdot 2^j.$$</p>
+        <p>Processing the bits low-to-high <em>turns off</em> $q$'s set bits one at a time: when $\epsilon_i = 1$ we strip the chunk $a\cdot 2^i$ from $B$; when $\epsilon_i = 0$ there is no such chunk in $B$, so $A$ doubles from $C$ instead. After the round every set bit of $q$ has been cleared from $B$, leaving exactly $r &lt; a$.</p>
+
+        <p>Two things to check:</p>
+
+        <p><em>1-bit ($\epsilon_i = 1$).</em> Earlier steps have only touched chunks at lower indices than $i$, so the chunk $a\cdot 2^i$ is still sitting in $B$ untouched. Take it. ✓</p>
+
+        <p><em>0-bit ($\epsilon_i = 0$).</em> The leading bit $\epsilon_k = 1$ forces $i \le k-1$, so $C$ started with $c \ge b \ge a\cdot 2^k \ge 2\cdot a\cdot 2^i$. By now $C$ has given up at most $a(1 + 2 + \cdots + 2^{i-1}) = a(2^i - 1) &lt; a\cdot 2^i$. So $C$ still holds more than $a\cdot 2^i$. ✓</p>
+
+        <h3>Termination</h3>
+        <p>Each round replaces the current minimum $a\ge 1$ by a new minimum $\le r &lt; a$. A strictly decreasing sequence of non-negative integers reaches $0$ in finitely many rounds, and a minimum of $0$ is an empty pole. $\blacksquare$</p>
+
+        <h3>Quick check</h3>
+        <p>Start $(1,5,6)$. Here $a=1,b=5,c=6$, $q=5=(101)_2$, $r=0$:</p>
+        <ul>
+          <li>$i=0$ ($\epsilon_0=1$): take $1$ from $B$ → $(2,4,6)$</li>
+          <li>$i=1$ ($\epsilon_1=0$): take $2$ from $C$ → $(4,4,4)$</li>
+          <li>$i=2$ ($\epsilon_2=1$): take $4$ from $B$ → $(8,0,4)$</li>
+        </ul>
+        <p>A pole is emptied, exactly as the descent predicts.</p>
+      </div>
+    </details>
+  </section>
+
+  <script type="text/babel" data-presets="react" src="app.jsx"></script>
+</body>
+</html>
