@@ -196,7 +196,7 @@ footer{
 
 <h2><span class="n">04</span> Ball meets hole</h2>
 <p>With no more gaps to close, every move cycles each diagonal one step: each ball slides one place leftward along its diagonal, and the left-most ball &mdash; the collected one &mdash; wraps around to the top row. Holes (empty places) cycle along with the balls.</p>
-<p>Now suppose diagonal d is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, d+1. The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every d+1 moves; between surfacings, the hole makes a full lap of its d places, plus one step. Hence each surfacing finds the hole one place closer, and within d surfacings they surface together: a ball at column d+1, a hole at column d &mdash; a top row that skips a column. Impossible. Therefore the hole never existed.</p>
+<p>Now suppose diagonal d is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, d+1. The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every d+1 moves; between surfacings, the hole makes a full lap of its d places, plus one step. Hence each surfacing finds the hole one place closer, and within d surfacings they surface together: a ball at column d+1, a hole at column d &mdash; a top row that has a gap. Impossible. Therefore the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
