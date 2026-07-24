@@ -58,7 +58,7 @@ function shade(hex) {
 
 function App() {
   const [initial, setInitial] = useState([3, 14, 16]);
-  const [mode, setMode] = useState("auto");
+  const [mode, setMode] = useState("manual");
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(2);
@@ -80,6 +80,12 @@ function App() {
 
   useEffect(() => { setStep(0); setPlaying(false); setSel(null); setPiles([...initial]); }, [initial, mode]);
   useEffect(() => { if (mode === "auto") setPiles(pilesAtStep(step)); }, [step, mode, pilesAtStep]);
+
+  // the formal-proof <details> lives outside the app; keep it proof-mode only
+  useEffect(() => {
+    const el = document.querySelector(".formal");
+    if (el) el.style.display = mode === "auto" ? "" : "none";
+  }, [mode]);
 
   // slower, readable pacing
   const gap = { 1: 1700, 2: 1150, 3: 700, 4: 380 }[speed];
@@ -169,8 +175,8 @@ function App() {
         ))}
         <span className="dd-divider" />
         <div className="dd-modeswitch">
-          <button className={mode === "auto" ? "on" : ""} onClick={() => setMode("auto")}>Proof</button>
           <button className={mode === "manual" ? "on" : ""} onClick={() => setMode("manual")}>Play</button>
+          <button className={mode === "auto" ? "on" : ""} onClick={() => setMode("auto")}>Proof</button>
         </div>
       </section>
 
@@ -301,6 +307,7 @@ function App() {
         </div>
       )}
 
+      {mode === "auto" && (
       <aside className="dd-proof">
         <div className="dd-proof-head">The proof</div>
         <p>
@@ -328,6 +335,7 @@ function App() {
           untouched; on a 0-bit, <span className="m">c ≥ b</span> is large enough since only smaller powers have been spent.
         </p>
       </aside>
+      )}
     </div>
   );
 }

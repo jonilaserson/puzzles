@@ -90,6 +90,13 @@ input.pgIn:focus{outline:none;border-color:var(--amber);z-index:1}
 .stat .same{color:var(--blue)}
 .mono{font-family:'JetBrains Mono',monospace;font-size:14px}
 .note{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue);min-height:20px;margin-top:6px}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
 footer{
   margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
   font-size:14px;line-height:1.6;color:var(--ink-soft);
@@ -97,7 +104,7 @@ footer{
 @media (max-width:520px){ h1{font-size:30px} }
 </style>
 </head>
-<body>
+<body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
 
 <svg width="0" height="0" style="position:absolute">
@@ -122,8 +129,32 @@ footer{
 <div class="box">
   <p><b>The game.</b> Take 15 balls and split them into groups, any way you please: (5,&thinsp;3,&thinsp;7), one big group of 15, fifteen groups of one — all fair starts. Then repeat a single move, forever: <b>take one ball from every group, and pile the collected balls together as a new group.</b> A group that runs out of balls simply disappears.</p>
   <p><b>The puzzle.</b> Play from any start and you will always arrive at the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5) — where the move recreates exactly the same five groups, so the game freezes for good. <b>Prove that this happens from every possible start.</b></p>
-  <p>Really: grab 15 coins and play a few rounds before scrolling. The puzzle is more fun once you've felt the pull — and the proof below will still be here.</p>
+  <p>Really: play a few rounds below (or grab 15 coins) before flipping to the proof. The puzzle is more fun once you've felt the pull.</p>
 </div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">start:</span>
+  <span class="seg"><button onclick="PL.set([5,3,7])">5, 3, 7</button><button onclick="PL.rand()">random</button></span>
+  <span class="seg"><input class="pgIn" id="plIn" placeholder="try 14" onkeydown="if(event.key==='Enter')PL.custom()"><button onclick="PL.custom()">set</button></span>
+  <span style="flex:1"></span>
+  <span class="seg"><button id="plBack" onclick="PL.back()">&#8592; back</button><button id="plStep" class="prime" onclick="PL.step()">step &#8594;</button></span>
+  <button id="plAuto" onclick="PL.auto()">auto</button>
+  <button onclick="PL.replay()">replay</button>
+</div>
+<div class="stat" id="plS"></div>
+<div id="fPlay"></div>
+<figcaption>Piles of balls on a table. Each move collects the top ball of every pile (amber) and stacks the loot as a new pile on the right; a pile whose last ball is taken is gone. Two things to try: find a start of 15 balls that escapes (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5) &mdash; and see what 14 balls do instead.</figcaption>
+</figure>
+</section>
+
+<section class="proof-only">
 
 <figure><div id="f0"></div>
 <figcaption>Start (5,&thinsp;3,&thinsp;7), kept in that order. Never sorted. Eight moves later it is sorted anyway &mdash; and frozen. The proof shows why.</figcaption></figure>
@@ -263,6 +294,8 @@ footer{
   <span><span class="swd" style="border-color:#c9bd9e"></span>target staircase</span>
 </div>
 <figcaption>Balls stay exactly where they are. Each move: the wall steps right, a new row lands on top, peeled balls fly along their 45&deg; lines. A ball's color never changes &mdash; depth is a property of the spot. Total depth falls exactly when a gap closes. A count that is not 1+2+&#8943;+k never freezes &mdash; it falls into a cycle.</figcaption></figure>
+
+</section>
 
 <footer>The game is known as Bulgarian solitaire. Theorem: J.&thinsp;Brandt (1982); popularized by Martin Gardner (1983). The no-sorting formulation and the gap monovariant in this page are due to Jonathan.</footer>
 </main>
@@ -590,6 +623,109 @@ const PG=(function(){
   function auto(){if(timer){stopAuto();return;}
     if(t>=tmax){t=0;refresh();}
     document.getElementById('autoB').textContent='stop';timer=setInterval(step,550);}
+  function replay(){stopAuto(); t=0; refresh();}
+  set([5,3,7]);
+  return {set,rand,step,back,auto,replay,custom};
+})();
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+/* PLAY playground — piles of balls on a table. No board, no depths, no
+   staircase: nothing of the proof's framing. New pile lands on the right;
+   empty piles vanish, so the arrangement is just how you'd play with coins. */
+const PL=(function(){
+  let states=[[5,3,7]], t=0, tmax=0, frozenAt=-1, repAt=-1, per=0, n=15;
+  let ballD=24, maxH=7, H=220, timer=null;
+  const M=16, W=680;
+  const key=s=>s.slice().sort((a,b)=>a-b).join(',');
+  const show=s=>s.join(', ');
+  function advance(s){
+    const loot=s.length;
+    const nx=s.map(v=>v-1).filter(v=>v>0);
+    nx.push(loot);
+    return nx;
+  }
+  function build(a){
+    let s=a.slice();
+    const sts=[s.slice()], seen=new Map([[key(s),0]]);
+    let fx=-1, rep=-1, p=0;
+    for(let tt=1;tt<=520;tt++){
+      const nx=advance(s);
+      sts.push(nx.slice());
+      if(key(nx)===key(s)){fx=tt;break;}
+      s=nx;
+      const k=key(s);
+      if(seen.has(k)){rep=tt;p=tt-seen.get(k);break;}
+      seen.set(k,tt);
+    }
+    if(fx>0) for(let i=0;i<4;i++){s=advance(sts[sts.length-1]);sts.push(s.slice());}
+    if(rep>0) for(let i=0;i<p;i++){s=advance(s);sts.push(s.slice());}
+    return {sts,fx,rep,p};
+  }
+  function draw(){
+    const st=states[t];
+    const pw=ballD*1.45, x0=(W-st.length*pw)/2, base=M+maxH*ballD;
+    let s=`<line x1="${M}" y1="${base+3}" x2="${W-M}" y2="${base+3}" stroke="#c9bd9e" stroke-width="1.6" stroke-linecap="round"/>`;
+    st.forEach((len,i)=>{
+      const cx=x0+i*pw+pw/2;
+      for(let j=1;j<=len;j++){
+        const top=(j===len);
+        s+=`<circle cx="${cx}" cy="${base-(j-0.5)*ballD}" r="${ballD/2-1.2}" fill="${top?'#d99f3f':'#5f92a6'}"/>`;
+      }
+      s+=`<text x="${cx}" y="${base+20}" fill="#6c655a" font-size="12" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${len}</text>`;
+    });
+    document.getElementById('fPlay').innerHTML=
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+  }
+  function statusLine(){
+    const st=states[t];
+    if(t===0) return `(${show(st)}) &mdash; ${n} ball${n>1?'s':''}, as given. Press step.`;
+    if(frozenAt>0&&t===frozenAt) return `(${show(st)}) &mdash; move ${t}: <b>trapped. Every move from here rebuilds these ${st.length} piles &mdash; forever.</b>`;
+    if(frozenAt>0&&t>frozenAt) return `(${show(st)}) &mdash; move ${t}: the same piles, rebuilt.`;
+    if(repAt>0&&t===repAt) return `(${show(st)}) &mdash; move ${t}: <span class="drop">the piles of move ${t-per}, again</span> &mdash; a cycle of length <b>${per}</b>. ${n} balls never settle.`;
+    if(repAt>0&&t>repAt) return `(${show(st)}) &mdash; move ${t}: cycling &mdash; the piles of move ${t-per}.`;
+    return `(${show(st)}) &mdash; move ${t}.`;
+  }
+  function refresh(){
+    draw();
+    document.getElementById('plS').innerHTML=statusLine();
+    document.getElementById('plBack').disabled=(t===0);
+    document.getElementById('plStep').disabled=(t===tmax);
+    if(t===tmax) stopAuto();
+  }
+  function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById('plAuto').textContent='auto';}
+  function step(){ if(t>=tmax){stopAuto();return;} t++; refresh(); }
+  function back(){ stopAuto(); if(t>0){t--; refresh();} }
+  function set(a){
+    stopAuto();
+    n=a.reduce((x,y)=>x+y,0);
+    const b=build(a);
+    states=b.sts; frozenAt=b.fx; repAt=b.rep; per=b.p;
+    tmax=states.length-1;
+    maxH=states.reduce((m,s)=>Math.max(m,...s),1);
+    const maxP=states.reduce((m,s)=>Math.max(m,s.length),1);
+    ballD=Math.max(8, Math.min(26, Math.floor((W-2*M)/maxP/1.45), Math.floor(300/maxH)));
+    H=M+maxH*ballD+34;
+    t=0; refresh();
+  }
+  function custom(){
+    const el=document.getElementById('plIn');
+    const a=(el.value.match(/\d+/g)||[]).map(Number).filter(v=>v>0);
+    if(!a.length){document.getElementById('plS').innerHTML='type pile sizes &mdash; e.g. 4, 4, 6 &mdash; or a single number like 14';return;}
+    const s=a.reduce((x,y)=>x+y,0);
+    if(s>60){document.getElementById('plS').innerHTML=`${s} balls is a lot &mdash; keep it &le; 60.`;return;}
+    set(a);
+  }
+  function rand(){let r=15,a=[];while(r>0){const q=1+Math.floor(Math.random()*r);a.push(q);r-=q;}set(a);}
+  function auto(){if(timer){stopAuto();return;}
+    if(t>=tmax){t=0;refresh();}
+    document.getElementById('plAuto').textContent='stop';timer=setInterval(step,650);}
   function replay(){stopAuto(); t=0; refresh();}
   set([5,3,7]);
   return {set,rand,step,back,auto,replay,custom};
