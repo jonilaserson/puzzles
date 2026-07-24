@@ -195,9 +195,8 @@ footer{
 <div class="fact">Hence, after some move, <b>no gap ever closes again</b>, and every ball keeps its depth from that point on.</div>
 
 <h2><span class="n">04</span> Ball meets hole</h2>
-<p>With no more gaps to close, every move cycles each diagonal one step to the left: a ball's row number grows by one, moving it one place leftward along its diagonal, and the diagonal's left-most ball &mdash; the collected one &mdash; wraps around to become its right-most, in the top row. Any holes (empty places of a diagonal) cycle the exact same way.</p>
-<p>Now take a ball cycling around diagonal d+1, and suppose diagonal d beneath it is not full: one of its places is a hole. The ball <b>surfaces</b> &mdash; returns to the top row &mdash; once every d+1 moves. Between two surfacings, the hole cycles d+1 steps around a diagonal of only d places: a full lap plus one step. Hence every surfacing finds the hole one place further along, and within d surfacings the two reach the top row together: a ball at column d+1, a hole at column d.</p>
-<p>But the top row is a group: its balls fill the columns in order from the left. If it reaches column d+1, it cannot skip column d. Therefore the hole never existed.</p>
+<p>With no more gaps to close, every move cycles each diagonal one step: each ball slides one place leftward along its diagonal, and the left-most ball &mdash; the collected one &mdash; wraps around to the top row. Holes (empty places) cycle along with the balls.</p>
+<p>Now suppose diagonal d is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, d+1. The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every d+1 moves; between surfacings, the hole makes a full lap of its d places, plus one step. Hence each surfacing finds the hole one place closer, and within d surfacings they surface together: a ball at column d+1, a hole at column d &mdash; a top row that skips a column. Impossible. Therefore the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
@@ -206,7 +205,7 @@ footer{
 <div class="stat" id="cs"></div>
 <div id="f6"></div>
 <div class="note" id="cnote"></div>
-<figcaption>The case d = 4, played out: the amber ball cycles diagonal 5; the red hole cycles diagonal 4 &mdash; if it exists. Every surfacing of the ball finds the hole one place closer to the top row. On the fourth, they surface together, and the top row would need a hole inside it.</figcaption></figure>
+<figcaption>The case d = 4. Jump from surfacing to surfacing &mdash; the hole slips one place closer each time.</figcaption></figure>
 
 <div class="fact"><b>Fact 3.</b> A ball on diagonal d+1 forces diagonal d to be completely full.</div>
 
@@ -370,45 +369,45 @@ function diagram(rows,o){
   document.getElementById('f3').innerHTML=SVG(680,300,s);
 })();
 
-/* F6 — ball meets hole, on the board */
+/* F6 — ball meets hole, on the board.
+   Start: ball at (5,1) (about to wrap), hole at (2,3) — always different
+   rows until they surface together at t=11, the third surfacing. */
 const C=(function(){
-  const b0=3, h0=3, END=18;
+  const b0=5, h0=2, END=11;
   let t=0;
   const c=36,g=5,p=c+g,x0=150,y0=40;
   const X=col=>x0+(col-1)*p, Y=row=>y0+(row-1)*p;
   const bslot=()=>((b0-1+t)%5)+1, hslot=()=>((h0-1+t)%4)+1;
-  const surfN=()=> t<3?0:Math.floor((t-3)/5)+1;
+  const surfN=()=> t<1?0:Math.floor((t-1)/5)+1;
   function draw(){
     const b=bslot(), h=hslot(), surf=(b===1), boom=(t===END);
     let s='';
     for(let r=1;r<=5;r++)for(let j=1;j<=6-r;j++)
       if(r+j-1<=3) s+=R(X(j),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"`);
     for(let k=1;k<=4;k++){const r=k,col=5-k;
-      if(k!==h){s+=R(X(col),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1.4" stroke-dasharray="4 3"`);
-        s+=T(X(col)+c/2,Y(r)+c/2,k,SOFT,12,500);}}
+      if(k!==h) s+=R(X(col),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1.4" stroke-dasharray="4 3"`);}
     for(let k=1;k<=5;k++){const r=k,col=6-k;
-      if(k!==b){s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
-        s+=T(X(col)+c/2,Y(r)+c/2,k,AMBL,12,600);}}
+      if(k!==b) s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);}
     if(boom){
       for(let j=1;j<=3;j++) s+=B(X(j),Y(1),c,GRAY);
-      s+=T(X(3)+c/2,Y(1)-18,'row 1 reaches column 5 — but column 4 is a hole',COR,12.5,600);
+      s+=T(X(3)+c/2,Y(1)-18,'the top row reaches column 5 — but column 4 is a hole',COR,12.5,600);
     }
     s+=R(X(5-h),Y(h),c,'none',`stroke="${COR}" stroke-width="${boom?2.6:1.8}" stroke-dasharray="4 3"`);
-    s+=T(X(5-h)+c/2,Y(h)+c/2,h,COR,12,700);
+    s+=T(X(5-h)+c/2,Y(h)+c/2,'hole',COR,10.5,700);
     s+=B(X(6-b),Y(b),c,AMB);
-    s+=T(X(6-b)+c/2,Y(b)+c/2,b,'#ffffff',12,700);
+    s+=T(X(6-b)+c/2,Y(b)+c/2,'ball','#ffffff',10.5,700);
     s+=T(X(1)-52,Y(4)+c/2,'diagonal 4',SOFT,11.5,500);
     s+=T(X(1)-52,Y(5)+c/2,'diagonal 5',AMBL,11.5,500);
     s+=`<path d="M ${X(1)+c/2} ${Y(5)+c+8} C ${X(1)+c/2+70} ${Y(5)+c+52}, ${X(5)+c+120} ${Y(1)+c+90}, ${X(5)+c+12} ${Y(1)+c/2+8}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
-    s+=T(460,268,'the first column wraps to the top row — on both diagonals',SOFT,11.5,500);
+    s+=T(480,268,'the first column wraps to the top row',SOFT,11.5,500);
     document.getElementById('f6').innerHTML=SVG(680,320,s);
     document.getElementById('cs').innerHTML=
-      `move <b>${t}</b> — ball: place <b>${b}</b> of 5 — hole: place <b>${h}</b> of 4 — surfacings <b>${surfN()}</b>`+
+      `move <b>${t}</b> — surfacings <b>${surfN()}</b>`+
       (boom?' — <span class="drop">collision</span>':'');
     document.getElementById('cnote').innerHTML=
-      boom?'<span style="color:var(--coral)">Surfacing 4: ball at (1, 5), hole at (1, 4). A row filled from the left that reaches column 5 cannot skip column 4. The hole cannot exist. &#8718;</span> — reset to replay'
-      :surf&&t>0?`Surfacing ${surfN()}: the ball is in the top row — the hole is at place ${h}, not yet at (1, 4). One place closer.`
-      :t===0?'Suppose diagonal 4 has a hole (red). A ball sits on diagonal 5 (amber). Press one move — both cycle.':'';
+      boom?'<span style="color:var(--coral)">Surfacing 3: they surface together — the top row reaches column 5 but skips column 4. Impossible. &#8718;</span> — reset to replay'
+      :surf&&t>0?`Surfacing ${surfN()}: the hole is one place closer to the top row.`
+      :t===0?'A hole on diagonal 4, a ball on diagonal 5. Press one move.':'';
   }
   return {step(){if(t>=END)return;t++;draw();},
           jump(){if(t>=END)return;do{t++}while(((b0-1+t)%5)!==0);draw();},
