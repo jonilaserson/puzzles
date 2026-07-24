@@ -405,7 +405,7 @@ const C=(function(){
       `move <b>${t}</b> — surfacings <b>${surfN()}</b>`+
       (boom?' — <span class="drop">collision</span>':'');
     document.getElementById('cnote').innerHTML=
-      boom?'<span style="color:var(--coral)">Surfacing 3: they surface together — the top row reaches column 5 but skips column 4. Impossible. &#8718;</span> — reset to replay'
+      boom?'<span style="color:var(--coral)">Surfacing 3: they surface together — the top row reaches column 5 but has a gap at column 4. Impossible. &#8718;</span> — reset to replay'
       :surf&&t>0?`Surfacing ${surfN()}: the hole is one place closer to the top row.`
       :t===0?'A hole on diagonal 4, a ball on diagonal 5. Press one move.':'';
   }
