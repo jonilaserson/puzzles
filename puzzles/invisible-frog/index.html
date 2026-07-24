@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The frog you can hear but cannot see</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .hit{color:var(--coral);font-weight:600}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+/* swamp scene */
+#frSvg .pole{cursor:crosshair}
+#frSvg .pole .cross{opacity:0;transition:opacity .12s}
+#frSvg .pole:hover .cross{opacity:.95}
+#frSvg text{user-select:none;pointer-events:none}
+#frSvg .fx{transform-box:fill-box;transform-origin:center}
+@keyframes frFlash{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.9)}}
+#frSvg .fxFlash{animation:frFlash .5s ease-out forwards}
+@keyframes frRip{0%{opacity:.6;transform:scale(.3)}100%{opacity:0;transform:scale(2.4)}}
+#frSvg .fxRip{animation:frRip .9s ease-out forwards}
+@keyframes frQk{0%{opacity:0;transform:translateY(5px)}14%{opacity:1}70%{opacity:1;transform:translateY(-2px)}100%{opacity:0;transform:translateY(-9px)}}
+#frSvg .fxQk{animation:frQk 1.6s ease-in-out forwards}
+</style>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">pursuit · parity · a visual proof</p>
+<h1>The frog you can hear<br>but cannot see</h1>
+<p class="sub">Ten poles in a dark swamp, a frog on one of them. Every shot that misses, it hops one pole over. How many bullets do you need to be sure?</p>
+
+<div class="box">
+  <p><b>The setup.</b> Ten poles stand in a swamp. On one of them sits a frog. It is night: you can hear it, but you can't see it.</p>
+  <p><b>The move.</b> Shoot any pole. If the frog is there, the quacking stops — you win. If not, it silently hops to a pole right next to its own, and you shoot again.</p>
+  <p><b>The puzzle.</b> Find a way of shooting that is <b>certain</b> to get the frog — with as few bullets as possible.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">frog:</span>
+  <span class="seg"><button id="frRnd" class="on" onclick="FR.setFrog('random')">random</button><button id="frSnk" onclick="FR.setFrog('sneaky')">sneaky</button></span>
+  <span style="flex:1"></span>
+  <span class="stat" id="frCnt" style="margin:0"></span>
+  <button onclick="FR.newFrog()">new frog &#8635;</button>
+</div>
+<div class="stat" id="frS"></div>
+<div id="fFrog"></div>
+<figcaption>Click a pole to shoot it. The <b>random</b> frog hops on a whim; the <b>sneaky</b> one stays alive as long as any hiding pole agrees with all your misses. Quacks echo across the water — they carry no clue. After the kill, a replay shows the path the frog took. How few shots make the kill certain?</figcaption>
+</figure>
+</section>
+
+<section class="proof-only">
+<p style="text-align:center;color:var(--ink-soft);font-style:italic;margin:48px 0">The proof is being illustrated — coming soon.</p>
+</section>
+
+<footer>A classic pursuit puzzle, also told with a lion in a row of caves, or a princess who changes rooms each night.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+/* The swamp — play-mode hunt.
+   Two opponents behind one scene:
+   random  — a real position, hopping to a random neighbour on each miss;
+   sneaky  — no position at all: it survives as long as at least one pole is
+             consistent with every miss so far (the adversarial frog the
+             puzzle is about). On the kill, a consistent path is rebuilt
+             backwards, so the replay shows the life it "really" lived. */
+const FR=(function(){
+  const N=10, W=680, H=330, WATER=246;
+  const TOPS=[162,150,168,155,171,148,164,158,152,167];
+  const PX=i=>47+(i-1)*65.2, TOP=i=>TOPS[i-1];
+
+  let mode='random', over=false, replaying=false;
+  let shots=[], pos=0, path=[], sets=[];
+  let quackT=null, replayT=null, best=null;
+
+  const spread=S=>{const o=new Set();S.forEach(p=>{if(p>1)o.add(p-1);if(p<N)o.add(p+1);});return o;};
+  const rnd=n=>Math.floor(Math.random()*n);
+
+  /* ---------- scene ---------- */
+  function scene(){
+    let s=`<defs>
+      <linearGradient id="frSky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#141f2b"/><stop offset="1" stop-color="#27394b"/></linearGradient>
+      <linearGradient id="frWat" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1e3343"/><stop offset="1" stop-color="#13222e"/></linearGradient>
+      <clipPath id="frClip"><rect x="0" y="0" width="${W}" height="${H}" rx="14"/></clipPath>
+    </defs>`;
+    s+=`<g clip-path="url(#frClip)">`;
+    s+=`<rect width="${W}" height="${H}" fill="url(#frSky)"/>`;
+    for(let k=0;k<24;k++){
+      const x=(k*97+31)%W, y=(k*61+17)%110+10, r=0.7+(k%3)*0.4;
+      s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#e8e4cf" opacity="${(0.2+(k%4)*0.13).toFixed(2)}"/>`;
+    }
+    s+=`<circle cx="596" cy="54" r="42" fill="#e9e2c8" opacity="0.08"/>
+        <circle cx="596" cy="54" r="24" fill="#e9e2c8" opacity="0.85"/>
+        <circle cx="588" cy="48" r="4.5" fill="#d6cdae" opacity="0.55"/>
+        <circle cx="601" cy="60" r="3" fill="#d6cdae" opacity="0.4"/>`;
+    s+=`<rect x="0" y="${WATER}" width="${W}" height="${H-WATER}" fill="url(#frWat)"/>`;
+    s+=`<ellipse cx="596" cy="${WATER+16}" rx="24" ry="3.5" fill="#e9e2c8" opacity="0.10"/>`;
+    for(let k=0;k<7;k++){
+      const x=(k*131+60)%(W-80)+20, y=WATER+14+(k*37)%56, w=26+(k*29)%34;
+      s+=`<line x1="${x}" y1="${y}" x2="${x+w}" y2="${y}" stroke="#3d5a70" stroke-width="1.2" opacity="0.5" stroke-linecap="round"/>`;
+    }
+    /* reeds in the corners */
+    s+=`<path d="M 16 ${WATER+4} q 4 -38 -4 -58" fill="none" stroke="#2c4434" stroke-width="3" stroke-linecap="round"/>
+        <path d="M 26 ${WATER+8} q 6 -30 2 -44" fill="none" stroke="#35513e" stroke-width="3" stroke-linecap="round"/>
+        <path d="M ${W-18} ${WATER+6} q -6 -34 2 -50" fill="none" stroke="#2c4434" stroke-width="3" stroke-linecap="round"/>`;
+    /* poles */
+    for(let i=1;i<=N;i++){
+      const x=PX(i), t=TOP(i);
+      s+=`<g class="pole" data-pole="${i}">`;
+      s+=`<rect x="${x-5}" y="${WATER+6}" width="10" height="24" rx="3" fill="#0f1b24" opacity="0.6"/>`;
+      s+=`<rect x="${x-7}" y="${t}" width="14" height="${WATER-t+8}" rx="3" fill="#5d4730"/>`;
+      s+=`<rect x="${x-7}" y="${t}" width="4.5" height="${WATER-t+8}" rx="2" fill="#74593a"/>`;
+      s+=`<ellipse cx="${x}" cy="${t}" rx="7" ry="3" fill="#83674a"/>`;
+      s+=`<text x="${x}" y="${t+17}" fill="#e4d6ae" font-size="11" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${i}</text>`;
+      s+=`<g class="cross" stroke="#d99f3f" stroke-width="1.5" fill="none">
+            <circle cx="${x}" cy="${t-15}" r="9"/>
+            <line x1="${x}" y1="${t-28}" x2="${x}" y2="${t-21}"/><line x1="${x}" y1="${t-9}" x2="${x}" y2="${t-2}"/>
+            <line x1="${x-13}" y1="${t-15}" x2="${x-6}" y2="${t-15}"/><line x1="${x+6}" y1="${t-15}" x2="${x+13}" y2="${t-15}"/>
+          </g>`;
+      s+=`<rect x="${x-26}" y="${t-40}" width="52" height="${WATER-t+46}" fill="transparent" role="button" aria-label="shoot pole ${i}"/>`;
+      s+=`</g>`;
+    }
+    s+=`<g id="frTrail"></g><g id="frFrog"></g><g id="frFx"></g><g id="frQk"></g>`;
+    s+=`</g>`;
+    document.getElementById('fFrog').innerHTML=
+      `<svg id="frSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+    document.getElementById('frSvg').addEventListener('click',ev=>{
+      const g=ev.target.closest('.pole');
+      if(g) shoot(+g.getAttribute('data-pole'));
+    });
+  }
+
+  /* ---------- transient effects ---------- */
+  function fx(html,life){
+    const g=document.getElementById('frFx');
+    if(!g) return;
+    g.insertAdjacentHTML('beforeend',html);
+    const el=g.lastElementChild;
+    setTimeout(()=>el.remove(),life||1000);
+  }
+  function fxMiss(p){
+    const x=PX(p), t=TOP(p);
+    fx(`<circle class="fx fxFlash" cx="${x}" cy="${t-4}" r="10" fill="#e8b04a"/>`);
+    fx(`<g class="fx fxFlash" stroke="#e8b04a" stroke-width="1.6" stroke-linecap="round">
+          <line x1="${x-13}" y1="${t-14}" x2="${x-7}" y2="${t-9}"/><line x1="${x+13}" y1="${t-14}" x2="${x+7}" y2="${t-9}"/>
+          <line x1="${x-14}" y1="${t+4}" x2="${x-8}" y2="${t+2}"/><line x1="${x+14}" y1="${t+4}" x2="${x+8}" y2="${t+2}"/></g>`);
+    fx(`<ellipse class="fx fxRip" cx="${x}" cy="${WATER+8}" rx="14" ry="3.5" fill="none" stroke="#7da4bd" stroke-width="1.4"/>`);
+  }
+  function fxHit(p){
+    const x=PX(p), t=TOP(p);
+    fx(`<circle class="fx fxFlash" cx="${x}" cy="${t-8}" r="16" fill="#e8734a"/>`,1200);
+    let burst='';
+    for(let a=0;a<8;a++){
+      const th=a*Math.PI/4, r1=10, r2=24;
+      burst+=`<line x1="${x+r1*Math.cos(th)}" y1="${t-8+r1*Math.sin(th)}" x2="${x+r2*Math.cos(th)}" y2="${t-8+r2*Math.sin(th)}"/>`;
+    }
+    fx(`<g class="fx fxFlash" stroke="#e8b04a" stroke-width="2" stroke-linecap="round">${burst}</g>`,1200);
+  }
+  function bubble(){
+    if(over) return;
+    const g=document.getElementById('frQk');
+    if(!g) return;
+    const x=70+Math.random()*(W-170), y=62+Math.random()*52;
+    g.insertAdjacentHTML('beforeend',
+      `<g class="fx fxQk">
+         <rect x="${x-32}" y="${y-13}" width="64" height="24" rx="11" fill="#fbf7ec" opacity="0.92"/>
+         <path d="M ${x-8} ${y+10} l -5 9 l 12 -8 z" fill="#fbf7ec" opacity="0.92"/>
+         <text x="${x}" y="${y}" fill="#1e1b16" font-size="12.5" font-style="italic" text-anchor="middle" dominant-baseline="central" font-family="'Newsreader',Georgia,serif">quack!</text>
+       </g>`);
+    const el=g.lastElementChild;
+    setTimeout(()=>el.remove(),1700);
+    quackT=setTimeout(bubble, 1000+Math.random()*1500);
+  }
+  function stopQuack(){ if(quackT){clearTimeout(quackT);quackT=null;} }
+
+  /* ---------- the frog, drawn ---------- */
+  function drawFrog(p,dead){
+    const x=PX(p), y=TOP(p);
+    const eye=(dx)=> dead
+      ? `<g stroke="#13222e" stroke-width="1.4" stroke-linecap="round">
+           <line x1="${x+dx-2}" y1="${y-18}" x2="${x+dx+2}" y2="${y-14}"/>
+           <line x1="${x+dx+2}" y1="${y-18}" x2="${x+dx-2}" y2="${y-14}"/></g>`
+      : `<circle cx="${x+dx}" cy="${y-16}" r="1.7" fill="#13222e"/>`;
+    document.getElementById('frFrog').innerHTML=
+      `<g transform="${dead?`rotate(12 ${x} ${y-8})`:''}">
+         <ellipse cx="${x-8}" cy="${y-3}" rx="4" ry="2.4" fill="#557a42"/>
+         <ellipse cx="${x+8}" cy="${y-3}" rx="4" ry="2.4" fill="#557a42"/>
+         <ellipse cx="${x}" cy="${y-9}" rx="11" ry="8" fill="#6f9c58" stroke="#4c6e3c" stroke-width="1"/>
+         <ellipse cx="${x}" cy="${y-6}" rx="7" ry="4" fill="#a8c48a" opacity="0.75"/>
+         <circle cx="${x-5}" cy="${y-16}" r="3.6" fill="#6f9c58" stroke="#4c6e3c" stroke-width="1"/>
+         <circle cx="${x+5}" cy="${y-16}" r="3.6" fill="#6f9c58" stroke="#4c6e3c" stroke-width="1"/>
+         ${eye(-5)}${eye(5)}
+         ${dead?'':`<path d="M ${x-4} ${y-10.5} q 4 2.5 8 0" fill="none" stroke="#3c5a2f" stroke-width="1.1" stroke-linecap="round"/>`}
+       </g>`;
+  }
+  const clearFrog=()=>{const g=document.getElementById('frFrog'); if(g)g.innerHTML='';};
+
+  /* ---------- status ---------- */
+  const cnt=()=>{
+    document.getElementById('frCnt').innerHTML=
+      `shots <b>${shots.length}</b>${best?` &nbsp;·&nbsp; best vs sneaky: <b>${best}</b>`:''}`;
+  };
+  const say=h=>{document.getElementById('frS').innerHTML=h;};
+
+  /* ---------- game ---------- */
+  function newFrog(){
+    stopQuack(); if(replayT){clearInterval(replayT);replayT=null;}
+    over=false; replaying=false; shots=[]; path=[]; sets=[];
+    if(mode==='random'){ pos=1+rnd(N); path=[pos]; }
+    else{ sets=[new Set(Array.from({length:N},(_,i)=>i+1))]; }
+    scene(); cnt();
+    say(mode==='random'?'a frog lands somewhere out there&hellip;':'a <b>sneaky</b> frog is out there&hellip;');
+    quackT=setTimeout(bubble,500);
+  }
+  function setFrog(m){
+    mode=m;
+    document.getElementById('frRnd').classList.toggle('on',m==='random');
+    document.getElementById('frSnk').classList.toggle('on',m==='sneaky');
+    newFrog();
+  }
+  function shoot(p){
+    if(over||replaying) return;
+    shots.push(p);
+    let hit=false;
+    if(mode==='random'){
+      if(pos===p) hit=true;
+      else{
+        pos+= pos===1?1: pos===N?-1: (Math.random()<.5?-1:1);
+        path.push(pos);
+      }
+    }else{
+      const S2=new Set(sets[sets.length-1]); S2.delete(p);
+      if(S2.size===0){ hit=true; rebuild(p); }
+      else sets.push(spread(S2));
+    }
+    cnt();
+    if(hit){
+      over=true; stopQuack();
+      fxHit(p); drawFrog(p,true);
+      say(`shot ${shots.length} &mdash; pole ${p}: <span class="hit">got it.</span> silence.`);
+      if(mode==='sneaky'&&(!best||shots.length<best)) best=shots.length;
+      cnt();
+      setTimeout(replay,900);
+    }else{
+      fxMiss(p);
+      say(`shot ${shots.length} &mdash; pole ${p}: splash. still quacking&hellip;`);
+    }
+  }
+  /* walk the miss history backwards and pick any consistent life */
+  function rebuild(pFinal){
+    const k=shots.length;
+    let cur=pFinal; const rev=[cur];
+    for(let t=k-1;t>=1;t--){
+      const S=sets[t-1];
+      const cand=[cur-1,cur+1].filter(q=>q>=1&&q<=N&&S.has(q)&&q!==shots[t-1]);
+      cur=cand[rnd(cand.length)];
+      rev.push(cur);
+    }
+    path=rev.reverse();
+  }
+  const arc=(a,b)=>{
+    const x1=PX(a), y1=TOP(a)-12, x2=PX(b), y2=TOP(b)-12;
+    return `<path d="M ${x1} ${y1} Q ${(x1+x2)/2} ${Math.min(y1,y2)-24} ${x2} ${y2}" fill="none" stroke="#d99f3f" stroke-width="1.6" stroke-dasharray="3 4" opacity="0.85"/>`;
+  };
+  function replay(){
+    replaying=true;
+    const trail=document.getElementById('frTrail');
+    trail.innerHTML=''; clearFrog();
+    say('replay &mdash; where it really was:');
+    let t=0;
+    replayT=setInterval(()=>{
+      t++;
+      if(t>path.length){
+        clearInterval(replayT); replayT=null; replaying=false;
+        say(`got it in <b>${shots.length}</b> shot${shots.length>1?'s':''} &mdash; its path: ${path.join(' &rarr; ')}`);
+        return;
+      }
+      const last=(t===path.length);
+      drawFrog(path[t-1],last);
+      if(t>1) trail.insertAdjacentHTML('beforeend',arc(path[t-2],path[t-1]));
+      if(last) fxHit(shots[t-1]); else fxMiss(shots[t-1]);
+    },430);
+  }
+
+  newFrog();
+  return {shoot,newFrog,setFrog};
+})();
+</script>
+</body>
+</html>
