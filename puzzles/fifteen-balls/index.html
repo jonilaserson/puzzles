@@ -124,7 +124,7 @@ footer{
 
 <p class="kicker">bulgarian solitaire · monovariants · a visual proof</p>
 <h1>Fifteen balls always<br>end at 1·2·3·4·5</h1>
-<p class="sub">Split fifteen balls into groups — any groups you like — and repeat one simple move. However you begin, you are pulled to the same five groups and trapped there forever. Nothing in the rules sorts anything. It happens anyway.</p>
+<p class="sub">Split fifteen balls into groups — any way you like — and repeat one simple move. Wherever you start, you are pulled to the same five groups, and trapped.</p>
 
 <div class="box">
   <p><b>The game.</b> Take 15 balls and split them into groups, any way you please: (5,&thinsp;3,&thinsp;7), one big group of 15, fifteen groups of one — all fair starts. Then repeat a single move, forever: <b>take one ball from every group, and pile the collected balls together as a new group.</b> A group that runs out of balls simply disappears.</p>
@@ -156,13 +156,11 @@ footer{
 <section class="proof-only">
 
 <figure><div id="f0"></div>
-<figcaption>Start (5,&thinsp;3,&thinsp;7), kept in that order. Never sorted. Eight moves later it is sorted anyway &mdash; and frozen. The proof shows why.</figcaption></figure>
+<figcaption>A game from (5,&thinsp;3,&thinsp;7): after eight moves it reaches the staircase shape of (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5), and stays there.</figcaption></figure>
 
 <h2><span class="n">01</span> The board</h2>
-<p>Put the groups in rows of boxes. Any order. Keep that order forever.</p>
-<p>Push each row against a left wall. A row is a solid run: no holes inside.</p>
-<p>The <b>corner</b> = the top-left cell. Rows and columns are counted from it.</p>
-<p><b>Depth</b> of a cell = row + column &minus; 1.</p>
+<p>The proof works on a picture of the game. Draw each group as a row of boxes, one box per ball, and stack the rows into a board, as below. Every row is filled from the left edge, so a group of 6 balls occupies the first 6 cells of its row. Which group goes on which row makes no difference.</p>
+<p>Two things to read off the picture. The <b>corner</b> is the board's top-left cell; rows and columns are counted from it. The <b>depth</b> of a cell is row + column &minus; 1. Cells of equal depth line up on the 45&deg; diagonals of the board &mdash; call the diagonal of depth d <b>line d</b> &mdash; and line d has exactly d cells, running from the top row down to the first column.</p>
 
 <figure><div id="f1"></div>
 <div class="legend">
@@ -174,72 +172,58 @@ footer{
   <span><span class="sw" style="background:#e9bd63"></span>6+</span>
   <span><span class="swd"></span>cell of line 5 outside the shape</span>
 </div>
-<figcaption>Groups (3,&thinsp;6,&thinsp;4,&thinsp;2), unsorted. Each number = depth. Equal depth = one 45&deg; line. <b>Line d has exactly d cells.</b> Line 5 is outlined: (1,5)&thinsp;(2,4)&thinsp;(3,3)&thinsp;(4,2)&thinsp;(5,1), top row to wall.</figcaption></figure>
+<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2) as a board. Each cell shows its depth; equal depths form one 45&deg; line. Line 5 is outlined: exactly five cells, from the top row down to the first column.</figcaption></figure>
 
 <h2><span class="n">02</span> The move, drawn</h2>
-<p>Peel the left column: one ball per living row.</p>
-<p>Lay it on top, keeping positions: the ball from row r goes to position r.</p>
-<p>No other ball moves.</p>
+<p>On the board, the move is a lift-and-tilt. The balls it collects are exactly the first column &mdash; one from every group. Lift that column out and lay it on top as the new group's row, keeping order: the ball from row r lands at column r of the new top row. No other ball moves.</p>
 
 <figure><div id="f2"></div>
-<figcaption>Amber = the peeled column. Dashed = where it lands. Every arrow is a 45&deg; line. Blue = the corner: it moves one up, one right.</figcaption></figure>
+<figcaption>The first column (amber) tilts up to become the new top row: the ball from row r travels along a 45&deg; line to column r. The corner (blue) shifts one cell up and one right.</figcaption></figure>
 
-<p>The corner's (row + column) is unchanged. So every standing ball keeps its depth.</p>
-<p>The peeled ball from row r had depth r. It lands at cell (1,&thinsp;r). Depth r again.</p>
+<p>Now watch the depths. A ball that stayed put has a new row above it and its old first column gone, so counted from the new corner, its row number grew by one and its column number shrank by one &mdash; depth unchanged. The collected ball from row r sat at row r, column 1: depth r. It lands at row 1, column r: depth r again.</p>
 
-<div class="fact"><b>Fact 1.</b> If the pasted row has no gap, no ball changes its depth.</div>
+<div class="fact"><b>Fact 1.</b> If the new top row lands with no gap in it, no ball changes its depth.</div>
 
 <h2><span class="n">03</span> Gaps cost depth</h2>
-<p>A row can die. Its place remains: a <b>dead row</b>.</p>
-<p>Peel past a dead row, and the pasted row has a <b>gap</b>.</p>
-<p>A group must be a solid run. So close the gap: every ball past it slides one step left. Depth &minus;1 each.</p>
+<p>There is one wrinkle. When a group loses its last ball, the group is gone, but its row's place on the board is kept &mdash; a <b>dead row</b>. A dead row has nothing to contribute to the next move, so the new top row comes out with a <b>gap</b> at that position. A row must show its group as boxes filled from the left, so the gap gets closed: every ball beyond it slides one cell left, and each slid ball loses exactly one depth.</p>
 
 <figure><div id="f3"></div>
-<figcaption>Rows (5,&thinsp;4,&thinsp;2,&thinsp;&mdash;,&thinsp;3,&thinsp;1): row 4 is dead. The peel lands with a gap at position 4. Closing it slides two balls left. Total depth drops by 2.</figcaption></figure>
+<figcaption>Rows (5,&thinsp;4,&thinsp;2,&thinsp;&mdash;,&thinsp;3,&thinsp;1), with the fourth row dead. The collected column lands with a gap at position 4; closing it slides two balls one cell left, and their depths drop by one each.</figcaption></figure>
 
-<p><b>Total depth</b> = the sum of all 15 balls' depths.</p>
+<p>Now add up the depths of all 15 balls and call the sum the <b>total depth</b>.</p>
 
-<div class="fact"><b>Fact 2.</b> No gap: total depth unchanged. Closing gaps: total depth drops by at least 1.</div>
+<div class="fact"><b>Fact 2.</b> A move that closes no gap keeps total depth unchanged; a move that closes gaps drops it by at least 1.</div>
 
-<p>Total depth is a positive whole number. It cannot drop forever.</p>
-<div class="fact">So after some move: <b>no gap ever closes again.</b></div>
+<p>Total depth is a positive whole number, so it can drop only finitely many times. That single observation powers everything that follows:</p>
+<div class="fact">After some move, <b>no gap ever closes again</b> &mdash; every later move preserves all 15 depths.</div>
 
-<h2><span class="n">04</span> Sorted, without sorting</h2>
-<p>Suppose the rows are not sorted: some row is shorter than a row below it.</p>
-<p>Then some column holds a hole above a ball.</p>
+<h2><span class="n">04</span> The rows fall in line</h2>
+<p>What does the board look like once the drops are over? No row can be shorter than a row below it (a dead row counts as a row of zero balls). Suppose one were. Then in some column, the short row shows a hole directly above the long row's ball. Each move strips the first column, pulling this hole-and-ball pair one column to the left &mdash; and since rows never grow, the hole never fills.</p>
 
 <figure><div id="f4"></div>
-<figcaption>The pair marches: one column per move, toward the wall. Rows never grow, so the hole cannot fill. The ball survives until peeled.</figcaption></figure>
+<figcaption>A hole above a ball, tracked for four moves: the pair slides one column left per move, until the short row is dead and the ball sits in the first column.</figcaption></figure>
 
-<p>At the wall, that column is peeled. The pasted row gets a gap. A drop.</p>
-<p>A dead row above a living one: the same story, already in column 1.</p>
-<p>But drops have ended. So neither can ever happen again:</p>
+<p>When the pair reaches the first column, the short row has died entirely while the long row still holds its ball &mdash; and the next move collects that ball past the dead row. The new top row lands with a gap, the gap closes, total depth drops. But the drops are over, so this can never happen again:</p>
 
-<div class="fact">From here on, rows are sorted &mdash; largest on top &mdash; and dead rows sit only at the bottom. Forever. Not by sorting. By survival.</div>
+<div class="fact">From here on, the rows are ordered &mdash; longest on top, dead rows at the bottom &mdash; and they stay that way forever.</div>
 
 <h2><span class="n">05</span> Every line is a ring</h2>
-<p>Take line 5 of such a state. Its 5 cells are fixed places: <b>slots</b>. Slot 1 = its top-row cell. Slot 5 = its wall cell.</p>
-<p>A slot holding a ball is <b>full</b>. A slot without one is a <b>hole</b>.</p>
+<p>From that move on, every ball keeps its depth: a ball on line d stays on line d for the rest of the game. What does it do there? Line d has d cells &mdash; call them <b>slots</b>: slot 1 in the top row, slot d in the first column. A slot holding a ball is full; a slot without one is a <b>hole</b>.</p>
 
 <figure><div id="f5a"></div>
-<figcaption>Line 5 of (4,&thinsp;3,&thinsp;3,&thinsp;2,&thinsp;2,&thinsp;1). Slots 3, 4, 5: full. Slots 1, 2: holes. Other balls dimmed.</figcaption></figure>
+<figcaption>Line 5 of the board (4,&thinsp;3,&thinsp;3,&thinsp;2,&thinsp;2,&thinsp;1): slots 3, 4, 5 hold balls; slots 1 and 2 are holes. Other balls dimmed.</figcaption></figure>
 
-<p>One move. A standing ball keeps its cell &mdash; but the corner moved up-right. Measured from the corner: row +1, column &minus;1. <b>The next slot of its own line.</b></p>
-<p>The wall ball (slot d) is peeled. It lands at cell (1,&thinsp;d). <b>Slot 1.</b></p>
-<p>Balls shift one slot forward. Holes shift with them.</p>
+<p>Follow one move. A standing ball keeps its cell, but the corner shifts one up and one right, so measured from the corner the ball now sits one slot further along its own line. And the first-column ball &mdash; slot d &mdash; is collected and lands in the top row at column d: slot 1 of the same line. A move turns every line one notch, like a ring: balls advance one slot, the last slot wraps around to the first, and the holes ride along in between.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="R3.step()">one move</button>
 <button onclick="R3.reset()">reset</button><span class="stat" id="s3"></span></div>
 <div id="f5b"></div>
-<figcaption>Line 5 as a ring of 5 slots. One move = one click. Every line. Every move, from now on.</figcaption></figure>
+<figcaption>Line 5 as a ring. Click one move: every ball advances one slot, and the ball in the last slot wraps around to the first. From now on this is true of every line, on every move.</figcaption></figure>
 
 <h2><span class="n">06</span> Ball meets hole</h2>
-<p>Each ball &mdash; and each hole &mdash; now stays on its ring forever, circling one slot per move.</p>
-<p>Take a ball on line d+1. Suppose line d is <b>not</b> full: somewhere on its ring sits a hole.</p>
-<p>The ball <b>surfaces</b> &mdash; visits its top-row cell (1,&thinsp;d+1) &mdash; every d+1 moves. Between two surfacings, the hole's ring of d slots clicks d+1 times: its own lap, plus one. Each surfacing, the hole stands one slot further along its ring.</p>
-<p>So within d surfacings they surface <b>together</b>: the ball at (1,&thinsp;d+1), the hole at (1,&thinsp;d). A top row that reaches column d+1 and skips column d. A hole inside a solid run.</p>
-<p>Rows are solid. This never happens. There was no hole.</p>
+<p>Here is the payoff. Take a ball riding line d+1, and suppose the line beneath it, line d, is not full: somewhere on that ring sits a hole. The ball <b>surfaces</b> &mdash; visits its top-row slot, the cell (1,&thinsp;d+1) &mdash; once every d+1 moves. Between two surfacings, the hole's ring of d slots turns d+1 times: one full lap and one slot more. So every time the ball surfaces, the hole stands one slot further along its ring, and within d surfacings the two surface <b>together</b>: a ball at (1,&thinsp;d+1) and a hole at (1,&thinsp;d), in the same top row.</p>
+<p>But the top row is a group, drawn as boxes filled from the left. If it reaches column d+1, it cannot skip column d. So the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
@@ -248,30 +232,28 @@ footer{
 <div class="stat" id="cs"></div>
 <div id="f6"></div>
 <div class="note" id="cnote"></div>
-<figcaption>Here d = 4, on the board itself. The amber ball circles line 5. The red hole circles line 4 &mdash; if it exists. Each surfacing of the ball, the hole slips one slot closer to the top. Fourth surfacing: they meet in the top row, and the row breaks.</figcaption></figure>
+<figcaption>The case d = 4, played out: the amber ball rides line 5; the red hole rides line 4 &mdash; if it exists. Every surfacing of the ball finds the hole one slot closer to the top row. On the fourth, they surface together, and the top row would need a hole inside it.</figcaption></figure>
 
 <div class="fact"><b>Fact 3.</b> A ball on line d+1 forces line d to be completely full.</div>
 
 <h2><span class="n">07</span> The count</h2>
-<p>Let D = the deepest line holding a ball.</p>
-<p>Fact 3, chained downward: lines 1 &hellip; D&minus;1 are all full.</p>
-<p>Full lines hold 1+2+&#8943;+(D&minus;1) balls. Line D holds between 1 and D.</p>
+<p>Let D be the deepest line holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: lines 1 through D&minus;1 are all full. Full lines hold 1+2+&#8943;+(D&minus;1) balls, and line D holds between 1 and D more. Now count:</p>
 <p class="mono">D = 4: at most 1+2+3&thinsp;+&thinsp;4 = 10. Too few.</p>
 <p class="mono">D = 6: at least 1+2+3+4+5&thinsp;+&thinsp;1 = 16. Too many.</p>
 <p class="mono">D = 5: line 5 holds 15 &minus; 10 = 5. Full.</p>
 
-<figure><div id="f7"></div>
-<figcaption>All five lines full. Rows of 5, 4, 3, 2, 1. Groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). One move: peel a column of 5, paste a row of 5, no gap. Same shape. Frozen.</figcaption></figure>
+<p>So all five lines are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). And a full ring turned one notch looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
 
-<div class="qed">Every game: finitely many gap closures &rarr; rows sorted forever &rarr; pure clicks &rarr; the staircase &rarr; frozen. &#8718;</div>
+<figure><div id="f7"></div>
+<figcaption>The staircase: every line full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
+
+<div class="qed">The whole proof: gap closures are finitely many; once they end, every line turns like a ring; a ball forces every line beneath it to be full; and 15 balls can fill that order only as the staircase. &#8718;</div>
 
 <h2><span class="n">08</span> Why 15</h2>
-<p>15 = 1+2+3+4+5. Used exactly once: in the count.</p>
-<p>With 14 balls: lines 1&ndash;4 full, and 4 balls circling the 5-ring forever. A cycle. No rest.</p>
-<p>A resting state exists &hArr; the ball count is 1+2+&#8943;+k.</p>
+<p>The count is the only place the number 15 entered the proof &mdash; and 15 = 1+2+3+4+5 is exactly what the staircase holds. Give the game 14 balls instead and everything runs the same until the count: lines 1 through 4 fill up, taking 10 balls, and the remaining 4 balls ride the 5-slot ring forever without ever filling it. The game ends in a cycle instead of freezing. A frozen state exists exactly when the ball count is 1+2+&#8943;+k &mdash; try it in the playground below.</p>
 
 <h2><span class="n">09</span> Playground</h2>
-<p>Any start, any order &mdash; or type your own, with any number of balls. Boxes never move. New rows pile on top; the wall eats columns from the left.</p>
+<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the wall steps one column right, collecting the balls it passes along their 45&deg; lines.</p>
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
@@ -292,11 +274,11 @@ footer{
   <span><span style="width:9px;height:9px;border-radius:50%;background:#356a7d;display:inline-block"></span>the corner</span>
   <span><span class="swd" style="border-color:#c9bd9e"></span>target staircase</span>
 </div>
-<figcaption>Balls stay exactly where they are. Each move: the wall steps right, a new row lands on top, peeled balls fly along their 45&deg; lines. A ball's color never changes &mdash; depth is a property of the spot. Total depth falls exactly when a gap closes. A count that is not 1+2+&#8943;+k never freezes &mdash; it falls into a cycle.</figcaption></figure>
+<figcaption>Depth is a property of the spot, so a ball never changes color. The status line tracks total depth: watch it fall exactly when a gap closes, and settle for good once the drops are over.</figcaption></figure>
 
 </section>
 
-<footer>The game is known as Bulgarian solitaire. Theorem: J.&thinsp;Brandt (1982); popularized by Martin Gardner (1983). The no-sorting formulation and the gap monovariant in this page are due to Jonathan.</footer>
+<footer>The game is known as Bulgarian solitaire; the theorem was proved by J.&thinsp;Brandt (1982) and popularized by Martin Gardner (1983). The board, the depths, and the gap argument on this page are due to Jonathan.</footer>
 </main>
 
 <script>
@@ -427,7 +409,7 @@ function diagram(rows,o){
     if(i<states.length-1){s+=L(x+w+9,60,x+w+31,60,ARROW,'mG');x+=w+44;}
     else x+=w;
   });
-  s+=T(x+52,60,'next peel: a drop',COR,12.5,600);
+  s+=T(x+52,60,'next move: a drop',COR,12.5,600);
   document.getElementById('f4').innerHTML=SVG(680,140,s);
 })();
 
@@ -453,7 +435,7 @@ const R3=(function(){
     }
     const xa=x0+4*p+c/2, xb=x0+c/2, yb=y0+c;
     s+=`<path d="M ${xa} ${yb+6} C ${xa} ${yb+42}, ${xb} ${yb+42}, ${xb} ${yb+10}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)"/>`;
-    s+=T(340,yb+50,'the wall ball wraps to slot 1',AMBL,12,500);
+    s+=T(340,yb+50,'the last slot wraps around to slot 1',AMBL,12,500);
     document.getElementById('f5b').innerHTML=SVG(680,180,s);
     document.getElementById('s3').innerHTML =
       t===0 ? 'move 0 — the pattern of line 5 above' :
@@ -485,7 +467,7 @@ const C=(function(){
         s+=T(X(col)+c/2,Y(r)+c/2,k,AMBL,12,600);}}
     if(boom){
       for(let j=1;j<=3;j++) s+=R(X(j),Y(1),c,GRAY);
-      s+=T(X(3)+c/2,Y(1)-18,'row 1: solid to column 5 — but column 4 is a hole',COR,12.5,600);
+      s+=T(X(3)+c/2,Y(1)-18,'row 1 reaches column 5 — but column 4 is a hole',COR,12.5,600);
     }
     s+=R(X(5-h),Y(h),c,'none',`stroke="${COR}" stroke-width="${boom?2.6:1.8}" stroke-dasharray="4 3"`);
     s+=T(X(5-h)+c/2,Y(h)+c/2,h,COR,12,700);
@@ -494,13 +476,13 @@ const C=(function(){
     s+=T(X(1)-42,Y(4)+c/2,'line 4',SOFT,11.5,500);
     s+=T(X(1)-42,Y(5)+c/2,'line 5',AMBL,11.5,500);
     s+=`<path d="M ${X(1)+c/2} ${Y(5)+c+8} C ${X(1)+c/2+70} ${Y(5)+c+52}, ${X(5)+c+120} ${Y(1)+c+90}, ${X(5)+c+12} ${Y(1)+c/2+8}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
-    s+=T(500,268,'the wall cell wraps to the top row — both rings',SOFT,11.5,500);
+    s+=T(500,268,'the first-column cell wraps to the top row — on both rings',SOFT,11.5,500);
     document.getElementById('f6').innerHTML=SVG(680,320,s);
     document.getElementById('cs').innerHTML=
       `move <b>${t}</b> — ball: slot <b>${b}</b> of 5 — hole: slot <b>${h}</b> of 4 — surfacings <b>${surfN()}</b>`+
       (boom?' — <span class="drop">collision</span>':'');
     document.getElementById('cnote').innerHTML=
-      boom?'<span style="color:var(--coral)">Surfacing 4: ball at (1, 5), hole at (1, 4). A solid run reaching column 5 cannot skip column 4. The hole cannot exist. &#8718;</span> — reset to replay'
+      boom?'<span style="color:var(--coral)">Surfacing 4: ball at (1, 5), hole at (1, 4). A row filled from the left that reaches column 5 cannot skip column 4. The hole cannot exist. &#8718;</span> — reset to replay'
       :surf&&t>0?`Surfacing ${surfN()}: the ball is in the top row — the hole is at slot ${h}, not yet at (1, 4). One slot closer.`
       :t===0?'Suppose line 4 has a hole (red). A ball sits on line 5 (amber). Press one move — both circle their rings.':'';
   }
