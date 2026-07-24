@@ -59,7 +59,7 @@ figcaption b{color:var(--ink);font-weight:600}
 svg{display:block;max-width:100%;height:auto}
 .legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:8px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.sw{width:13px;height:13px;border-radius:50%;display:inline-block}
 .swd{width:13px;height:13px;border-radius:3px;display:inline-block;border:1.5px dashed var(--amber)}
 .swg{width:13px;height:4px;border-radius:2px;display:inline-block;background:#c9bd9e}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
@@ -155,12 +155,9 @@ footer{
 
 <section class="proof-only">
 
-<figure><div id="f0"></div>
-<figcaption>A game from (5,&thinsp;3,&thinsp;7): after eight moves it reaches the staircase shape of (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5), and stays there.</figcaption></figure>
-
 <h2><span class="n">01</span> The board</h2>
-<p>The proof works on a picture of the game. Draw each group as a row of boxes, one box per ball, and stack the rows into a board, as below. Every row is filled from the left edge, so a group of 6 balls occupies the first 6 cells of its row. Which group goes on which row makes no difference.</p>
-<p>Two things to read off the picture. The <b>corner</b> is the board's top-left cell; rows and columns are counted from it. The <b>depth</b> of a cell is row + column &minus; 1. Cells of equal depth line up on the 45&deg; diagonals of the board &mdash; call the diagonal of depth d <b>line d</b> &mdash; and line d has exactly d cells, running from the top row down to the first column.</p>
+<p>Tip each pile onto its side, so every group becomes a row of balls, and stack the rows: a board.</p>
+<p>Give each ball a <b>depth</b>: its row + column &minus; 1. Balls of equal depth sit on one 45&deg; diagonal of the board; <b>line d</b>, the diagonal of depth d, has exactly d places on it.</p>
 
 <figure><div id="f1"></div>
 <div class="legend">
@@ -169,61 +166,52 @@ footer{
   <span><span class="sw" style="background:#93bac8"></span>3</span>
   <span><span class="sw" style="background:#5f92a6"></span>4</span>
   <span><span class="sw" style="background:#356a7d"></span>5</span>
-  <span><span class="sw" style="background:#e9bd63"></span>6+</span>
-  <span><span class="swd"></span>cell of line 5 outside the shape</span>
+  <span><span class="sw" style="background:#c4ad82"></span>6+</span>
+  <span><span class="swd"></span>place of line 5 with no ball</span>
 </div>
-<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2) as a board. Each cell shows its depth; equal depths form one 45&deg; line. Line 5 is outlined: exactly five cells, from the top row down to the first column.</figcaption></figure>
+<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2), tipped onto their sides and stacked into a board. Each ball shows its depth; equal depths form one 45&deg; line. Line 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
 
 <h2><span class="n">02</span> The move, drawn</h2>
-<p>On the board, the move is a lift-and-tilt. The balls it collects are exactly the first column &mdash; one from every group. Lift that column out and lay it on top as the new group's row, keeping order: the ball from row r lands at column r of the new top row. No other ball moves.</p>
+<p>Now make a move on the board. The balls it collects are exactly the first column &mdash; one from every group &mdash; and the new group lines up as a new top row: the ball from row r lands at column r. No other ball moves.</p>
 
 <figure><div id="f2"></div>
-<figcaption>The first column (amber) tilts up to become the new top row: the ball from row r travels along a 45&deg; line to column r. The corner (blue) shifts one cell up and one right.</figcaption></figure>
+<figcaption>The collected column (amber rings) becomes the new top row (dashed). Each collected ball flies along its own 45&deg; line: from a place of depth r to a place of depth r.</figcaption></figure>
 
-<p>Now watch the depths. A ball that stayed put has a new row above it and its old first column gone, so counted from the new corner, its row number grew by one and its column number shrank by one &mdash; depth unchanged. The collected ball from row r sat at row r, column 1: depth r. It lands at row 1, column r: depth r again.</p>
+<p>Standing balls keep their depth too: the board gained a row on top and lost its first column, so a standing ball's row number grew by one and its column number shrank by one.</p>
 
-<div class="fact"><b>Fact 1.</b> If the new top row lands with no gap in it, no ball changes its depth.</div>
+<div class="fact"><b>Fact 1.</b> As long as every group is alive, a move changes no ball's depth.</div>
 
 <h2><span class="n">03</span> Gaps cost depth</h2>
-<p>There is one wrinkle. When a group loses its last ball, the group is gone, but its row's place on the board is kept &mdash; a <b>dead row</b>. A dead row has nothing to contribute to the next move, so the new top row comes out with a <b>gap</b> at that position. A row must show its group as boxes filled from the left, so the gap gets closed: every ball beyond it slides one cell left, and each slid ball loses exactly one depth.</p>
+<p>There is one wrinkle. When a group loses its last ball, its row becomes empty. If the empty row is not the last one, the next move leaves a <b>gap</b> in the new top row. We close the gap by sliding the balls after it to the left &mdash; and each slide costs a ball one depth.</p>
 
 <figure><div id="f3"></div>
-<figcaption>Rows (5,&thinsp;4,&thinsp;2,&thinsp;&mdash;,&thinsp;3,&thinsp;1), with the fourth row dead. The collected column lands with a gap at position 4; closing it slides two balls one cell left, and their depths drop by one each.</figcaption></figure>
+<figcaption>Rows (5,&thinsp;4,&thinsp;2,&thinsp;&mdash;,&thinsp;3,&thinsp;1): the fourth row is empty, so the collected column lands with a gap at position 4. Closing it slides two balls left; each loses one depth.</figcaption></figure>
 
 <p>Now add up the depths of all 15 balls and call the sum the <b>total depth</b>.</p>
 
 <div class="fact"><b>Fact 2.</b> A move that closes no gap keeps total depth unchanged; a move that closes gaps drops it by at least 1.</div>
 
-<p>Total depth is a positive whole number, so it can drop only finitely many times. That single observation powers everything that follows:</p>
+<p>Total depth is a positive whole number, so it can drop only finitely many times:</p>
 <div class="fact">After some move, <b>no gap ever closes again</b> &mdash; every later move preserves all 15 depths.</div>
+<p>In particular, from that move on, no empty row ever sits above a living one &mdash; that would force a gap on the very next move.</p>
 
-<h2><span class="n">04</span> The rows fall in line</h2>
-<p>What does the board look like once the drops are over? No row can be shorter than a row below it (a dead row counts as a row of zero balls). Suppose one were. Then in some column, the short row shows a hole directly above the long row's ball. Each move strips the first column, pulling this hole-and-ball pair one column to the left &mdash; and since rows never grow, the hole never fills.</p>
-
-<figure><div id="f4"></div>
-<figcaption>A hole above a ball, tracked for four moves: the pair slides one column left per move, until the short row is dead and the ball sits in the first column.</figcaption></figure>
-
-<p>When the pair reaches the first column, the short row has died entirely while the long row still holds its ball &mdash; and the next move collects that ball past the dead row. The new top row lands with a gap, the gap closes, total depth drops. But the drops are over, so this can never happen again:</p>
-
-<div class="fact">From here on, the rows are ordered &mdash; longest on top, dead rows at the bottom &mdash; and they stay that way forever.</div>
-
-<h2><span class="n">05</span> Every line is a ring</h2>
-<p>From that move on, every ball keeps its depth: a ball on line d stays on line d for the rest of the game. What does it do there? Line d has d cells &mdash; call them <b>slots</b>: slot 1 in the top row, slot d in the first column. A slot holding a ball is full; a slot without one is a <b>hole</b>.</p>
+<h2><span class="n">04</span> Every line is a ring</h2>
+<p>Every ball now keeps its depth: a ball on line d stays on line d for the rest of the game. What does it do there? Number the line's places from the top: <b>slots</b> 1 to d, as below. A slot holding a ball is full; an empty slot is a <b>hole</b>.</p>
 
 <figure><div id="f5a"></div>
 <figcaption>Line 5 of the board (4,&thinsp;3,&thinsp;3,&thinsp;2,&thinsp;2,&thinsp;1): slots 3, 4, 5 hold balls; slots 1 and 2 are holes. Other balls dimmed.</figcaption></figure>
 
-<p>Follow one move. A standing ball keeps its cell, but the corner shifts one up and one right, so measured from the corner the ball now sits one slot further along its own line. And the first-column ball &mdash; slot d &mdash; is collected and lands in the top row at column d: slot 1 of the same line. A move turns every line one notch, like a ring: balls advance one slot, the last slot wraps around to the first, and the holes ride along in between.</p>
+<p>Follow one move. A standing ball keeps its place, but its row number grew by one, so it now sits one slot further along its line. The first-column ball &mdash; slot d &mdash; is collected and lands in the top row at column d: slot 1 of the same line. A move turns every line one notch, like a ring: balls advance one slot, the last slot wraps around to the first, and the holes ride along in between.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="R3.step()">one move</button>
 <button onclick="R3.reset()">reset</button><span class="stat" id="s3"></span></div>
 <div id="f5b"></div>
-<figcaption>Line 5 as a ring. Click one move: every ball advances one slot, and the ball in the last slot wraps around to the first. From now on this is true of every line, on every move.</figcaption></figure>
+<figcaption>Line 5 as a ring &mdash; click one move.</figcaption></figure>
 
-<h2><span class="n">06</span> Ball meets hole</h2>
-<p>Here is the payoff. Take a ball riding line d+1, and suppose the line beneath it, line d, is not full: somewhere on that ring sits a hole. The ball <b>surfaces</b> &mdash; visits its top-row slot, the cell (1,&thinsp;d+1) &mdash; once every d+1 moves. Between two surfacings, the hole's ring of d slots turns d+1 times: one full lap and one slot more. So every time the ball surfaces, the hole stands one slot further along its ring, and within d surfacings the two surface <b>together</b>: a ball at (1,&thinsp;d+1) and a hole at (1,&thinsp;d), in the same top row.</p>
-<p>But the top row is a group, drawn as boxes filled from the left. If it reaches column d+1, it cannot skip column d. So the hole never existed.</p>
+<h2><span class="n">05</span> Ball meets hole</h2>
+<p>Take a ball riding line d+1, and suppose the line beneath it, line d, is not full: somewhere on that ring sits a hole. The ball <b>surfaces</b> &mdash; visits its top-row slot, the place (1,&thinsp;d+1) &mdash; once every d+1 moves. Between two surfacings, the hole's ring of d slots turns d+1 times: one full lap and one slot more. So every time the ball surfaces, the hole stands one slot further along its ring, and within d surfacings the two surface <b>together</b>: a ball at (1,&thinsp;d+1) and a hole at (1,&thinsp;d), in the same top row.</p>
+<p>But the top row is a group: its balls fill the columns in order from the left. If it reaches column d+1, it cannot skip column d. So the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
@@ -236,10 +224,10 @@ footer{
 
 <div class="fact"><b>Fact 3.</b> A ball on line d+1 forces line d to be completely full.</div>
 
-<h2><span class="n">07</span> The count</h2>
+<h2><span class="n">06</span> The count</h2>
 <p>Let D be the deepest line holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: lines 1 through D&minus;1 are all full. Full lines hold 1+2+&#8943;+(D&minus;1) balls, and line D holds between 1 and D more. Now count:</p>
-<p class="mono">D = 4: at most 1+2+3&thinsp;+&thinsp;4 = 10. Too few.</p>
-<p class="mono">D = 6: at least 1+2+3+4+5&thinsp;+&thinsp;1 = 16. Too many.</p>
+<p class="mono">D &le; 4: at most 1+2+3&thinsp;+&thinsp;4 = 10. Too few.</p>
+<p class="mono">D &ge; 6: at least 1+2+3+4+5&thinsp;+&thinsp;1 = 16. Too many.</p>
 <p class="mono">D = 5: line 5 holds 15 &minus; 10 = 5. Full.</p>
 
 <p>So all five lines are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). And a full ring turned one notch looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
@@ -247,13 +235,11 @@ footer{
 <figure><div id="f7"></div>
 <figcaption>The staircase: every line full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
 
-<div class="qed">The whole proof: gap closures are finitely many; once they end, every line turns like a ring; a ball forces every line beneath it to be full; and 15 balls can fill that order only as the staircase. &#8718;</div>
-
-<h2><span class="n">08</span> Why 15</h2>
+<h2><span class="n">07</span> Why 15</h2>
 <p>The count is the only place the number 15 entered the proof &mdash; and 15 = 1+2+3+4+5 is exactly what the staircase holds. Give the game 14 balls instead and everything runs the same until the count: lines 1 through 4 fill up, taking 10 balls, and the remaining 4 balls ride the 5-slot ring forever without ever filling it. The game ends in a cycle instead of freezing. A frozen state exists exactly when the ball count is 1+2+&#8943;+k &mdash; try it in the playground below.</p>
 
-<h2><span class="n">09</span> Playground</h2>
-<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the wall steps one column right, collecting the balls it passes along their 45&deg; lines.</p>
+<h2><span class="n">08</span> Playground</h2>
+<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the board's left edge steps one column right, collecting the balls it passes along their 45&deg; lines.</p>
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
@@ -268,10 +254,10 @@ footer{
 <div id="f8"></div>
 <div class="legend">
   <span><span class="sw" style="background:#93bac8"></span>inside the target staircase</span>
-  <span><span class="sw" style="background:#e9bd63"></span>beyond it</span>
-  <span><span class="swg"></span>dead row</span>
-  <span><span style="width:3px;height:14px;background:#a89c82;display:inline-block"></span>the wall</span>
-  <span><span style="width:9px;height:9px;border-radius:50%;background:#356a7d;display:inline-block"></span>the corner</span>
+  <span><span class="sw" style="background:#c4ad82"></span>beyond it</span>
+  <span><span class="swg"></span>empty row</span>
+  <span><span style="width:3px;height:14px;background:#a89c82;display:inline-block"></span>the left edge</span>
+  <span><span style="width:9px;height:9px;border-radius:50%;background:#356a7d;display:inline-block"></span>the board's top-left</span>
   <span><span class="swd" style="border-color:#c9bd9e"></span>target staircase</span>
 </div>
 <figcaption>Depth is a property of the spot, so a ball never changes color. The status line tracks total depth: watch it fall exactly when a gap closes, and settle for good once the drops are over.</figcaption></figure>
@@ -284,12 +270,13 @@ footer{
 <script>
 "use strict";
 const RAMP={1:'#e4edf1',2:'#c5dae2',3:'#93bac8',4:'#5f92a6',5:'#356a7d'};
-const OVER='#e9bd63';
+const OVER='#c4ad82';
 const TXTC=d=> d<=2?'#2b5060' : d===3?'#14303c' : d<=5?'#edf4f7' : '#6b4a0a';
 const GRAY='#ddd2b8', AMB='#d99f3f', AMBL='#a8641f', COR='#bb3b27';
 const GHOST='#c9bd9e', ARROW='#8a8072', WALL='#a89c82', CORNER='#356a7d', SOFT='#6c655a';
 
 const R=(x,y,s,fill,extra='')=>`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="5" fill="${fill}" ${extra}/>`;
+const B=(x,y,s,fill,extra='')=>`<circle cx="${x+s/2}" cy="${y+s/2}" r="${s/2-1.2}" fill="${fill}" ${extra}/>`;
 const T=(x,y,str,fill,size=13,w=600)=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
 const L=(x1,y1,x2,y2,stroke,mk,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="1.4" ${mk?`marker-end="url(#${mk})"`:''} ${extra}/>`;
 const SVG=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
@@ -309,7 +296,7 @@ function diagram(rows,o){
       const d=r+j-1, onRing=o.ringD&&d===o.ringD;
       const fill=o.plain?GRAY:(d<=5?RAMP[d]:OVER);
       const dim=(o.dimOffRing&&!onRing)?'opacity="0.3"':'';
-      s+=R(X(j),Y(r),c,fill,dim);
+      s+=B(X(j),Y(r),c,fill,dim);
       if(o.depthNums&&!o.plain) s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d));
     }});
   if(o.ringD){
@@ -322,50 +309,51 @@ function diagram(rows,o){
     }
   }
   (o.marks||[]).forEach(m=>{
-    if(m.kind==='ball') s+=R(X(m.c),Y(m.r),c,COR);
+    if(m.kind==='ball') s+=B(X(m.c),Y(m.r),c,COR);
     else s+=R(X(m.c),Y(m.r),c,'none',`stroke="${COR}" stroke-width="1.8" stroke-dasharray="4 3"`);
   });
   return s;
 }
 
-/* F0 — hero: (5,3,7) unsorted, first steps, then the frozen end */
+/* F1 — the piles as played, tipped onto their sides into a board */
 (function(){
-  const seq=[[5,3,7],[3,4,2,6],[4,2,3,1,5]], fin=[5,4,3,2,1];
-  const c=13,g=3,p=c+g; let x=16,s='';
-  seq.forEach(rows=>{
-    s+=diagram(rows,{cell:c,gap:g,x:x,y:16});
-    const w=Math.max(...rows)*p-g;
-    s+=L(x+w+8,50,x+w+30,50,ARROW,'mG'); x+=w+42;
+  const groups=[3,6,4,2];
+  const d=17, pw=22, bx=26, base=190;
+  let s='';
+  s+=`<line x1="${bx-10}" y1="${base+3}" x2="${bx+groups.length*pw+4}" y2="${base+3}" stroke="${GHOST}" stroke-width="1.5" stroke-linecap="round"/>`;
+  groups.forEach((len,i)=>{
+    const cx=bx+i*pw+pw/2;
+    for(let j=1;j<=len;j++)
+      s+=`<circle cx="${cx}" cy="${base-(j-0.5)*d}" r="${d/2-1.3}" fill="#5f92a6"/>`;
   });
-  s+=T(x+8,50,'&#8943;',ARROW,18);
-  s+=L(x+24,50,x+46,50,ARROW,'mG'); x+=58;
-  s+=diagram(fin,{cell:c,gap:g,x:x,y:16});
-  document.getElementById('f0').innerHTML=SVG(680,120,s);
-})();
-
-/* F1 — depths + line 5 on an unsorted state */
-(function(){
-  const s=diagram([3,6,4,2],{cell:36,gap:5,x:160,y:22,depthNums:true,ringD:5});
+  s+=L(bx+groups.length*pw+14,108,168,108,ARROW,'mG');
+  s+=T(bx+groups.length*pw+34,90,'tip over',SOFT,11.5,500);
+  s+=diagram(groups,{cell:36,gap:5,x:186,y:22,depthNums:true,ringD:5});
   document.getElementById('f1').innerHTML=SVG(680,250,s);
 })();
 
-/* F2 — peel and paste on (3,6,4,2) */
+/* F2 — the move on (3,6,4,2): collected column flies along 45° lines,
+   depth numbers make the preservation visible */
 (function(){
   const rows=[3,6,4,2], c=32,g=5,p=c+g, x0=210, y0=56;
   const X=col=>x0+(col-1)*p, Y=r=>y0+r*p;
   let s='';
-  for(let col=2;col<=5;col++)
+  for(let col=2;col<=5;col++){
     s+=R(X(col),y0,c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+    s+=T(X(col)+c/2,y0+c/2,col-1,AMBL,12,500);
+  }
   rows.forEach((len,i)=>{const r=i+1;
-    for(let j=1;j<=len;j++) s+=R(X(j),Y(r),c,j===1?AMB:GRAY);
+    for(let j=1;j<=len;j++){
+      const d=r+j-1;
+      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER, j===1?`stroke="${AMB}" stroke-width="3"`:'');
+      s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d),12);
+    }
   });
   for(let r=1;r<=4;r++){
     const ax=X(1)+c/2, ay=Y(r)+c/2, bx=X(r+1)+c/2, by=y0+c/2;
     const len=Math.hypot(bx-ax,by-ay), ux=(bx-ax)/len, uy=(by-ay)/len, off=c*0.62;
     s+=L(ax+ux*off,ay+uy*off,bx-ux*off,by-uy*off,AMBL,'mA','opacity="0.9"');
   }
-  s+=L(X(1)-3,Y(1)+3,X(2)-9,y0+9,CORNER,'mT','stroke-width="2"');
-  s+=T(X(1)-56,Y(1)-10,'corner',CORNER,12.5);
   document.getElementById('f2').innerHTML=SVG(680,260,s);
 })();
 
@@ -380,7 +368,10 @@ function diagram(rows,o){
   s+=T(X(5)+c/2,y0+c/2,'gap',COR,11,700);
   rows.forEach((len,i)=>{const r=i+1;
     if(len===0){s+=`<rect x="${X(1)}" y="${Y(r)+c/2-2}" width="${c*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
-    for(let j=1;j<=len;j++) s+=R(X(j),Y(r),c,j===1?AMB:GRAY);
+    for(let j=1;j<=len;j++){
+      const d=r+j-1;
+      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER, j===1?`stroke="${AMB}" stroke-width="3"`:'');
+    }
   });
   for(const r of [1,2,3,5,6]){
     const ax=X(1)+c/2, ay=Y(r)+c/2, bx=X(r+1)+c/2, by=y0+c/2;
@@ -393,27 +384,7 @@ function diagram(rows,o){
   document.getElementById('f3').innerHTML=SVG(680,300,s);
 })();
 
-/* F4 — the hole-above-ball pair marches to the wall */
-(function(){
-  const states=[
-    {rows:[3,6,4,2],  hole:[1,4], ball:[2,4]},
-    {rows:[4,2,5,3,1],hole:[2,3], ball:[3,3]},
-    {rows:[5,3,1,4,2],hole:[3,2], ball:[4,2]},
-    {rows:[5,4,2,0,3,1],hole:[4,1],ball:[5,1]}
-  ];
-  const c=15,g=3,p=c+g; let x=22,s='';
-  states.forEach((st,i)=>{
-    s+=diagram(st.rows,{cell:c,gap:g,x:x,y:18,plain:true,
-      marks:[{r:st.hole[0],c:st.hole[1],kind:'hole'},{r:st.ball[0],c:st.ball[1],kind:'ball'}]});
-    const w=Math.max(...st.rows)*p-g;
-    if(i<states.length-1){s+=L(x+w+9,60,x+w+31,60,ARROW,'mG');x+=w+44;}
-    else x+=w;
-  });
-  s+=T(x+52,60,'next move: a drop',COR,12.5,600);
-  document.getElementById('f4').innerHTML=SVG(680,140,s);
-})();
-
-/* F5a — slots of line 5 on a sorted state */
+/* F5a — slots of line 5 */
 (function(){
   const s=diagram([4,3,3,2,2,1],{cell:36,gap:5,x:220,y:22,ringD:5,slotNums:true,dimOffRing:true});
   document.getElementById('f5a').innerHTML=SVG(680,290,s);
@@ -428,7 +399,8 @@ const R3=(function(){
     let s='';
     for(let k=1;k<=5;k++){
       const x=x0+(k-1)*p, full=pat[k-1];
-      s+=R(x,y0,c,full?RAMP[5]:'none',full?'':`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+      s+=R(x,y0,c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+      if(full) s+=B(x,y0,c,RAMP[5]);
       s+=T(x+c/2,y0+c/2,k,full?'#edf4f7':AMBL,15,700);
       s+=T(x+c/2,y0-16,'slot '+k,SOFT,11.5,500);
       if(k<5) s+=L(x+c+2,y0+c/2,x+p-3,y0+c/2,ARROW,'mG');
@@ -466,17 +438,17 @@ const C=(function(){
       if(k!==b){s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
         s+=T(X(col)+c/2,Y(r)+c/2,k,AMBL,12,600);}}
     if(boom){
-      for(let j=1;j<=3;j++) s+=R(X(j),Y(1),c,GRAY);
+      for(let j=1;j<=3;j++) s+=B(X(j),Y(1),c,GRAY);
       s+=T(X(3)+c/2,Y(1)-18,'row 1 reaches column 5 — but column 4 is a hole',COR,12.5,600);
     }
     s+=R(X(5-h),Y(h),c,'none',`stroke="${COR}" stroke-width="${boom?2.6:1.8}" stroke-dasharray="4 3"`);
     s+=T(X(5-h)+c/2,Y(h)+c/2,h,COR,12,700);
-    s+=R(X(6-b),Y(b),c,AMB);
+    s+=B(X(6-b),Y(b),c,AMB);
     s+=T(X(6-b)+c/2,Y(b)+c/2,b,'#ffffff',12,700);
     s+=T(X(1)-42,Y(4)+c/2,'line 4',SOFT,11.5,500);
     s+=T(X(1)-42,Y(5)+c/2,'line 5',AMBL,11.5,500);
     s+=`<path d="M ${X(1)+c/2} ${Y(5)+c+8} C ${X(1)+c/2+70} ${Y(5)+c+52}, ${X(5)+c+120} ${Y(1)+c+90}, ${X(5)+c+12} ${Y(1)+c/2+8}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
-    s+=T(500,268,'the first-column cell wraps to the top row — on both rings',SOFT,11.5,500);
+    s+=T(470,268,'the first column wraps to the top row — on both rings',SOFT,11.5,500);
     document.getElementById('f6').innerHTML=SVG(680,320,s);
     document.getElementById('cs').innerHTML=
       `move <b>${t}</b> — ball: slot <b>${b}</b> of 5 — hole: slot <b>${h}</b> of 4 — surfacings <b>${surfN()}</b>`+
@@ -551,7 +523,7 @@ const PG=(function(){
       if(len===0){s+=`<rect x="${xA(t+1)}" y="${yA(rA)+cs/2-2}" width="${cs*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
       for(let c=1;c<=len;c++){
         const d=r+c-1;
-        s+=`<rect x="${xA(c+t)}" y="${yA(rA)}" width="${cs}" height="${cs}" rx="4" fill="${d<=K?shade(d):OVER}"/>`;
+        s+=`<circle cx="${xA(c+t)+cs/2}" cy="${yA(rA)+cs/2}" r="${cs/2-1}" fill="${d<=K?shade(d):OVER}"/>`;
       }});
     document.getElementById('f8').innerHTML=
       `<svg viewBox="0 0 680 ${2*M+Rn*px}" width="100%" role="img">${s}</svg>`;
