@@ -157,7 +157,7 @@ footer{
 
 <h2><span class="n">01</span> The board</h2>
 <p>Tip each pile onto its side, so every group becomes a row of balls, and stack the rows: a board.</p>
-<p>Give each ball a <b>depth</b>: its row + column &minus; 1. Balls of equal depth sit on one 45&deg; diagonal of the board; <b>line d</b>, the diagonal of depth d, has exactly d places on it.</p>
+<p>Give each ball a <b>depth</b>: its row + column &minus; 1. Balls of equal depth form one diagonal of the board &mdash; <b>diagonal d</b>, with exactly d places on it.</p>
 
 <figure><div id="f1"></div>
 <div class="legend">
@@ -167,15 +167,15 @@ footer{
   <span><span class="sw" style="background:#5f92a6"></span>4</span>
   <span><span class="sw" style="background:#356a7d"></span>5</span>
   <span><span class="sw" style="background:#c4ad82"></span>6+</span>
-  <span><span class="swd"></span>place of line 5 with no ball</span>
+  <span><span class="swd"></span>place of diagonal 5 with no ball</span>
 </div>
-<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2), tipped onto their sides and stacked into a board. Each ball shows its depth; equal depths form one 45&deg; line. Line 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
+<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2), tipped onto their sides and stacked into a board. Each ball shows its depth. Diagonal 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
 
 <h2><span class="n">02</span> The move, drawn</h2>
 <p>Now make a move on the board. The balls it collects are exactly the first column &mdash; one from every group &mdash; and the new group lines up as a new top row: the ball from row r lands at column r. No other ball moves.</p>
 
 <figure><div id="f2"></div>
-<figcaption>The collected column (amber rings) becomes the new top row (dashed). Each collected ball flies along its own 45&deg; line: from a place of depth r to a place of depth r.</figcaption></figure>
+<figcaption>The collected column (amber) becomes the new top row (dashed). Each collected ball flies along its own diagonal: from a place of depth r to a place of depth r.</figcaption></figure>
 
 <p>Standing balls keep their depth too: the board gained a row on top and lost its first column, so a standing ball's row number grew by one and its column number shrank by one.</p>
 
@@ -191,27 +191,13 @@ footer{
 
 <div class="fact"><b>Fact 2.</b> A move that closes no gap keeps total depth unchanged; a move that closes gaps drops it by at least 1.</div>
 
-<p>Total depth is a positive whole number, so it can drop only finitely many times:</p>
-<div class="fact">After some move, <b>no gap ever closes again</b> &mdash; every later move preserves all 15 depths.</div>
-<p>In particular, from that move on, no empty row ever sits above a living one &mdash; that would force a gap on the very next move.</p>
+<p>Total depth is a positive whole number &mdash; it cannot drop forever.</p>
+<div class="fact">Hence, after some move, <b>no gap ever closes again</b>, and every ball keeps its depth from that point on.</div>
 
-<h2><span class="n">04</span> Every line is a ring</h2>
-<p>Every ball now keeps its depth: a ball on line d stays on line d for the rest of the game. What does it do there? Number the line's places from the top: <b>slots</b> 1 to d, as below. A slot holding a ball is full; an empty slot is a <b>hole</b>.</p>
-
-<figure><div id="f5a"></div>
-<figcaption>Line 5 of the board (4,&thinsp;3,&thinsp;3,&thinsp;2,&thinsp;2,&thinsp;1): slots 3, 4, 5 hold balls; slots 1 and 2 are holes. Other balls dimmed.</figcaption></figure>
-
-<p>Follow one move. A standing ball keeps its place, but its row number grew by one, so it now sits one slot further along its line. The first-column ball &mdash; slot d &mdash; is collected and lands in the top row at column d: slot 1 of the same line. A move turns every line one notch, like a ring: balls advance one slot, the last slot wraps around to the first, and the holes ride along in between.</p>
-
-<figure>
-<div class="ctl"><button class="prime" onclick="R3.step()">one move</button>
-<button onclick="R3.reset()">reset</button><span class="stat" id="s3"></span></div>
-<div id="f5b"></div>
-<figcaption>Line 5 as a ring &mdash; click one move.</figcaption></figure>
-
-<h2><span class="n">05</span> Ball meets hole</h2>
-<p>Take a ball riding line d+1, and suppose the line beneath it, line d, is not full: somewhere on that ring sits a hole. The ball <b>surfaces</b> &mdash; visits its top-row slot, the place (1,&thinsp;d+1) &mdash; once every d+1 moves. Between two surfacings, the hole's ring of d slots turns d+1 times: one full lap and one slot more. So every time the ball surfaces, the hole stands one slot further along its ring, and within d surfacings the two surface <b>together</b>: a ball at (1,&thinsp;d+1) and a hole at (1,&thinsp;d), in the same top row.</p>
-<p>But the top row is a group: its balls fill the columns in order from the left. If it reaches column d+1, it cannot skip column d. So the hole never existed.</p>
+<h2><span class="n">04</span> Ball meets hole</h2>
+<p>With no more gaps to close, every move cycles each diagonal one step to the left: a ball's row number grows by one, moving it one place leftward along its diagonal, and the diagonal's left-most ball &mdash; the collected one &mdash; wraps around to become its right-most, in the top row. Any holes (empty places of a diagonal) cycle the exact same way.</p>
+<p>Now take a ball cycling around diagonal d+1, and suppose diagonal d beneath it is not full: one of its places is a hole. The ball <b>surfaces</b> &mdash; returns to the top row &mdash; once every d+1 moves. Between two surfacings, the hole cycles d+1 steps around a diagonal of only d places: a full lap plus one step. Hence every surfacing finds the hole one place further along, and within d surfacings the two reach the top row together: a ball at column d+1, a hole at column d.</p>
+<p>But the top row is a group: its balls fill the columns in order from the left. If it reaches column d+1, it cannot skip column d. Therefore the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
@@ -220,26 +206,26 @@ footer{
 <div class="stat" id="cs"></div>
 <div id="f6"></div>
 <div class="note" id="cnote"></div>
-<figcaption>The case d = 4, played out: the amber ball rides line 5; the red hole rides line 4 &mdash; if it exists. Every surfacing of the ball finds the hole one slot closer to the top row. On the fourth, they surface together, and the top row would need a hole inside it.</figcaption></figure>
+<figcaption>The case d = 4, played out: the amber ball cycles diagonal 5; the red hole cycles diagonal 4 &mdash; if it exists. Every surfacing of the ball finds the hole one place closer to the top row. On the fourth, they surface together, and the top row would need a hole inside it.</figcaption></figure>
 
-<div class="fact"><b>Fact 3.</b> A ball on line d+1 forces line d to be completely full.</div>
+<div class="fact"><b>Fact 3.</b> A ball on diagonal d+1 forces diagonal d to be completely full.</div>
 
-<h2><span class="n">06</span> The count</h2>
-<p>Let D be the deepest line holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: lines 1 through D&minus;1 are all full. Full lines hold 1+2+&#8943;+(D&minus;1) balls, and line D holds between 1 and D more. Now count:</p>
+<h2><span class="n">05</span> The count</h2>
+<p>Let D be the deepest diagonal holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: diagonals 1 through D&minus;1 are all full. Full diagonals hold 1+2+&#8943;+(D&minus;1) balls, and diagonal D holds between 1 and D more. Now count:</p>
 <p class="mono">D &le; 4: at most 1+2+3&thinsp;+&thinsp;4 = 10. Too few.</p>
 <p class="mono">D &ge; 6: at least 1+2+3+4+5&thinsp;+&thinsp;1 = 16. Too many.</p>
-<p class="mono">D = 5: line 5 holds 15 &minus; 10 = 5. Full.</p>
+<p class="mono">D = 5: diagonal 5 holds 15 &minus; 10 = 5. Full.</p>
 
-<p>So all five lines are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). And a full ring turned one notch looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
+<p>Hence all five diagonals are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). A full diagonal cycled one step looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
 
 <figure><div id="f7"></div>
-<figcaption>The staircase: every line full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
+<figcaption>The staircase: every diagonal full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
 
-<h2><span class="n">07</span> Why 15</h2>
-<p>The count is the only place the number 15 entered the proof &mdash; and 15 = 1+2+3+4+5 is exactly what the staircase holds. Give the game 14 balls instead and everything runs the same until the count: lines 1 through 4 fill up, taking 10 balls, and the remaining 4 balls ride the 5-slot ring forever without ever filling it. The game ends in a cycle instead of freezing. A frozen state exists exactly when the ball count is 1+2+&#8943;+k &mdash; try it in the playground below.</p>
+<h2><span class="n">06</span> Why 15</h2>
+<p>The count is the only place the number 15 entered the proof &mdash; and 15 = 1+2+3+4+5 is exactly what the staircase holds. Give the game 14 balls instead and everything runs the same until the count: diagonals 1 through 4 fill up, taking 10 balls, and the remaining 4 balls cycle around diagonal 5 forever without ever filling it. The game ends in a cycle instead of freezing. A frozen state exists exactly when the ball count is 1+2+&#8943;+k &mdash; try it in the playground below.</p>
 
-<h2><span class="n">08</span> Playground</h2>
-<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the board's left edge steps one column right, collecting the balls it passes along their 45&deg; lines.</p>
+<h2><span class="n">07</span> Playground</h2>
+<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the board's left edge steps one column right, collecting the balls it passes along their diagonals.</p>
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
@@ -384,40 +370,6 @@ function diagram(rows,o){
   document.getElementById('f3').innerHTML=SVG(680,300,s);
 })();
 
-/* F5a — slots of line 5 */
-(function(){
-  const s=diagram([4,3,3,2,2,1],{cell:36,gap:5,x:220,y:22,ringD:5,slotNums:true,dimOffRing:true});
-  document.getElementById('f5a').innerHTML=SVG(680,290,s);
-})();
-
-/* F5b — the ring strip, interactive */
-const R3=(function(){
-  const start=[false,false,true,true,true];
-  let pat=start.slice(), t=0;
-  const c=44,g=10,p=c+g, x0=(680-(5*p-g))/2, y0=46;
-  function draw(){
-    let s='';
-    for(let k=1;k<=5;k++){
-      const x=x0+(k-1)*p, full=pat[k-1];
-      s+=R(x,y0,c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
-      if(full) s+=B(x,y0,c,RAMP[5]);
-      s+=T(x+c/2,y0+c/2,k,full?'#edf4f7':AMBL,15,700);
-      s+=T(x+c/2,y0-16,'slot '+k,SOFT,11.5,500);
-      if(k<5) s+=L(x+c+2,y0+c/2,x+p-3,y0+c/2,ARROW,'mG');
-    }
-    const xa=x0+4*p+c/2, xb=x0+c/2, yb=y0+c;
-    s+=`<path d="M ${xa} ${yb+6} C ${xa} ${yb+42}, ${xb} ${yb+42}, ${xb} ${yb+10}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)"/>`;
-    s+=T(340,yb+50,'the last slot wraps around to slot 1',AMBL,12,500);
-    document.getElementById('f5b').innerHTML=SVG(680,180,s);
-    document.getElementById('s3').innerHTML =
-      t===0 ? 'move 0 — the pattern of line 5 above' :
-      `move ${t} — same balls, shifted ${t} slot${t>1?'s':''}`;
-  }
-  return {step(){pat=pat.map((_,i)=>pat[(i+4)%5]);t++;draw();},
-          reset(){pat=start.slice();t=0;draw();}, draw};
-})();
-R3.draw();
-
 /* F6 — ball meets hole, on the board */
 const C=(function(){
   const b0=3, h0=3, END=18;
@@ -445,18 +397,18 @@ const C=(function(){
     s+=T(X(5-h)+c/2,Y(h)+c/2,h,COR,12,700);
     s+=B(X(6-b),Y(b),c,AMB);
     s+=T(X(6-b)+c/2,Y(b)+c/2,b,'#ffffff',12,700);
-    s+=T(X(1)-42,Y(4)+c/2,'line 4',SOFT,11.5,500);
-    s+=T(X(1)-42,Y(5)+c/2,'line 5',AMBL,11.5,500);
+    s+=T(X(1)-52,Y(4)+c/2,'diagonal 4',SOFT,11.5,500);
+    s+=T(X(1)-52,Y(5)+c/2,'diagonal 5',AMBL,11.5,500);
     s+=`<path d="M ${X(1)+c/2} ${Y(5)+c+8} C ${X(1)+c/2+70} ${Y(5)+c+52}, ${X(5)+c+120} ${Y(1)+c+90}, ${X(5)+c+12} ${Y(1)+c/2+8}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
-    s+=T(470,268,'the first column wraps to the top row — on both rings',SOFT,11.5,500);
+    s+=T(460,268,'the first column wraps to the top row — on both diagonals',SOFT,11.5,500);
     document.getElementById('f6').innerHTML=SVG(680,320,s);
     document.getElementById('cs').innerHTML=
-      `move <b>${t}</b> — ball: slot <b>${b}</b> of 5 — hole: slot <b>${h}</b> of 4 — surfacings <b>${surfN()}</b>`+
+      `move <b>${t}</b> — ball: place <b>${b}</b> of 5 — hole: place <b>${h}</b> of 4 — surfacings <b>${surfN()}</b>`+
       (boom?' — <span class="drop">collision</span>':'');
     document.getElementById('cnote').innerHTML=
       boom?'<span style="color:var(--coral)">Surfacing 4: ball at (1, 5), hole at (1, 4). A row filled from the left that reaches column 5 cannot skip column 4. The hole cannot exist. &#8718;</span> — reset to replay'
-      :surf&&t>0?`Surfacing ${surfN()}: the ball is in the top row — the hole is at slot ${h}, not yet at (1, 4). One slot closer.`
-      :t===0?'Suppose line 4 has a hole (red). A ball sits on line 5 (amber). Press one move — both circle their rings.':'';
+      :surf&&t>0?`Surfacing ${surfN()}: the ball is in the top row — the hole is at place ${h}, not yet at (1, 4). One place closer.`
+      :t===0?'Suppose diagonal 4 has a hole (red). A ball sits on diagonal 5 (amber). Press one move — both cycle.':'';
   }
   return {step(){if(t>=END)return;t++;draw();},
           jump(){if(t>=END)return;do{t++}while(((b0-1+t)%5)!==0);draw();},
