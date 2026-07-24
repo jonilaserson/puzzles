@@ -141,12 +141,11 @@ footer{
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
-  <span class="seg"><button onclick="PL.set([5,3,7])">5, 3, 7</button><button onclick="PL.rand()">random</button></span>
-  <span class="seg"><input class="pgIn" id="plIn" placeholder="try 14" onkeydown="if(event.key==='Enter')PL.custom()"><button onclick="PL.custom()">set</button></span>
+  <span class="seg"><input class="pgIn" id="plIn" value="5, 3, 7" onkeydown="if(event.key==='Enter')PL.custom()"><button onclick="PL.custom()">set</button></span>
   <span style="flex:1"></span>
   <span class="seg"><button id="plBack" onclick="PL.back()">&#8592; back</button><button id="plStep" class="prime" onclick="PL.step()">step &#8594;</button></span>
   <button id="plAuto" onclick="PL.auto()">auto</button>
-  <button onclick="PL.replay()">replay</button>
+  <button onclick="PL.reset()">reset</button>
 </div>
 <div class="stat" id="plS"></div>
 <div id="fPlay"></div>
@@ -640,9 +639,9 @@ function setMode(m){
    staircase: nothing of the proof's framing. New pile lands on the right;
    empty piles vanish, so the arrangement is just how you'd play with coins. */
 const PL=(function(){
-  let states=[[5,3,7]], t=0, tmax=0, frozenAt=-1, repAt=-1, per=0, n=15;
-  let ballD=24, maxH=7, H=220, timer=null;
-  const M=16, W=680;
+  let states=[[5,3,7]], t=0, horizon=0, frozenAt=-1, repAt=-1, per=0, n=15;
+  let ballD=24, maxH=7, maxP=5, H=220, timer=null;
+  const M=16, W=680, X0=30;
   const key=s=>s.slice().sort((a,b)=>a-b).join(',');
   const show=s=>s.join(', ');
   function advance(s){
@@ -670,7 +669,10 @@ const PL=(function(){
   }
   function draw(){
     const st=states[t];
-    const pw=ballD*1.45, x0=(W-st.length*pw)/2, base=M+maxH*ballD;
+    /* piles are left-anchored at fixed slots, not centered: a pile keeps its
+       x-position between moves, so the vanishing top balls are easy to track.
+       Slots re-pack (everything slides left) only when a pile dies. */
+    const pw=ballD*1.45, x0=X0, base=M+maxH*ballD;
     let s=`<line x1="${M}" y1="${base+3}" x2="${W-M}" y2="${base+3}" stroke="#c9bd9e" stroke-width="1.6" stroke-linecap="round"/>`;
     st.forEach((len,i)=>{
       const cx=x0+i*pw+pw/2;
@@ -696,22 +698,35 @@ const PL=(function(){
     draw();
     document.getElementById('plS').innerHTML=statusLine();
     document.getElementById('plBack').disabled=(t===0);
-    document.getElementById('plStep').disabled=(t===tmax);
-    if(t===tmax) stopAuto();
   }
   function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById('plAuto').textContent='auto';}
-  function step(){ if(t>=tmax){stopAuto();return;} t++; refresh(); }
+  function fit(){
+    ballD=Math.max(8, Math.min(26, Math.floor((W-X0-M)/maxP/1.45), Math.floor(300/maxH)));
+    H=M+maxH*ballD+34;
+  }
+  /* stepping never ends: past the precomputed horizon, states extend lazily */
+  function step(){
+    if(t===states.length-1){
+      const nx=advance(states[t]);
+      states.push(nx);
+      if(Math.max(...nx)>maxH||nx.length>maxP){
+        maxH=Math.max(maxH,...nx); maxP=Math.max(maxP,nx.length); fit();
+      }
+    }
+    t++;
+    if(timer&&t>=horizon) stopAuto();
+    refresh();
+  }
   function back(){ stopAuto(); if(t>0){t--; refresh();} }
   function set(a){
     stopAuto();
     n=a.reduce((x,y)=>x+y,0);
     const b=build(a);
     states=b.sts; frozenAt=b.fx; repAt=b.rep; per=b.p;
-    tmax=states.length-1;
+    horizon=states.length-1;
     maxH=states.reduce((m,s)=>Math.max(m,...s),1);
-    const maxP=states.reduce((m,s)=>Math.max(m,s.length),1);
-    ballD=Math.max(8, Math.min(26, Math.floor((W-2*M)/maxP/1.45), Math.floor(300/maxH)));
-    H=M+maxH*ballD+34;
+    maxP=states.reduce((m,s)=>Math.max(m,s.length),1);
+    fit();
     t=0; refresh();
   }
   function custom(){
@@ -722,13 +737,12 @@ const PL=(function(){
     if(s>60){document.getElementById('plS').innerHTML=`${s} balls is a lot &mdash; keep it &le; 60.`;return;}
     set(a);
   }
-  function rand(){let r=15,a=[];while(r>0){const q=1+Math.floor(Math.random()*r);a.push(q);r-=q;}set(a);}
   function auto(){if(timer){stopAuto();return;}
-    if(t>=tmax){t=0;refresh();}
+    if(t>=horizon){t=0;refresh();}
     document.getElementById('plAuto').textContent='stop';timer=setInterval(step,650);}
-  function replay(){stopAuto(); t=0; refresh();}
+  function reset(){stopAuto(); t=0; refresh();}
   set([5,3,7]);
-  return {set,rand,step,back,auto,replay,custom};
+  return {set,step,back,auto,reset,custom};
 })();
 </script>
 </body>
