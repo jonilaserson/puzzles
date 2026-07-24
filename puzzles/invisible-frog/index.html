@@ -67,6 +67,8 @@ button:disabled:hover{border-color:var(--line)}
 .seg>*:last-child{border-radius:0 7px 7px 0}
 .seg>*:hover{z-index:1}
 .seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.seg button.ro{cursor:default;font-weight:600}
+.seg button.ro:hover{border-color:var(--line)}
 .stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
 .stat b{color:var(--ink)}
 .stat .hit{color:var(--coral);font-weight:600}
@@ -85,16 +87,18 @@ footer{
 
 /* swamp scene */
 #frSvg .pole{cursor:crosshair}
+#frSvg.done .pole{cursor:default}
 #frSvg .pole .cross{opacity:0;transition:opacity .12s}
 #frSvg .pole:hover .cross{opacity:.95}
+#frSvg.done .pole:hover .cross{opacity:0}
 #frSvg text{user-select:none;pointer-events:none}
 #frSvg .fx{transform-box:fill-box;transform-origin:center}
 @keyframes frFlash{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.9)}}
 #frSvg .fxFlash{animation:frFlash .5s ease-out forwards}
 @keyframes frRip{0%{opacity:.6;transform:scale(.3)}100%{opacity:0;transform:scale(2.4)}}
 #frSvg .fxRip{animation:frRip .9s ease-out forwards}
-@keyframes frQk{0%{opacity:0;transform:translateY(5px)}14%{opacity:1}70%{opacity:1;transform:translateY(-2px)}100%{opacity:0;transform:translateY(-9px)}}
-#frSvg .fxQk{animation:frQk 1.6s ease-in-out forwards}
+@keyframes frPulse{0%,100%{opacity:.1}50%{opacity:.6}}
+#frSvg .qpulse{animation:frPulse 2.6s ease-in-out infinite}
 </style>
 </head>
 <body class="mode-play">
@@ -122,13 +126,22 @@ footer{
 <div class="ctl">
   <span class="lab">frog:</span>
   <span class="seg"><button id="frRnd" class="on" onclick="FR.setFrog('random')">random</button><button id="frSnk" onclick="FR.setFrog('sneaky')">sneaky</button></span>
+  <span class="lab">poles:</span>
+  <span class="seg"><button id="frNm" onclick="FR.poles(-1)">&minus;</button><button id="frN" class="ro" tabindex="-1">10</button><button id="frNp" onclick="FR.poles(1)">+</button></span>
   <span style="flex:1"></span>
   <span class="stat" id="frCnt" style="margin:0"></span>
+</div>
+<div class="ctl">
+  <button id="frRev" onclick="FR.reveal()">reveal the frog</button>
   <button onclick="FR.newFrog()">new frog &#8635;</button>
+  <span style="flex:1"></span>
+  <span id="frRp" style="display:none">
+    <span class="seg"><button onclick="FR.rp0()">&#8676;</button><button onclick="FR.rpBack()">&#8592; back</button><button id="frPP" onclick="FR.rpPlay()">&#9654; play</button><button onclick="FR.rpFwd()">fwd &#8594;</button></span>
+  </span>
 </div>
 <div class="stat" id="frS"></div>
 <div id="fFrog"></div>
-<figcaption>Click a pole to shoot it. The <b>random</b> frog hops on a whim; the <b>sneaky</b> one stays alive as long as any hiding pole agrees with all your misses. Quacks echo across the water — they carry no clue. After the kill, a replay shows the path the frog took. How few shots make the kill certain?</figcaption>
+<figcaption>Click a pole to shoot it. The <b>random</b> frog hops on a whim; the <b>sneaky</b> one stays alive as long as any hiding pole agrees with all your misses. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay: the path the frog took, step by step. How few shots make the kill certain?</figcaption>
 </figure>
 </section>
 
@@ -152,19 +165,22 @@ function setMode(m){
 
 /* The swamp — play-mode hunt.
    Two opponents behind one scene:
-   random  — a real position, hopping to a random neighbour on each miss;
-   sneaky  — no position at all: it survives as long as at least one pole is
-             consistent with every miss so far (the adversarial frog the
-             puzzle is about). On the kill, a consistent path is rebuilt
-             backwards, so the replay shows the life it "really" lived. */
+   random — a real position, hopping to a random neighbour on each miss;
+   sneaky — no position at all: it survives as long as at least one pole is
+            consistent with every miss so far (the adversarial frog the
+            puzzle is about). When the hunt ends — kill or reveal — a
+            consistent life is rebuilt backwards from the miss history,
+            and replay mode plays it back, scrubbable in both directions. */
 const FR=(function(){
-  const N=10, W=680, H=330, WATER=246;
+  const MAXN=10, W=680, H=330, WATER=246;
   const TOPS=[162,150,168,155,171,148,164,158,152,167];
-  const PX=i=>47+(i-1)*65.2, TOP=i=>TOPS[i-1];
+  let N=10;
+  const PX=i=>47+(i-1)*(586/(N-1)), TOP=i=>TOPS[i-1];
 
-  let mode='random', over=false, replaying=false;
+  let mode='random', over=false, killed=false;
   let shots=[], pos=0, path=[], sets=[];
-  let quackT=null, replayT=null, best=null;
+  let best=null;
+  const rp={t:0,timer:null,killT:null};
 
   const spread=S=>{const o=new Set();S.forEach(p=>{if(p>1)o.add(p-1);if(p<N)o.add(p+1);});return o;};
   const rnd=n=>Math.floor(Math.random()*n);
@@ -198,6 +214,8 @@ const FR=(function(){
     s+=`<path d="M 16 ${WATER+4} q 4 -38 -4 -58" fill="none" stroke="#2c4434" stroke-width="3" stroke-linecap="round"/>
         <path d="M 26 ${WATER+8} q 6 -30 2 -44" fill="none" stroke="#35513e" stroke-width="3" stroke-linecap="round"/>
         <path d="M ${W-18} ${WATER+6} q -6 -34 2 -50" fill="none" stroke="#2c4434" stroke-width="3" stroke-linecap="round"/>`;
+    /* the quacking, heard from everywhere and nowhere */
+    s+=`<text id="frQkI" class="qpulse" x="26" y="34" fill="#9fb4c4" font-size="13.5" font-style="italic" font-family="'Newsreader',Georgia,serif">quack&#8230;</text>`;
     /* poles */
     for(let i=1;i<=N;i++){
       const x=PX(i), t=TOP(i);
@@ -215,7 +233,7 @@ const FR=(function(){
       s+=`<rect x="${x-26}" y="${t-40}" width="52" height="${WATER-t+46}" fill="transparent" role="button" aria-label="shoot pole ${i}"/>`;
       s+=`</g>`;
     }
-    s+=`<g id="frTrail"></g><g id="frFrog"></g><g id="frFx"></g><g id="frQk"></g>`;
+    s+=`<g id="frTrail"></g><g id="frFrog"></g><g id="frFx"></g>`;
     s+=`</g>`;
     document.getElementById('fFrog').innerHTML=
       `<svg id="frSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
@@ -251,22 +269,23 @@ const FR=(function(){
     }
     fx(`<g class="fx fxFlash" stroke="#e8b04a" stroke-width="2" stroke-linecap="round">${burst}</g>`,1200);
   }
-  function bubble(){
-    if(over) return;
-    const g=document.getElementById('frQk');
-    if(!g) return;
-    const x=70+Math.random()*(W-170), y=62+Math.random()*52;
-    g.insertAdjacentHTML('beforeend',
-      `<g class="fx fxQk">
-         <rect x="${x-32}" y="${y-13}" width="64" height="24" rx="11" fill="#fbf7ec" opacity="0.92"/>
-         <path d="M ${x-8} ${y+10} l -5 9 l 12 -8 z" fill="#fbf7ec" opacity="0.92"/>
-         <text x="${x}" y="${y}" fill="#1e1b16" font-size="12.5" font-style="italic" text-anchor="middle" dominant-baseline="central" font-family="'Newsreader',Georgia,serif">quack!</text>
-       </g>`);
-    const el=g.lastElementChild;
-    setTimeout(()=>el.remove(),1700);
-    quackT=setTimeout(bubble, 1000+Math.random()*1500);
+  /* static shot markers for scrubbable replay frames */
+  function missMark(p){
+    const x=PX(p), t=TOP(p);
+    return `<g stroke="#d99f3f" stroke-width="1.5" fill="none" opacity="0.9">
+      <circle cx="${x}" cy="${t-15}" r="9" fill="#d99f3f" fill-opacity="0.15"/>
+      <line x1="${x}" y1="${t-28}" x2="${x}" y2="${t-21}"/><line x1="${x}" y1="${t-9}" x2="${x}" y2="${t-2}"/>
+      <line x1="${x-13}" y1="${t-15}" x2="${x-6}" y2="${t-15}"/><line x1="${x+6}" y1="${t-15}" x2="${x+13}" y2="${t-15}"/></g>`;
   }
-  function stopQuack(){ if(quackT){clearTimeout(quackT);quackT=null;} }
+  function hitMark(p){
+    const x=PX(p), t=TOP(p);
+    let burst='';
+    for(let a=0;a<8;a++){
+      const th=a*Math.PI/4, r1=9, r2=20;
+      burst+=`<line x1="${x+r1*Math.cos(th)}" y1="${t-10+r1*Math.sin(th)}" x2="${x+r2*Math.cos(th)}" y2="${t-10+r2*Math.sin(th)}"/>`;
+    }
+    return `<g stroke="#e8734a" stroke-width="2" stroke-linecap="round" opacity="0.9">${burst}</g>`;
+  }
 
   /* ---------- the frog, drawn ---------- */
   function drawFrog(p,dead){
@@ -288,24 +307,31 @@ const FR=(function(){
          ${dead?'':`<path d="M ${x-4} ${y-10.5} q 4 2.5 8 0" fill="none" stroke="#3c5a2f" stroke-width="1.1" stroke-linecap="round"/>`}
        </g>`;
   }
-  const clearFrog=()=>{const g=document.getElementById('frFrog'); if(g)g.innerHTML='';};
 
   /* ---------- status ---------- */
-  const cnt=()=>{
+  const say=h=>{document.getElementById('frS').innerHTML=h;};
+  function sync(){
     document.getElementById('frCnt').innerHTML=
       `shots <b>${shots.length}</b>${best?` &nbsp;·&nbsp; best vs sneaky: <b>${best}</b>`:''}`;
-  };
-  const say=h=>{document.getElementById('frS').innerHTML=h;};
+    document.getElementById('frRev').disabled = over || shots.length===0;
+    document.getElementById('frN').textContent=N;
+    document.getElementById('frNm').disabled = N<=2;
+    document.getElementById('frNp').disabled = N>=MAXN;
+    document.getElementById('frRp').style.display = over?'inline':'none';
+    const svg=document.getElementById('frSvg');
+    if(svg) svg.classList.toggle('done',over);
+    const q=document.getElementById('frQkI');
+    if(q) q.style.display = killed?'none':'';
+  }
 
   /* ---------- game ---------- */
   function newFrog(){
-    stopQuack(); if(replayT){clearInterval(replayT);replayT=null;}
-    over=false; replaying=false; shots=[]; path=[]; sets=[];
+    stopRp();
+    over=false; killed=false; shots=[]; path=[]; sets=[]; rp.t=0;
     if(mode==='random'){ pos=1+rnd(N); path=[pos]; }
     else{ sets=[new Set(Array.from({length:N},(_,i)=>i+1))]; }
-    scene(); cnt();
+    scene(); sync();
     say(mode==='random'?'a frog lands somewhere out there&hellip;':'a <b>sneaky</b> frog is out there&hellip;');
-    quackT=setTimeout(bubble,500);
   }
   function setFrog(m){
     mode=m;
@@ -313,8 +339,13 @@ const FR=(function(){
     document.getElementById('frSnk').classList.toggle('on',m==='sneaky');
     newFrog();
   }
+  function poles(d){
+    const n=Math.min(MAXN,Math.max(2,N+d));
+    if(n===N) return;
+    N=n; newFrog();
+  }
   function shoot(p){
-    if(over||replaying) return;
+    if(over) return;
     shots.push(p);
     let hit=false;
     if(mode==='random'){
@@ -325,60 +356,93 @@ const FR=(function(){
       }
     }else{
       const S2=new Set(sets[sets.length-1]); S2.delete(p);
-      if(S2.size===0){ hit=true; rebuild(p); }
+      if(S2.size===0){ hit=true; rebuild(p,shots.length); }
       else sets.push(spread(S2));
     }
-    cnt();
     if(hit){
-      over=true; stopQuack();
+      over=true; killed=true;
+      if(mode==='random') path=path.slice(0,shots.length);
       fxHit(p); drawFrog(p,true);
-      say(`shot ${shots.length} &mdash; pole ${p}: <span class="hit">got it.</span> silence.`);
       if(mode==='sneaky'&&(!best||shots.length<best)) best=shots.length;
-      cnt();
-      setTimeout(replay,900);
+      sync();
+      say(`shot ${shots.length} &mdash; pole ${p}: <span class="hit">got it.</span> silence.`);
+      rp.killT=setTimeout(()=>{rp.killT=null;playRp();},900);
     }else{
-      fxMiss(p);
+      fxMiss(p); sync();
       say(`shot ${shots.length} &mdash; pole ${p}: splash. still quacking&hellip;`);
     }
   }
-  /* walk the miss history backwards and pick any consistent life */
-  function rebuild(pFinal){
-    const k=shots.length;
-    let cur=pFinal; const rev=[cur];
-    for(let t=k-1;t>=1;t--){
-      const S=sets[t-1];
-      const cand=[cur-1,cur+1].filter(q=>q>=1&&q<=N&&S.has(q)&&q!==shots[t-1]);
+  /* give up: the frog steps into the light, and the hunt is over */
+  function reveal(){
+    if(over||shots.length===0) return;
+    over=true; killed=false;
+    if(mode==='sneaky'){
+      const S=[...sets[sets.length-1]];
+      rebuild(S[rnd(S.length)],shots.length+1);
+    }
+    sync();
+    playRp();
+  }
+  /* walk the miss history backwards and pick any consistent life.
+     M = how many positions the life has (k for a kill, k+1 after a reveal) */
+  function rebuild(finalPos,M){
+    let cur=finalPos; const rev=[cur];
+    for(let m=M;m>1;m--){
+      const S=sets[m-2];
+      const cand=[cur-1,cur+1].filter(q=>q>=1&&q<=N&&S.has(q)&&q!==shots[m-2]);
       cur=cand[rnd(cand.length)];
       rev.push(cur);
     }
     path=rev.reverse();
   }
+
+  /* ---------- replay mode ---------- */
   const arc=(a,b)=>{
     const x1=PX(a), y1=TOP(a)-12, x2=PX(b), y2=TOP(b)-12;
     return `<path d="M ${x1} ${y1} Q ${(x1+x2)/2} ${Math.min(y1,y2)-24} ${x2} ${y2}" fill="none" stroke="#d99f3f" stroke-width="1.6" stroke-dasharray="3 4" opacity="0.85"/>`;
   };
-  function replay(){
-    replaying=true;
-    const trail=document.getElementById('frTrail');
-    trail.innerHTML=''; clearFrog();
-    say('replay &mdash; where it really was:');
-    let t=0;
-    replayT=setInterval(()=>{
-      t++;
-      if(t>path.length){
-        clearInterval(replayT); replayT=null; replaying=false;
-        say(`got it in <b>${shots.length}</b> shot${shots.length>1?'s':''} &mdash; its path: ${path.join(' &rarr; ')}`);
-        return;
-      }
-      const last=(t===path.length);
-      drawFrog(path[t-1],last);
-      if(t>1) trail.insertAdjacentHTML('beforeend',arc(path[t-2],path[t-1]));
-      if(last) fxHit(shots[t-1]); else fxMiss(shots[t-1]);
-    },430);
+  function rpDraw(anim){
+    const M=path.length, k=shots.length, t=rp.t;
+    let tr='';
+    for(let i=1;i<t;i++) tr+=arc(path[i-1],path[i]);
+    document.getElementById('frTrail').innerHTML=tr;
+    const dead=killed&&t===M;
+    drawFrog(path[t-1],dead);
+    document.getElementById('frFx').innerHTML =
+      t<=k ? (dead?hitMark(shots[t-1]):missMark(shots[t-1])) : '';
+    if(anim&&t<=k){ if(dead)fxHit(shots[t-1]); else fxMiss(shots[t-1]); }
+    if(t<=k){
+      say(`replay ${t}/${M} &mdash; you shot pole ${shots[t-1]}, `+
+          (dead?`<span class="hit">and there it was.</span>`:`the frog sat on pole <b>${path[t-1]}</b>.`));
+    }else{
+      say(`replay ${t}/${M} &mdash; and now it sits on pole <b>${path[t-1]}</b>, quacking. the hunt is over.`);
+    }
   }
+  function setPP(){
+    const b=document.getElementById('frPP');
+    if(b) b.innerHTML = rp.timer?'&#10073;&#10073; pause':'&#9654; play';
+  }
+  function stopRp(){
+    if(rp.timer){clearInterval(rp.timer);rp.timer=null;}
+    if(rp.killT){clearTimeout(rp.killT);rp.killT=null;}
+    setPP();
+  }
+  function playRp(){
+    if(!over||rp.timer) return;
+    if(rp.t>=path.length) rp.t=0;
+    rp.timer=setInterval(()=>{
+      if(rp.t>=path.length){ stopRp(); return; }
+      rp.t++; rpDraw(true);
+    },520);
+    setPP();
+  }
+  const rp0    =()=>{ if(!over)return; rp.t=1; rpDraw(false); };
+  const rpBack =()=>{ if(!over)return; stopRp(); rp.t=Math.max(1,rp.t-1); rpDraw(false); };
+  const rpFwd  =()=>{ if(!over)return; stopRp(); rp.t=Math.min(path.length,rp.t+1); rpDraw(false); };
+  const rpPlay =()=>{ if(!over)return; if(rp.timer)stopRp(); else playRp(); };
 
   newFrog();
-  return {shoot,newFrog,setFrog};
+  return {shoot,newFrog,setFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay};
 })();
 </script>
 </body>
