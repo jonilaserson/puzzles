@@ -124,8 +124,6 @@ footer{
 <section class="play-only">
 <figure>
 <div class="ctl">
-  <span class="lab">frog:</span>
-  <span class="seg"><button id="frRnd" class="on" onclick="FR.setFrog('random')">random</button><button id="frSnk" onclick="FR.setFrog('sneaky')">sneaky</button></span>
   <span class="lab">poles:</span>
   <span class="seg"><button id="frNm" onclick="FR.poles(-1)">&minus;</button><button id="frN" class="ro" tabindex="-1">10</button><button id="frNp" onclick="FR.poles(1)">+</button></span>
   <span style="flex:1"></span>
@@ -141,7 +139,7 @@ footer{
 </div>
 <div class="stat" id="frS"></div>
 <div id="fFrog"></div>
-<figcaption>Click a pole to shoot it. The <b>random</b> frog hops on a whim; the <b>sneaky</b> one stays alive as long as any hiding pole agrees with all your misses. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay: the path the frog took, step by step. How few shots make the kill certain?</figcaption>
+<figcaption>Click a pole to shoot it. This frog gets every benefit of the doubt: if it could still be alive somewhere, it is. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay, which shows where the frog sat on each of your shots. Start with a few poles, then work up to ten.</figcaption>
 </figure>
 </section>
 
@@ -164,22 +162,20 @@ function setMode(m){
 }
 
 /* The swamp — play-mode hunt.
-   Two opponents behind one scene:
-   random — a real position, hopping to a random neighbour on each miss;
-   sneaky — no position at all: it survives as long as at least one pole is
-            consistent with every miss so far (the adversarial frog the
-            puzzle is about). When the hunt ends — kill or reveal — a
-            consistent life is rebuilt backwards from the miss history,
-            and replay mode plays it back, scrubbable in both directions. */
+   The frog has no position: it survives as long as at least one pole is
+   consistent with every miss so far, so it is the adversary the puzzle is
+   really about. When the hunt ends — kill or reveal — a consistent life is
+   rebuilt backwards from the miss history, and replay mode plays it back,
+   scrubbable in both directions. */
 const FR=(function(){
   const MAXN=10, W=680, H=330, WATER=246;
   const TOPS=[162,150,168,155,171,148,164,158,152,167];
   let N=10;
   const PX=i=>47+(i-1)*(586/(N-1)), TOP=i=>TOPS[i-1];
 
-  let mode='random', over=false, killed=false;
-  let shots=[], pos=0, path=[], sets=[];
-  let best=null;
+  let over=false, killed=false;
+  let shots=[], path=[], sets=[];
+  const best={};
   const rp={t:0,timer:null,killT:null};
 
   const spread=S=>{const o=new Set();S.forEach(p=>{if(p>1)o.add(p-1);if(p<N)o.add(p+1);});return o;};
@@ -312,7 +308,7 @@ const FR=(function(){
   const say=h=>{document.getElementById('frS').innerHTML=h;};
   function sync(){
     document.getElementById('frCnt').innerHTML=
-      `shots <b>${shots.length}</b>${best?` &nbsp;·&nbsp; best vs sneaky: <b>${best}</b>`:''}`;
+      `shots <b>${shots.length}</b>${best[N]?` &nbsp;·&nbsp; fewest on ${N} poles: <b>${best[N]}</b>`:''}`;
     document.getElementById('frRev').disabled = over || shots.length===0;
     document.getElementById('frN').textContent=N;
     document.getElementById('frNm').disabled = N<=2;
@@ -327,17 +323,10 @@ const FR=(function(){
   /* ---------- game ---------- */
   function newFrog(){
     stopRp();
-    over=false; killed=false; shots=[]; path=[]; sets=[]; rp.t=0;
-    if(mode==='random'){ pos=1+rnd(N); path=[pos]; }
-    else{ sets=[new Set(Array.from({length:N},(_,i)=>i+1))]; }
+    over=false; killed=false; shots=[]; path=[]; rp.t=0;
+    sets=[new Set(Array.from({length:N},(_,i)=>i+1))];
     scene(); sync();
-    say(mode==='random'?'a frog lands somewhere out there&hellip;':'a <b>sneaky</b> frog is out there&hellip;');
-  }
-  function setFrog(m){
-    mode=m;
-    document.getElementById('frRnd').classList.toggle('on',m==='random');
-    document.getElementById('frSnk').classList.toggle('on',m==='sneaky');
-    newFrog();
+    say('somewhere out there, a frog is quacking&hellip;');
   }
   function poles(d){
     const n=Math.min(MAXN,Math.max(2,N+d));
@@ -347,23 +336,14 @@ const FR=(function(){
   function shoot(p){
     if(over) return;
     shots.push(p);
-    let hit=false;
-    if(mode==='random'){
-      if(pos===p) hit=true;
-      else{
-        pos+= pos===1?1: pos===N?-1: (Math.random()<.5?-1:1);
-        path.push(pos);
-      }
-    }else{
-      const S2=new Set(sets[sets.length-1]); S2.delete(p);
-      if(S2.size===0){ hit=true; rebuild(p,shots.length); }
-      else sets.push(spread(S2));
-    }
+    const S2=new Set(sets[sets.length-1]); S2.delete(p);
+    const hit=(S2.size===0);
+    if(hit) rebuild(p,shots.length);
+    else sets.push(spread(S2));
     if(hit){
       over=true; killed=true;
-      if(mode==='random') path=path.slice(0,shots.length);
       fxHit(p); drawFrog(p,true);
-      if(mode==='sneaky'&&(!best||shots.length<best)) best=shots.length;
+      if(!best[N]||shots.length<best[N]) best[N]=shots.length;
       sync();
       say(`shot ${shots.length} &mdash; pole ${p}: <span class="hit">got it.</span> silence.`);
       rp.killT=setTimeout(()=>{rp.killT=null;playRp();},900);
@@ -376,10 +356,8 @@ const FR=(function(){
   function reveal(){
     if(over||shots.length===0) return;
     over=true; killed=false;
-    if(mode==='sneaky'){
-      const S=[...sets[sets.length-1]];
-      rebuild(S[rnd(S.length)],shots.length+1);
-    }
+    const S=[...sets[sets.length-1]];
+    rebuild(S[rnd(S.length)],shots.length+1);
     sync();
     playRp();
   }
@@ -430,6 +408,7 @@ const FR=(function(){
   function playRp(){
     if(!over||rp.timer) return;
     if(rp.t>=path.length) rp.t=0;
+    if(rp.t===0){ rp.t=1; rpDraw(true); }   /* first frame at once, no blank beat */
     rp.timer=setInterval(()=>{
       if(rp.t>=path.length){ stopRp(); return; }
       rp.t++; rpDraw(true);
@@ -442,7 +421,7 @@ const FR=(function(){
   const rpPlay =()=>{ if(!over)return; if(rp.timer)stopRp(); else playRp(); };
 
   newFrog();
-  return {shoot,newFrog,setFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay};
+  return {shoot,newFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay};
 })();
 </script>
 </body>
