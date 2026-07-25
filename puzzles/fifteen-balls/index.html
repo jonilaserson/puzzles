@@ -228,12 +228,11 @@ footer{
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
-  <span class="seg"><button onclick="PG.set([5,3,7])">5, 3, 7</button><button onclick="PG.rand()">random</button></span>
-  <span class="seg"><input class="pgIn" id="pgIn" placeholder="try 14" onkeydown="if(event.key==='Enter')PG.custom()"><button onclick="PG.custom()">set</button></span>
+  <span class="seg"><input class="pgIn" id="pgIn" value="5, 3, 7" onkeydown="if(event.key==='Enter')PG.custom()"><button onclick="PG.custom()">set</button></span>
   <span style="flex:1"></span>
   <span class="seg"><button id="backB" onclick="PG.back()">&#8592; back</button><button id="stepB" class="prime" onclick="PG.step()">step &#8594;</button></span>
   <button id="autoB" onclick="PG.auto()">auto</button>
-  <button onclick="PG.replay()">replay</button>
+  <button onclick="PG.reset()">reset</button>
 </div>
 <div class="stat" id="pgS"></div>
 <div id="f8"></div>
@@ -523,13 +522,12 @@ const PG=(function(){
     if(s>60){status(`${s} balls is a lot — keep it &le; 60.`);return;}
     set(a);
   }
-  function rand(){let r=15,a=[];while(r>0){const q=1+Math.floor(Math.random()*r);a.push(q);r-=q;}set(a);}
   function auto(){if(timer){stopAuto();return;}
     if(t>=tmax){t=0;refresh();}
     document.getElementById('autoB').textContent='stop';timer=setInterval(step,550);}
-  function replay(){stopAuto(); t=0; refresh();}
+  function reset(){stopAuto(); t=0; refresh();}
   set([5,3,7]);
-  return {set,rand,step,back,auto,replay,custom};
+  return {set,step,back,auto,reset,custom};
 })();
 
 /* Play / Proof mode switch */
