@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every two cards share exactly one shape</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+button.ro{cursor:default}
+button.ro:hover{border-color:var(--line)}
+button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+input[type=range]{accent-color:var(--amber)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .drop{color:var(--coral);font-weight:600}
+.stat .same{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+/* builder */
+.palette{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.palette button{font-size:20px;padding:3px 7px;line-height:1.25}
+.palette button.sel{border-color:var(--amber);background:#f7ecd9}
+.bdeck{display:flex;flex-wrap:wrap;gap:12px;margin:12px 2px 4px;min-height:78px;align-items:flex-start}
+.bcard{
+  position:relative;width:74px;height:74px;border:1.5px solid var(--line);border-radius:50%;
+  background:#fffdf6;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+  font-size:17px;cursor:pointer;padding:9px;text-align:center;line-height:1.15;
+}
+.bcard:hover{border-color:var(--coral)}
+.bcard .no{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);
+  background:var(--paper);padding:0 4px;
+}
+/* clickable emoji + pulse */
+text.pk{cursor:pointer}
+@keyframes shPulse{0%,100%{opacity:.25}50%{opacity:.95}}
+.pulse{animation:shPulse 1.5s ease-in-out infinite}
+</style>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">dobble · finite geometry · a visual proof</p>
+<h1>Every two cards share<br>exactly one shape</h1>
+<p class="sub">The whole rule of Dobble. With k shapes on every card, how many cards can one deck hold — and how many shapes does it take?</p>
+
+<div class="box">
+  <p><b>The deck.</b> Each card shows k different shapes, and every two cards in the deck share <b>exactly one</b> shape — never none, never two.</p>
+  <p><b>The puzzle.</b> For a given k, find the largest deck that can exist — and count how many shapes it uses. The Dobble sold in shops plays this with k&thinsp;=&thinsp;8.</p>
+  <p>Spot a few pairs below, then try building a deck of your own before flipping to the proof.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+
+<figure>
+<div class="ctl">
+  <button onclick="SP.deal()">new pair</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="spN" style="margin:0"></span>
+</div>
+<div class="stat" id="spS"></div>
+<div id="fSpot"></div>
+<figcaption>Two cards of a real k&thinsp;=&thinsp;8 deck: exactly one shape appears on both. Click the shape they share.</figcaption>
+</figure>
+
+<figure>
+<div class="ctl">
+  <span class="lab">shapes per card:</span>
+  <span class="seg"><button onclick="BD.setK(-1)">&minus;</button><button id="bdK" class="ro" tabindex="-1">3</button><button onclick="BD.setK(1)">+</button></span>
+  <span style="flex:1"></span>
+  <button id="bdAdd" class="prime" onclick="BD.add()">add card</button>
+  <button onclick="BD.clear()">clear</button>
+</div>
+<div class="palette" id="bdPal"></div>
+<div class="stat" id="bdS"></div>
+<div class="bdeck" id="bdDeck"></div>
+<figcaption>Now build your own deck: pick k shapes and press add. A card joins only if it shares exactly one shape with <b>each</b> card already placed; click a placed card to take it back. With k&thinsp;=&thinsp;3, how many cards can you place — and how many shapes does your deck end up using?</figcaption>
+</figure>
+
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> A deck that never ends</h2>
+<p>Break the puzzle first. Put a star on every card, and fill the rest of each card with shapes never used before. Any two cards share exactly the star — a legal deck, and it never has to stop.</p>
+
+<figure>
+<div class="ctl">
+  <button class="prime" onclick="CH.add()">another card</button>
+  <button onclick="CH.reset()">reset</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="chS" style="margin:0"></span>
+</div>
+<div id="f1"></div>
+<figcaption>k&thinsp;=&thinsp;3. The star does all the sharing, and nothing ever stops the machine.</figcaption>
+</figure>
+
+<p>It is also a dead game — the answer is always the star. One rule bans it, and it is the only rule the proof will need:</p>
+<div class="fact"><b>No single shape on every card.</b></div>
+
+<h2><span class="n">02</span> Cards are lines</h2>
+<p>Now read the rule out slowly: every two <b>cards</b> share exactly one <b>shape</b>. Geometry has been saying this sentence for two thousand years: every two <b>lines</b> share exactly one <b>point</b>. Same sentence, different nouns. Lines obey Dobble's rule by nature — so let them deal. Draw lines, no two parallel, no three through one point, and drop a shape on every crossing. Each line reads as a card: the shapes sitting on it.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">lines</span>
+  <input type="range" id="lnR" min="2" max="6" value="4" oninput="LN.set(+this.value)">
+  <span style="flex:1"></span>
+  <span class="stat" id="lnS" style="margin:0"></span>
+</div>
+<div id="f2"></div>
+<figcaption>Every such drawing is a legal deck, because two lines cross exactly once. No proofreading required.</figcaption>
+</figure>
+
+<p>Free decks, straight off the page — but stingy ones: n lines make n cards of n&thinsp;&minus;&thinsp;1 shapes each, so for a fixed card size k the drawing stops at k&thinsp;+&thinsp;1 cards. You may well have beaten that in the builder. Packing more cards means putting one shape on three, four, many cards — <em>concurrent</em> lines, the one thing the drawing avoided. How far can concurrency go?</p>
+
+<h2><span class="n">03</span> The fan</h2>
+<p>Run r cards through one shared shape 🐸 — as lines, a fan of r blades through one point. On paper r is unlimited. But a fan is the banned cheat in a costume: if 🐸 sat on <em>every</em> card, that is the star again. So some card misses 🐸. Draw it — card D, one more line. D crosses every blade, and no two blades at the same point: two blades meeting on D would share that shape <em>and</em> 🐸. So the blades hand D one shape each, all different — and D only carries k.</p>
+
+<figure>
+<div class="ctl">
+  <button class="prime" onclick="FN.add()">another card through 🐸</button>
+  <button onclick="FN.reset()">reset</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="fnS" style="margin:0"></span>
+</div>
+<div id="f3"></div>
+<figcaption>k&thinsp;=&thinsp;4. Each card through 🐸 crosses D at a fresh shape of D — and D has only four to give.</figcaption>
+</figure>
+
+<div class="fact"><b>No shape sits on more than k cards.</b></div>
+
+<h2><span class="n">04</span> Count from one card</h2>
+<p>Take any card C in any legal deck. Every other card shares exactly one shape with C, so every other card hangs from exactly one of C's k shapes. And each shape of C carries at most k cards — C itself and k&thinsp;&minus;&thinsp;1 others. Hence:</p>
+
+<div class="fact"><b>A deck holds at most 1 + k(k&minus;1) = k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 cards.</b></div>
+<p class="mono">k = 3 &#8594; 7 &nbsp;&nbsp; k = 4 &#8594; 13 &nbsp;&nbsp; k = 8 &#8594; 57</p>
+
+<figure><div id="f4"></div>
+<figcaption>k&thinsp;=&thinsp;4: one card laid flat, and every possible other card hanging from one of its shapes — at most 1&thinsp;+&thinsp;4&middot;3&thinsp;=&thinsp;13 in all.</figcaption>
+</figure>
+
+<h2><span class="n">05</span> Where parallels meet</h2>
+<p>Can a deck reach the bound? Only if nothing sags: every shape of every card must sit on exactly k cards — fans of full size k meeting at every crossing. Ink cannot deliver that, and the page is what jams it: infinitely many points to waste, and parallels lurking everywhere. So change pages. Make the plane itself finite, and send the parallels where painters have always sent them — to the horizon, where they meet.</p>
+<p><b>The grid.</b> Coordinates 0&hellip;q&minus;1, arithmetic wrapping around mod q, with q a prime. A line y&thinsp;=&thinsp;mx&thinsp;+&thinsp;b still takes one point in every column — q points, wrapping as it climbs.</p>
+<p><b>The horizon.</b> The q lines of slope m never touch each other, so hand slope m its own new shape, sitting on all q of them, at the horizon. The q vertical lines get one too. That is q&thinsp;+&thinsp;1 horizon shapes — and together they form one last card: the horizon itself.</p>
+<p>Every card now carries q&thinsp;+&thinsp;1 shapes, so k&thinsp;=&thinsp;q&thinsp;+&thinsp;1. Lines of different slopes meet in exactly one grid point — wrap-around arithmetic with a prime q leaves the equation mx&thinsp;+&thinsp;b&thinsp;=&thinsp;m&#8242;x&thinsp;+&thinsp;b&#8242; exactly one solution. Lines of the same slope share only their horizon shape, and every line meets the horizon card at its slope. The rule holds everywhere, with no cheat star in sight. Count the cards: q slopes &times; q intercepts, plus q verticals, plus the horizon —</p>
+
+<div class="fact"><b>q² + q + 1 = k² &minus; k + 1 cards, on k² &minus; k + 1 shapes. The bound is reached.</b></div>
+
+<figure>
+<div class="ctl">
+  <span class="lab">q</span>
+  <span class="seg"><button id="rcQ2" onclick="RC.setQ(2)">2</button><button id="rcQ3" class="on" onclick="RC.setQ(3)">3</button><button id="rcQ5" onclick="RC.setQ(5)">5</button></span>
+  <span style="flex:1"></span>
+  <span class="stat" id="rcN" style="margin:0"></span>
+</div>
+<div class="stat" id="rcS"></div>
+<div id="f5"></div>
+<figcaption>The deck, and its geometry. Pick two cards from the list: their lines light up on the grid — wrapping around as they leave it — and the one shape they share pulses. The last card is the horizon itself.</figcaption>
+</figure>
+
+<h2><span class="n">06</span> All fifty-seven</h2>
+<p>q&thinsp;=&thinsp;7 gives k&thinsp;=&thinsp;8: 57 cards on 57 shapes. The pairs you spotted in Play were dealt from this very deck. (The Dobble in shops prints 55 of the 57.)</p>
+<p>Cards and shapes coming out equal is no accident. In a full deck every shape sits on exactly k cards, so count card&ndash;shape pairs twice: 57 cards &times; 8 shapes each = (number of shapes) &times; 8 cards each. Swap the words <em>card</em> and <em>shape</em> and every statement on this page stays true — geometry calls it duality.</p>
+
+<div class="fact">With k shapes per card: <b>at most k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 cards</b>, and a largest deck uses <b>exactly k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 shapes</b>. For k&thinsp;=&thinsp;8: 57 and 57.</div>
+
+<figure>
+<div class="ctl">
+  <button onclick="AL.random()">deal a random pair</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="alS" style="margin:0"></span>
+</div>
+<div id="f6"></div>
+<figcaption>The full deck. Pick any two cards — one shared shape, every time.</figcaption>
+</figure>
+
+<h2><span class="n">07</span> The missing k's</h2>
+<p>One loose end: the recipe wants q&thinsp;=&thinsp;k&minus;1 prime. Powers of primes work too, with a fancier wrap-around arithmetic (k&thinsp;=&thinsp;5 runs on q&thinsp;=&thinsp;4). But nothing covers every k — and for k&thinsp;=&thinsp;7 nothing can: no full deck of q&thinsp;=&thinsp;6 exists, so 43 cards is unreachable. q&thinsp;=&thinsp;10 fell too, to one of the heaviest computer searches ever run. Whether the bound is reachable for <em>any</em> k&minus;1 that is not a prime power remains an open problem.</p>
+<p>Meanwhile the builder is still open. The bound says k&thinsp;=&thinsp;3 ends at 7 cards: find the seven. Then look at what you built — can you point at its grid, and at its horizon?</p>
+
+</section>
+
+<footer>Dobble (Spot&thinsp;It!) ships k&thinsp;=&thinsp;8 with 55 of the possible 57 cards. Decks meeting the bound are the projective planes of finite geometry; q&thinsp;=&thinsp;6 was ruled out by Tarry (1900) and Bruck&ndash;Ryser (1949), q&thinsp;=&thinsp;10 by Lam, Thiel &amp; Swiercz's computer search (1989). q&thinsp;=&thinsp;12 — k&thinsp;=&thinsp;13 — is anyone's guess.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* ---------- shared ---------- */
+const EMO=["🐸","🦊","🐙","🐝","🦋","🐢","🐘","🦁","🐳","🦉","🐞","🦀","🐍","🦄","🐌","🐬","🦓","🦜","🐫","🦔",
+"🍎","🍌","🍇","🍄","🌵","🌻","🍀","🌙","🌈","🔥","💧","🍓","🥕","🍩","🧀","🍒","🍉","🥦","🌽",
+"🎈","🎲","🎁","🔑","🎯","🧲","💡","🔔","🧩","🪁","🎨","🎩","👓","⏰","🚀","⚽","🎸","🍕","🔍"];
+
+const SVG=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
+const TT=(x,y,str,fill,size=13,w=600,anchor='middle')=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+const EM=(x,y,e,size,extra='')=>`<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" dominant-baseline="central" ${extra}>${e}</text>`;
+
+/* grid + horizon deck: cards over the plane mod q, plus horizon */
+function makeDeck(q){
+  const gid=(x,y)=>x*q+y, sid=m=>q*q+m, vid=q*q+q, cards=[];
+  for(let m=0;m<q;m++)for(let b=0;b<q;b++){
+    const c=[]; for(let x=0;x<q;x++) c.push(gid(x,(m*x+b)%q));
+    c.push(sid(m)); cards.push({sh:c,kind:'slope',m,b});
+  }
+  for(let x=0;x<q;x++){
+    const c=[]; for(let y=0;y<q;y++) c.push(gid(x,y));
+    c.push(vid); cards.push({sh:c,kind:'vert',x});
+  }
+  const hz=[]; for(let m=0;m<q;m++) hz.push(sid(m)); hz.push(vid);
+  cards.push({sh:hz,kind:'horizon'});
+  return cards;
+}
+const D7=makeDeck(7).map(c=>c.sh.map(i=>EMO[i]));
+const common=(a,b)=>a.filter(e=>b.includes(e));
+
+/* a round card with its shapes scattered on it */
+function cardSVG(cx,cy,r,shapes,opt){
+  opt=opt||{};
+  const k=shapes.length, seed=opt.seed||0;
+  let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fffdf6" stroke="${opt.stroke||'var(--line)'}" stroke-width="${opt.sw||1.6}"/>`;
+  const ringN=k>=7?k-1:k, pos=[], a0=(seed*47%360)*Math.PI/180;
+  for(let i=0;i<ringN;i++){
+    const a=a0+i*2*Math.PI/ringN;
+    pos.push([cx+Math.cos(a)*r*0.63, cy+Math.sin(a)*r*0.63]);
+  }
+  if(k>=7) pos.push([cx,cy]);
+  const SZ=[1,0.78,1.18,0.9,1.05,0.8,1.12,0.95];
+  shapes.forEach((e,i)=>{
+    const [x,y]=pos[i], fs=Math.round(r*0.30*SZ[(i+seed)%8]), rot=((seed*31+i*57)%50)-25;
+    if(opt.hi!==undefined&&e===opt.hi)
+      s+=`<circle cx="${x}" cy="${y}" r="${fs*0.82}" fill="rgba(217,159,63,.28)" stroke="#a8641f" stroke-width="2.5"/>`;
+    s+=`<text class="${opt.click?'pk':''}" x="${x}" y="${y}" font-size="${fs}" text-anchor="middle" dominant-baseline="central" transform="rotate(${rot} ${x} ${y})" ${opt.click?`onclick="${opt.click}('${opt.tag}','${e}')"`:''}>${e}</text>`;
+  });
+  return s;
+}
+
+/* ---------- PLAY: spot it ---------- */
+const SP=(function(){
+  let A=0,B=1,found=false,n=0,timer=null;
+  function draw(){
+    const com=common(D7[A],D7[B])[0];
+    let s=cardSVG(178,152,132,D7[A],{seed:A,click:'SP.pick',tag:'L',hi:found?com:undefined});
+    s+=cardSVG(502,152,132,D7[B],{seed:B,click:'SP.pick',tag:'R',hi:found?com:undefined});
+    document.getElementById('fSpot').innerHTML=SVG(680,300,s);
+    document.getElementById('spN').innerHTML=`pairs spotted: <b>${n}</b>`;
+  }
+  function status(html){document.getElementById('spS').innerHTML=html;}
+  function deal(){
+    if(timer){clearTimeout(timer);timer=null;}
+    const a=Math.floor(Math.random()*57); let b=Math.floor(Math.random()*56); if(b>=a)b++;
+    A=a;B=b;found=false;draw();status('one shape is on both cards — click it.');
+  }
+  function pick(tag,e){
+    if(found)return;
+    const other=(tag==='L')?D7[B]:D7[A];
+    if(other.includes(e)){
+      found=true;n++;draw();
+      status(`<span class="same">${e} is on both.</span> dealing a new pair&hellip;`);
+      timer=setTimeout(deal,1300);
+    }else status(`${e} is only on the ${tag==='L'?'left':'right'} card.`);
+  }
+  deal();
+  return {deal,pick};
+})();
+
+/* ---------- PLAY: deck builder ---------- */
+const BD=(function(){
+  const PAL=EMO.slice(0,24);
+  let k=3, deck=[], sel=[];
+  function palette(){
+    document.getElementById('bdPal').innerHTML=
+      PAL.map(e=>`<button class="${sel.includes(e)?'sel':''}" onclick="BD.tog('${e}')">${e}</button>`).join('');
+  }
+  function cards(){
+    document.getElementById('bdDeck').innerHTML=
+      deck.map((c,i)=>`<div class="bcard" title="remove" onclick="BD.rm(${i})"><span class="no">${i+1}</span>${c.join('')}</div>`).join('');
+  }
+  function counts(){
+    const used=new Set(deck.flat());
+    return `<b>${deck.length}</b> card${deck.length===1?'':'s'} &middot; <b>${used.size}</b> shapes used`;
+  }
+  function status(html){document.getElementById('bdS').innerHTML=html;}
+  function refresh(msg){
+    palette();cards();
+    document.getElementById('bdK').textContent=k;
+    document.getElementById('bdAdd').disabled=(sel.length!==k);
+    status(msg!==undefined?msg:(deck.length?counts()+' — every two cards share exactly one shape.':`pick ${k} shapes, then add the card.`));
+  }
+  function tog(e){
+    const i=sel.indexOf(e);
+    if(i>=0)sel.splice(i,1);
+    else if(sel.length<k)sel.push(e);
+    else{refresh(`a card holds ${k} shapes — unselect one first.`);return;}
+    refresh(sel.length===k?'press add card.':undefined);
+  }
+  function add(){
+    if(sel.length!==k)return;
+    for(let i=0;i<deck.length;i++){
+      const com=common(deck[i],sel);
+      if(com.length!==1){
+        status(`<span class="drop">not added — ${com.length===0?'nothing in common':'shares '+com.join(' ')} with card ${i+1}.</span>`);
+        return;
+      }
+    }
+    deck.push(sel.slice());sel=[];refresh();
+  }
+  function rm(i){deck.splice(i,1);refresh(counts()+' — card removed.');}
+  function setK(d){
+    const nk=Math.min(5,Math.max(2,k+d));
+    if(nk===k)return;
+    k=nk;deck=[];sel=[];refresh(`k = ${k} — deck cleared.`);
+  }
+  function clear(){deck=[];sel=[];refresh();}
+  refresh();
+  return {tog,add,rm,setK,clear};
+})();
+
+/* ---------- 01: the cheat ---------- */
+const CH=(function(){
+  const START=5, MAXDRAW=24;
+  let n=START;
+  function draw(){
+    const r=27, dx=82, dy=76, perRow=8, shown=Math.min(n,MAXDRAW);
+    const rows=Math.ceil(shown/perRow);
+    let s='';
+    for(let i=0;i<shown;i++){
+      const cx=48+(i%perRow)*dx, cy=44+Math.floor(i/perRow)*dy;
+      s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fffdf6" stroke="var(--line)" stroke-width="1.4"/>`;
+      s+=EM(cx,cy-9,'⭐',15);
+      s+=EM(cx-9,cy+9,EMO[(2*i)%57],13);
+      s+=EM(cx+9,cy+9,EMO[(2*i+1)%57],13);
+    }
+    if(n>MAXDRAW) s+=TT(21, 44+rows*dy-14, `&hellip; +${n-MAXDRAW} more`, '#6c655a', 12, 500, 'start');
+    document.getElementById('f1').innerHTML=SVG(680,44+(rows-1)*dy+r+16+(n>MAXDRAW?34:0),s);
+    document.getElementById('chS').innerHTML=`<b>${n}</b> cards &middot; <b>${2*n+1}</b> shapes`;
+  }
+  draw();
+  return {add(){n++;draw();}, reset(){n=START;draw();}};
+})();
+
+/* ---------- 02: lines are cards ---------- */
+const LN=(function(){
+  const OFF=[-40,7,-67,0,41,-33];
+  function set(n){
+    const cx=210, cy=188, R=168;
+    const th=[],d=[];
+    for(let i=0;i<n;i++){th.push((12+i*180/n)*Math.PI/180);d.push(OFF[i]);}
+    let s='';
+    const ends=[];
+    for(let i=0;i<n;i++){
+      const nx=Math.cos(th[i]), ny=Math.sin(th[i]);
+      const px=cx+nx*d[i], py=cy+ny*d[i];
+      const ux=-ny, uy=nx, L=Math.sqrt(R*R-d[i]*d[i]);
+      s+=`<line x1="${px-ux*L}" y1="${py-uy*L}" x2="${px+ux*L}" y2="${py+uy*L}" stroke="#8a8072" stroke-width="1.5"/>`;
+      ends.push([px+ux*(L+12),py+uy*(L+12)]);
+    }
+    ends.forEach((p,i)=>{s+=TT(p[0],p[1],i+1,'#a8641f',12);});
+    const lineShapes=Array.from({length:n},()=>[]);
+    for(let j=1;j<n;j++)for(let i=0;i<j;i++){
+      const det=Math.cos(th[i])*Math.sin(th[j])-Math.sin(th[i])*Math.cos(th[j]);
+      const x=cx+(d[i]*Math.sin(th[j])-d[j]*Math.sin(th[i]))/det;
+      const y=cy+(d[j]*Math.cos(th[i])-d[i]*Math.cos(th[j]))/det;
+      const e=EMO[j*(j-1)/2+i];
+      lineShapes[i].push(e);lineShapes[j].push(e);
+      const es=n>=5?13:15;
+      s+=`<circle cx="${x}" cy="${y}" r="${es*0.68}" fill="#FBF7EC"/>`+EM(x,y,e,es);
+    }
+    const x0=425;
+    for(let i=0;i<n;i++){
+      const y=64+i*44;
+      s+=TT(x0,y,`card ${i+1}`,'#6c655a',11,500,'start');
+      s+=`<text x="${x0+72}" y="${y}" font-size="17" dominant-baseline="central" letter-spacing="4">${lineShapes[i].join('')}</text>`;
+    }
+    document.getElementById('f2').innerHTML=SVG(680,380,s);
+    document.getElementById('lnS').innerHTML=
+      `<b>${n}</b> cards &middot; ${n-1} shape${n>2?'s':''} each &middot; ${n*(n-1)/2} shapes in all`;
+  }
+  set(4);
+  return {set};
+})();
+
+/* ---------- 03: the fan ---------- */
+const FN=(function(){
+  const AP=[330,54], DY=252, XS=[150,262,374,486], GX=566;
+  const DSH=['🍎','🎈','🌙','🔥'];
+  let r=2;
+  function blade(x,ghost){
+    const t=1.13, ex=AP[0]+(x-AP[0])*t, ey=AP[1]+(DY-AP[1])*t;
+    return `<line x1="${AP[0]}" y1="${AP[1]}" x2="${ex}" y2="${ey}" stroke="${ghost?'#bb3b27':'#8a8072'}" stroke-width="1.5" ${ghost?'stroke-dasharray="6 5"':''}/>`;
+  }
+  function draw(boom){
+    let s='';
+    for(let i=0;i<r;i++)s+=blade(XS[i]);
+    if(boom)s+=blade(GX,true);
+    s+=`<line x1="70" y1="${DY}" x2="612" y2="${DY}" stroke="#1E1B16" stroke-width="2"/>`;
+    s+=TT(52,DY,'D','#1E1B16',14);
+    for(let i=0;i<4;i++){
+      const x=XS[i];
+      if(i<r){s+=`<circle cx="${x}" cy="${DY}" r="14" fill="#FBF7EC" stroke="#a8641f" stroke-width="1.6"/>`+EM(x,DY,DSH[i],16);}
+      else s+=`<circle cx="${x}" cy="${DY}" r="13" fill="#FBF7EC" stroke="#a8641f" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+    }
+    if(boom){
+      s+=`<circle cx="${GX}" cy="${DY}" r="13" fill="none" stroke="#bb3b27" stroke-width="1.8" stroke-dasharray="4 3"/>`;
+      s+=TT(GX,DY+26,'a 5th shape?','#bb3b27',12);
+    }
+    s+=`<circle cx="${AP[0]}" cy="${AP[1]}" r="16" fill="#FBF7EC"/>`+EM(AP[0],AP[1],'🐸',20);
+    document.getElementById('f3').innerHTML=SVG(680,300,s);
+    document.getElementById('fnS').innerHTML=boom
+      ?`<span class="drop">D holds four shapes — no room for a fifth card. r &le; k &#8718;</span>`
+      :`<b>${r}</b> cards through 🐸 — D shows ${r} of its 4 shapes`;
+  }
+  draw();
+  return {add(){if(r<4){r++;draw();}else draw(true);}, reset(){r=2;draw();}};
+})();
+
+/* ---------- 04: the count, static ---------- */
+(function(){
+  const XS=[150,278,406,534], CY=246, SH=['🐸','🍎','🎈','🌙'];
+  let s=`<line x1="100" y1="${CY}" x2="584" y2="${CY}" stroke="#1E1B16" stroke-width="2"/>`;
+  s+=TT(80,CY,'C','#1E1B16',14);
+  XS.forEach((x,i)=>{
+    for(let j=-1;j<=1;j++){
+      const tx=x+j*44, ty=84;
+      s+=`<line x1="${x}" y1="${CY}" x2="${tx}" y2="${ty}" stroke="#5f92a6" stroke-width="1.4"/>`;
+      s+=`<circle cx="${tx}" cy="${ty-10}" r="9" fill="none" stroke="#5f92a6" stroke-width="1.3" stroke-dasharray="3 3"/>`;
+    }
+    s+=`<circle cx="${x}" cy="${CY}" r="14" fill="#FBF7EC"/>`+EM(x,CY,SH[i],17);
+    s+=TT(x,CY+26,'&le; 3 more','#6c655a',11,500);
+  });
+  s+=TT(342,30,'1 + 4&middot;3 = 13','#a8641f',15);
+  document.getElementById('f4').innerHTML=SVG(680,290,s);
+})();
+
+/* ---------- 05: the recipe ---------- */
+const RC=(function(){
+  let q=3, deck=[], selA=-1, selB=-1;
+  const CFG={2:{cell:66,cols:1,rowH:30,fs:15,es:17},3:{cell:54,cols:1,rowH:22,fs:12,es:14},5:{cell:40,cols:2,rowH:19,fs:11,es:12}};
+  const AMBER='#a8641f', BLUE='#356a7d', CORAL='#bb3b27';
+  function build(){deck=makeDeck(q);}
+  function shapePos(id,C){
+    const gx0=64, hy=44, gy0=104;
+    if(id<q*q){const X=Math.floor(id/q), Y=id%q; return [gx0+X*C.cell, gy0+(q-1-Y)*C.cell];}
+    return [gx0+(id-q*q)*C.cell*(q>2?1:0.9)+(q>2?0:6), hy];
+  }
+  function stub(x,y,m,C,color){ /* m: slope number, or 'v' */
+    let dx,dy;
+    if(m==='v'){dx=0;dy=1;}
+    else{const L=Math.hypot(1,m);dx=1/L;dy=-m/L;}
+    const t=C.cell*0.46;
+    return `<line x1="${x-dx*t}" y1="${y-dy*t}" x2="${x+dx*t}" y2="${y+dy*t}" stroke="${color}" stroke-width="2.4" opacity="0.85"/>`;
+  }
+  function overlay(ci,color,C){
+    const card=deck[ci];
+    let s='';
+    card.sh.forEach(id=>{
+      const [x,y]=shapePos(id,C);
+      if(card.kind==='horizon'||id>=q*q)
+        s+=`<circle cx="${x}" cy="${y}" r="${C.cell*0.30}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
+      else
+        s+=stub(x,y,card.kind==='vert'?'v':card.m,C,color);
+    });
+    return s;
+  }
+  function draw(){
+    const C=CFG[q];
+    let s='';
+    const gx0=64, hy=44, gy0=104;
+    /* horizon */
+    s+=`<line x1="${gx0-40}" y1="${hy}" x2="${gx0+q*C.cell+40}" y2="${hy}" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="6 5"/>`;
+    s+=TT(gx0-40,hy-18,'the horizon','#6c655a',10.5,500,'start');
+    for(let m=0;m<=q;m++){
+      const id=q*q+m,[x,y]=shapePos(id,C);
+      const mm=(m===q)?'v':m;
+      s+=stub(x,y+C.cell*0.34,mm,{cell:C.cell*0.5},'#c9bd9e');
+      s+=EM(x,y,EMO[id],C.cell*0.40);
+    }
+    /* grid */
+    for(let id=0;id<q*q;id++){
+      const [x,y]=shapePos(id,C);
+      s+=EM(x,y,EMO[id],C.cell*0.42);
+    }
+    /* overlays under selection rings */
+    if(selA>=0)s+=overlay(selA,AMBER,C);
+    if(selB>=0)s+=overlay(selB,BLUE,C);
+    if(selA>=0&&selB>=0){
+      const com=deck[selA].sh.filter(id=>deck[selB].sh.includes(id))[0];
+      const [x,y]=shapePos(com,C);
+      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${C.cell*0.42}" fill="none" stroke="${CORAL}" stroke-width="3"/>`;
+    }
+    /* card list */
+    const lx0=q===5?352:400, colW=q===5?168:220, perCol=Math.ceil(deck.length/C.cols);
+    deck.forEach((card,i)=>{
+      const col=Math.floor(i/perCol), y=36+(i%perCol)*C.rowH, x=lx0+col*colW;
+      const selCol=(i===selA)?AMBER:(i===selB)?BLUE:null;
+      s+=`<rect x="${x-6}" y="${y-C.rowH/2}" width="${colW-14}" height="${C.rowH-2}" rx="5" fill="${i===selA?'rgba(217,159,63,.10)':i===selB?'rgba(53,106,125,.08)':'transparent'}" stroke="${selCol||'transparent'}" stroke-width="1.6" style="cursor:pointer" onclick="RC.pick(${i})"/>`;
+      s+=TT(x+8,y,i+1,'#6c655a',C.fs,500);
+      s+=`<text x="${x+26}" y="${y}" font-size="${C.es}" dominant-baseline="central" letter-spacing="2" style="pointer-events:none">${card.sh.map(j=>EMO[j]).join('')}</text>`;
+    });
+    const H=Math.max(gy0+(q-1)*CFG[q].cell+50, 36+perCol*C.rowH+16);
+    document.getElementById('f5').innerHTML=SVG(680,H,s);
+    document.getElementById('rcN').innerHTML=`q=${q}: <b>${deck.length}</b> cards &middot; <b>${q*q+q+1}</b> shapes &middot; ${q+1} per card`;
+    const st=document.getElementById('rcS');
+    if(selA<0)st.innerHTML='click two cards in the list.';
+    else if(selB<0)st.innerHTML=`card ${selA+1} — pick another.`;
+    else{
+      const com=deck[selA].sh.filter(id=>deck[selB].sh.includes(id))[0];
+      st.innerHTML=`cards <b>${selA+1}</b> &amp; <b>${selB+1}</b> share ${EMO[com]}`;
+    }
+  }
+  function pick(i){
+    if(selA<0)selA=i;
+    else if(selB<0&&i!==selA)selB=i;
+    else{selA=i;selB=-1;}
+    draw();
+  }
+  function setQ(nq){
+    q=nq;selA=-1;selB=-1;build();
+    [2,3,5].forEach(v=>document.getElementById('rcQ'+v).classList.toggle('on',v===q));
+    draw();
+  }
+  build();draw();
+  return {pick,setQ};
+})();
+
+/* ---------- 06: all 57 ---------- */
+const AL=(function(){
+  let selA=-1,selB=-1;
+  function draw(){
+    const perRow=12, dx=52, dy=52, x0=40, y0=38, r=21;
+    let s='';
+    for(let i=0;i<57;i++){
+      const cx=x0+(i%perRow)*dx, cy=y0+Math.floor(i/perRow)*dy;
+      const sel=(i===selA)?'#a8641f':(i===selB)?'#356a7d':null;
+      s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${sel?'rgba(217,159,63,.12)':'#fffdf6'}" stroke="${sel||'var(--line)'}" stroke-width="${sel?2.4:1.3}" style="cursor:pointer" onclick="AL.pick(${i})"/>`;
+      s+=TT(cx,cy,i+1,sel?'#1E1B16':'#6c655a',12,sel?600:400);
+    }
+    const detY=310;
+    if(selA>=0&&selB>=0){
+      const com=common(D7[selA],D7[selB])[0];
+      s+=cardSVG(178,detY+108,104,D7[selA],{seed:selA,hi:com,stroke:'#a8641f',sw:2});
+      s+=cardSVG(502,detY+108,104,D7[selB],{seed:selB,hi:com,stroke:'#356a7d',sw:2});
+      document.getElementById('alS').innerHTML=`cards <b>${selA+1}</b> &amp; <b>${selB+1}</b> share ${com}`;
+    }else{
+      s+=TT(340,detY+104,selA<0?'pick two cards':'pick another card','#6c655a',13,500);
+      document.getElementById('alS').innerHTML='';
+    }
+    document.getElementById('f6').innerHTML=SVG(680,detY+228,s);
+  }
+  function pick(i){
+    if(selA<0)selA=i;
+    else if(selB<0&&i!==selA)selB=i;
+    else{selA=i;selB=-1;}
+    draw();
+  }
+  function random(){
+    selA=Math.floor(Math.random()*57);
+    selB=Math.floor(Math.random()*56); if(selB>=selA)selB++;
+    draw();
+  }
+  draw();
+  return {pick,random};
+})();
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+</script>
+</body>
+</html>
