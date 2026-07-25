@@ -132,6 +132,7 @@ footer{
 <div class="ctl">
   <button id="frRev" onclick="FR.reveal()">reveal the frog</button>
   <button onclick="FR.newFrog()">new frog &#8635;</button>
+  <button id="frSnd" onclick="FR.sound()">sound on</button>
   <span style="flex:1"></span>
   <span id="frRp" style="display:none">
     <span class="seg"><button onclick="FR.rp0()">&#8676;</button><button onclick="FR.rpBack()">&#8592; back</button><button id="frPP" onclick="FR.rpPlay()">&#9654; play</button><button onclick="FR.rpFwd()">fwd &#8594;</button></span>
@@ -161,6 +162,88 @@ function setMode(m){
   document.getElementById('msProof').classList.toggle('on', m==='proof');
 }
 
+/* Sounds, synthesised on the spot so the page stays one self-contained file.
+   The audio context is built on the first shot — never on load — so the page
+   is silent until you do something. */
+const SND=(function(){
+  let ctx=null, noiseBuf=null, on=true, lastT=-1;
+  try{ on = localStorage.getItem('frog.mute')!=='1'; }catch(e){}
+  function ac(){
+    if(!on) return null;
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C) return null;
+    if(!ctx) ctx=new C();
+    if(ctx.state!=='running') ctx.resume();
+    /* A clock that has not moved since the last sound means there is no audio
+       device: everything we schedule would stack on one timestamp and blast
+       together if it ever started. Let one wait, drop the rest. */
+    if(ctx.currentTime===lastT) return null;
+    return ctx;
+  }
+  function noise(c){
+    if(!noiseBuf){
+      noiseBuf=c.createBuffer(1,Math.floor(c.sampleRate*0.3),c.sampleRate);
+      const d=noiseBuf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    }
+    return noiseBuf;
+  }
+  /* a shotgun: a bright crack of noise collapsing into a low thump */
+  function shot(v){
+    const c=ac(); if(!c) return;
+    v=(v===undefined?1:v);
+    const t=c.currentTime; lastT=t;
+    const s=c.createBufferSource(); s.buffer=noise(c);
+    const lp=c.createBiquadFilter(); lp.type='lowpass';
+    lp.frequency.setValueAtTime(6000,t);
+    lp.frequency.exponentialRampToValueAtTime(300,t+0.2);
+    const g=c.createGain();
+    g.gain.setValueAtTime(0.7*v,t);
+    g.gain.exponentialRampToValueAtTime(0.0008,t+0.24);
+    s.connect(lp); lp.connect(g); g.connect(c.destination);
+    s.start(t); s.stop(t+0.28);
+    const o=c.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(130,t);
+    o.frequency.exponentialRampToValueAtTime(42,t+0.17);
+    const og=c.createGain();
+    og.gain.setValueAtTime(0.5*v,t);
+    og.gain.exponentialRampToValueAtTime(0.0008,t+0.2);
+    o.connect(og); og.connect(c.destination);
+    o.start(t); o.stop(t+0.22);
+  }
+  /* a frog: a buzzy sawtooth sliding down, chopped up by a fast tremolo */
+  function quack(v){
+    const c=ac(); if(!c) return;
+    v=(v===undefined?1:v);
+    const t=c.currentTime; lastT=t;
+    const o=c.createOscillator(); o.type='sawtooth';
+    o.frequency.setValueAtTime(520,t);
+    o.frequency.linearRampToValueAtTime(215,t+0.17);
+    const bp=c.createBiquadFilter(); bp.type='bandpass';
+    bp.frequency.value=900; bp.Q.value=2.6;
+    const g=c.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.3*v,t+0.025);
+    g.gain.setValueAtTime(0.3*v,t+0.12);
+    g.gain.exponentialRampToValueAtTime(0.0008,t+0.19);
+    const trem=c.createOscillator(); trem.type='square'; trem.frequency.value=46;
+    const tg=c.createGain(); tg.gain.value=0.2*v;
+    trem.connect(tg); tg.connect(g.gain);
+    o.connect(bp); bp.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t+0.2); trem.start(t); trem.stop(t+0.2);
+  }
+  /* Muting just stops us building sounds — the context is left running.
+     Suspending it here looked tidier but stuck: resume() needs a user gesture,
+     so a mute/unmute cycle could kill the audio for good. */
+  function toggle(){
+    on=!on;
+    try{ localStorage.setItem('frog.mute', on?'0':'1'); }catch(e){}
+    if(on) ac();
+    return on;
+  }
+  return {shot,quack,toggle,isOn:()=>on};
+})();
+
 /* The swamp — play-mode hunt.
    The frog has no position: it survives as long as at least one pole is
    consistent with every miss so far, so it is the adversary the puzzle is
@@ -177,6 +260,7 @@ const FR=(function(){
   let shots=[], path=[], sets=[];
   const best={};
   const rp={t:0,timer:null,killT:null};
+  let qkT=null;   /* the frog's answering quack, a beat after each miss */
 
   const spread=S=>{const o=new Set();S.forEach(p=>{if(p>1)o.add(p-1);if(p<N)o.add(p+1);});return o;};
   const rnd=n=>Math.floor(Math.random()*n);
@@ -314,6 +398,7 @@ const FR=(function(){
     document.getElementById('frNm').disabled = N<=2;
     document.getElementById('frNp').disabled = N>=MAXN;
     document.getElementById('frRp').style.display = over?'inline':'none';
+    document.getElementById('frSnd').textContent = SND.isOn()?'sound on':'sound off';
     const svg=document.getElementById('frSvg');
     if(svg) svg.classList.toggle('done',over);
     const q=document.getElementById('frQkI');
@@ -323,6 +408,7 @@ const FR=(function(){
   /* ---------- game ---------- */
   function newFrog(){
     stopRp();
+    if(qkT){clearTimeout(qkT);qkT=null;}
     over=false; killed=false; shots=[]; path=[]; rp.t=0;
     sets=[new Set(Array.from({length:N},(_,i)=>i+1))];
     scene(); sync();
@@ -340,6 +426,7 @@ const FR=(function(){
     const hit=(S2.size===0);
     if(hit) rebuild(p,shots.length);
     else sets.push(spread(S2));
+    SND.shot();
     if(hit){
       over=true; killed=true;
       fxHit(p); drawFrog(p,true);
@@ -350,6 +437,8 @@ const FR=(function(){
     }else{
       fxMiss(p); sync();
       say(`shot ${shots.length} &mdash; pole ${p}: splash. still quacking&hellip;`);
+      if(qkT) clearTimeout(qkT);
+      qkT=setTimeout(()=>{qkT=null;SND.quack();},300);
     }
   }
   /* give up: the frog steps into the light, and the hunt is over */
@@ -389,6 +478,8 @@ const FR=(function(){
     document.getElementById('frFx').innerHTML =
       t<=k ? (dead?hitMark(shots[t-1]):missMark(shots[t-1])) : '';
     if(anim&&t<=k){ if(dead)fxHit(shots[t-1]); else fxMiss(shots[t-1]); }
+    /* the hunt heard again, quieter — and a live frog gets the last word */
+    if(t<=k) SND.shot(dead?0.55:0.34); else SND.quack(0.7);
     if(t<=k){
       say(`replay ${t}/${M} &mdash; you shot pole ${shots[t-1]}, `+
           (dead?`<span class="hit">and there it was.</span>`:`the frog sat on pole <b>${path[t-1]}</b>.`));
@@ -419,6 +510,11 @@ const FR=(function(){
   const rpBack =()=>{ if(!over)return; stopRp(); rp.t=Math.max(1,rp.t-1); rpDraw(false); };
   const rpFwd  =()=>{ if(!over)return; stopRp(); rp.t=Math.min(path.length,rp.t+1); rpDraw(false); };
   const rpPlay =()=>{ if(!over)return; if(rp.timer)stopRp(); else playRp(); };
+  function sound(){
+    const on=SND.toggle();
+    sync();
+    if(on) SND.quack(0.8);   /* one croak, so you hear what you just switched on */
+  }
 
   /* the poles wear their numbers, so the matching key shoots them — 0 is pole 10 */
   document.addEventListener('keydown',ev=>{
@@ -432,7 +528,7 @@ const FR=(function(){
   });
 
   newFrog();
-  return {shoot,newFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay};
+  return {shoot,newFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay,sound};
 })();
 </script>
 </body>
