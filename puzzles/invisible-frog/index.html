@@ -173,7 +173,7 @@ footer{
 </figure>
 
 <h2><span class="n">02</span> Unroll time</h2>
-<p>Poles across, turns downward. A whole life of the frog becomes one line, and each shot becomes one square.</p>
+<p>Give every pole a column and every turn a row. Then a whole life of the frog is one line, and you can see all of it at once.</p>
 
 <figure>
 <div class="ctl">
@@ -183,47 +183,60 @@ footer{
   <span class="stat" id="s2" style="margin:0"></span>
 </div>
 <div id="f2"></div>
-<figcaption>Every turn the frog steps down-left or down-right. You win where its line lands on a square you shot.</figcaption>
+<div class="legend">
+  <span><span class="sw" style="background:#3f7a2a;border-radius:50%;box-shadow:0 0 0 1.5px #fbf7ec inset"></span>where the frog sat</span>
+  <span>one column per pole &middot; one row per turn</span>
+</div>
+<figcaption>The frog above hops one pole; the line below grows one row. Each step goes down-left or down-right.</figcaption>
 </figure>
 
 <h2><span class="n">03</span> The frog is a bishop</h2>
-<p>Colour the board like a chessboard. The frog only ever steps diagonally — so it can never change colour.</p>
+<p>Colour the board like a chessboard. Every step the frog takes is diagonal, so it lands on its own colour every time. Steer it yourself and try to reach the other colour.</p>
 
 <figure>
 <div class="ctl">
-  <button class="prime" onclick="W3.again()">another frog &#8635;</button>
+  <span class="seg"><button id="b3l" class="prime" onclick="W3.hop(-1)">&#8592; hop left</button><button id="b3r" class="prime" onclick="W3.hop(1)">hop right &#8594;</button></span>
+  <button onclick="W3.again()">new frog &#8635;</button>
   <button onclick="W3.many()">twenty frogs</button>
   <span style="flex:1"></span>
   <span class="stat" id="s3" style="margin:0"></span>
 </div>
 <div id="f3"></div>
 <div class="legend">
-  <span><span class="sw" style="background:#a9c2cc"></span>dark</span>
-  <span><span class="sw" style="background:#f0e6cd"></span>light</span>
-  <span><span class="sw" style="background:#5c8a45;border-radius:50%"></span>the frog</span>
-  <span><span class="sw" style="background:#a8641f;border-radius:50%"></span>a shot</span>
+  <span><span class="sw" style="background:#a9c2cc"></span>dark square</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
+  <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>where the frog sat</span>
 </div>
-<figcaption>Whatever it does, a frog stays on its own colour for life.</figcaption>
+<figcaption>Hop as you like, for ten turns. The other colour stays out of reach.</figcaption>
 </figure>
 
 <div class="fact">So there are only <b>two</b> frogs to catch — one on the dark squares, one on the light. And a square you shoot sits on one colour, so it can only ever catch <b>one</b> of them.</div>
 
 <h2><span class="n">04</span> A wall the dark frog cannot pass</h2>
-<p>Shoot pole 2, then 3, then 4, up to 9. On the board those eight shots make a diagonal — every square of it dark.</p>
+<p>Shoot pole 2, then 3, then 4, up to 9. On the board those eight shots make a diagonal, and every square of it is dark.</p>
+<p>The dominoes fill the distance from the frog to the wall. Send each colour at it and watch what they do.</p>
 
 <figure>
 <div class="ctl">
+  <span class="seg"><button id="b4d" class="on" onclick="W4.colour(true)">dark frog</button><button id="b4w" onclick="W4.colour(false)">light frog</button></span>
   <button id="b4" class="prime" onclick="W4.step()">next turn &#8594;</button>
-  <button onclick="W4.again()">another dark frog &#8635;</button>
+  <button onclick="W4.again()">another &#8635;</button>
   <button onclick="W4.many()">twenty at once</button>
-  <span style="flex:1"></span>
 </div>
 <div class="stat" id="s4"></div>
 <div id="f4"></div>
-<figcaption>The bar measures the gap from the frog to the wall. Watch the numbers.</figcaption>
+<div class="legend">
+  <span><span class="sw" style="background:#a9c2cc"></span>dark square</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
+  <span><span class="sw" style="background:#2f2a22"></span>a shot</span>
+  <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>the frog</span>
+  <span><span class="sw" style="background:#356a7d;border-radius:2px;width:22px"></span>one domino = two poles</span>
+  <span><span class="sw" style="background:#fbf7ec;border:1.5px dashed #e8503a;width:11px"></span>a block with no partner</span>
+</div>
+<figcaption>A domino is two poles wide. The frog closes on the wall by whole dominoes only.</figcaption>
 </figure>
 
-<div class="fact">An even gap that only ever shrinks by two <b>must land on zero</b>. Landing on zero is being shot.</div>
+<div class="fact">The dark frog's dominoes <b>pair up exactly</b>, and they only ever vanish two poles at a time — so it runs out, and standing on nothing is standing on the bullet. The light frog is always <b>one block over</b>, and that block never pairs, so it can walk straight by.</div>
 
 <h2><span class="n">05</span> Now the same wall, backwards</h2>
 <p>A light frog strolls straight through the first wall — it crosses between the squares, never on one. But watch where it stands on turn 9.</p>
@@ -236,7 +249,14 @@ footer{
   <span class="stat" id="s5" style="margin:0"></span>
 </div>
 <div id="f5"></div>
-<figcaption>Shots 9 down to 2 make the second diagonal, and every square of it is light. The same gap closes on the light frog.</figcaption>
+<div class="legend">
+  <span><span class="sw" style="background:#a9c2cc"></span>dark square</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
+  <span><span class="sw" style="background:#2f2a22"></span>a shot</span>
+  <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>the frog</span>
+  <span><span class="sw" style="background:none;border:0;color:#e8503a;font-weight:700;width:auto">&times;</span>where it was shot</span>
+</div>
+<figcaption>Shots 9 down to 2 make the second diagonal, and every square of it is light. Now the dominoes pair for the light frog instead.</figcaption>
 </figure>
 
 <h2><span class="n">06</span> Sixteen bullets</h2>
@@ -265,6 +285,12 @@ footer{
   <span class="stat" id="s7" style="margin:0"></span>
 </div>
 <div id="f7"></div>
+<div class="legend">
+  <span><span class="sw" style="background:#a9c2cc"></span>dark square</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
+  <span><span class="sw" style="background:#2f2a22"></span>your shot</span>
+  <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>a frog that survives it</span>
+</div>
 <div class="stat" id="s7b"></div>
 <figcaption>One square per turn, at most one. Any frog that survives your plan is drawn in green.</figcaption>
 </figure>
@@ -278,6 +304,11 @@ footer{
   <span class="stat" id="s8" style="margin:0"></span>
 </div>
 <div id="f8"></div>
+<div class="legend">
+  <span><span class="sw" style="background:#a9c2cc"></span>dark square</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
+  <span><span class="sw" style="background:#2f2a22"></span>a shot</span>
+</div>
 <figcaption>The chevron just stretches, and the answer with it.</figcaption>
 </figure>
 
@@ -672,8 +703,12 @@ const FR=(function(){
    stepping diagonally, and a shot is an amber square. Each figure is the
    previous one with one thing added. */
 const PB=(function(){
+  /* The three marks on a board — frog, bullet, kill — used to sit at almost the
+     same lightness, so they blurred into one family of dark smudges. They are
+     now separated by lightness, and every thin mark wears a cream halo so it
+     reads on a dark square and a light one alike. */
   const DARK='#a9c2cc', LIGHT='#f0e6cd', PLAIN='#e7dcc4', SEAM='#fbf7ec';
-  const FROG='#4e7d3a', GHOST='#8fbf74', DOT='#a8641f', KILL='#bb3b27';
+  const FROG='#3f7a2a', GHOST='#8fbf74', DOT='#2f2a22', KILL='#e8503a';
   const SOFT='#6c655a', MEAS='#356a7d';
   const isDark=(p,t)=>((p+t)%2===1);
   /* a frog's colour never changes, so its whole class is fixed by where it starts */
@@ -717,13 +752,21 @@ const PB=(function(){
   function line(b,cells,o){
     o=o||{};
     const n=cells.length, st=o.stroke||FROG, op=o.op===undefined?0.95:o.op;
+    const w=o.w||2.4, halo=o.halo!==false, r=o.r||3.2;
     let d='';
     for(let i=0;i<n;i++) d+=(i?' L ':'M ')+b.cx(cells[i])+' '+b.cy(i+1);
     let s='';
-    if(!o.beadsOnly) s+=`<path d="${d}" fill="none" stroke="${st}" stroke-width="${o.w||2.2}" `+
-                        `stroke-linejoin="round" stroke-linecap="round" opacity="${op}"/>`;
+    if(!o.beadsOnly){
+      if(halo) s+=`<path d="${d}" fill="none" stroke="${SEAM}" stroke-width="${w+2.8}" `+
+                  `stroke-linejoin="round" stroke-linecap="round"/>`;
+      s+=`<path d="${d}" fill="none" stroke="${st}" stroke-width="${w}" `+
+         `stroke-linejoin="round" stroke-linecap="round" opacity="${op}"/>`;
+    }
     if(o.beads||o.beadsOnly)
-      for(let i=0;i<n;i++) s+=`<circle cx="${b.cx(cells[i])}" cy="${b.cy(i+1)}" r="${o.r||3.2}" fill="${st}" opacity="${op}"/>`;
+      for(let i=0;i<n;i++){
+        if(halo) s+=`<circle cx="${b.cx(cells[i])}" cy="${b.cy(i+1)}" r="${r+1.5}" fill="${SEAM}"/>`;
+        s+=`<circle cx="${b.cx(cells[i])}" cy="${b.cy(i+1)}" r="${r}" fill="${st}" opacity="${op}"/>`;
+      }
     return s;
   }
   /* A bullet is drawn inside its square, never over it: the square's colour has
@@ -736,22 +779,68 @@ const PB=(function(){
   }
   function cross(b,t,p,o){
     o=o||{};
-    const x=b.cx(p), y=b.cy(t), r=o.r||5.5;
-    return `<g stroke="${KILL}" stroke-width="${o.w||2.4}" stroke-linecap="round" opacity="${o.op||1}">`+
-           `<line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}"/>`+
-           `<line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}"/></g>`;
-  }
-  /* the gap from frog to wall, measured right on the board */
-  function gapBar(b,t,pFrog,pWall,val){
-    const y=b.cy(t);
-    const x1=Math.min(b.cx(pFrog),b.cx(pWall)), x2=Math.max(b.cx(pFrog),b.cx(pWall));
+    const x=b.cx(p), y=b.cy(t), r=o.r||5.5, w=o.w||2.4;
+    const arms=`<line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}"/>`+
+               `<line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}"/>`;
     let s='';
-    if(x2-x1>1) s+=`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${MEAS}" `+
-                   `stroke-width="2.4" opacity="0.9" stroke-linecap="round"/>`;
-    const mid=(x1+x2)/2;
-    s+=`<rect x="${mid-10}" y="${y-8}" width="20" height="16" rx="8" fill="${SEAM}" opacity="0.96"/>`;
-    s+=TX(mid,y,val,MEAS,11,700);
+    if(o.halo!==false) s+=`<g stroke="${SEAM}" stroke-width="${w+2.6}" stroke-linecap="round">${arms}</g>`;
+    s+=`<g stroke="${KILL}" stroke-width="${w}" stroke-linecap="round" opacity="${o.op||1}">${arms}</g>`;
     return s;
+  }
+  /* The gap from frog to wall, drawn as dominoes rather than written as a
+     number: two blocks per domino, so an even gap pairs up perfectly and an odd
+     one is left holding a single block that can never pair. Losing ground means
+     losing a whole domino; no dominoes left means the frog is standing on the
+     bullet. The picture says even, says minus two, and says zero. */
+  function dominoes(b,t,pFrog,pWall){
+    const g=Math.abs(pFrog-pWall);
+    if(!g) return '';
+    const dir=pFrog>pWall?1:-1, y=b.cy(t), h=b.cell*0.5, x0=b.cx(pWall);
+    const pairs=Math.floor(g/2);
+    let s='';
+    for(let k=0;k<pairs;k++){
+      const a=x0+dir*(2*k)*b.cell, c=x0+dir*(2*k+2)*b.cell;
+      const L=Math.min(a,c), R=Math.max(a,c), mid=(L+R)/2;
+      s+=`<rect x="${L+2}" y="${y-h/2}" width="${R-L-4}" height="${h}" rx="3" `+
+         `fill="${MEAS}" stroke="${SEAM}" stroke-width="1.5"/>`;
+      s+=`<line x1="${mid}" y1="${y-h/2+1}" x2="${mid}" y2="${y+h/2-1}" `+
+         `stroke="${SEAM}" stroke-width="2" opacity="0.95"/>`;
+    }
+    if(g%2){
+      const a=x0+dir*(2*pairs)*b.cell, c=x0+dir*(2*pairs+1)*b.cell;
+      const L=Math.min(a,c), R=Math.max(a,c);
+      s+=`<rect x="${L+2}" y="${y-h/2}" width="${R-L-4}" height="${h}" rx="3" `+
+         `fill="${SEAM}" fill-opacity="0.75" stroke="${KILL}" stroke-width="2" stroke-dasharray="3 2.5"/>`;
+    }
+    return s;
+  }
+  /* the swamp itself, sitting above a board and lined up with its columns */
+  function miniSwamp(b,pole,toY){
+    const x1=b.x(1)-8, x2=b.x(1)+b.N*b.cell+8, yTop=34, h=62, deck=yTop+26;
+    let s=`<rect x="${x1}" y="${yTop}" width="${x2-x1}" height="${h}" rx="9" fill="#1e3040"/>`;
+    for(let p=1;p<=b.N;p++){
+      const x=b.cx(p);
+      s+=`<rect x="${x-4}" y="${deck}" width="8" height="${yTop+h-deck-6}" rx="2.5" fill="#5d4730"/>`;
+      s+=`<ellipse cx="${x}" cy="${deck}" rx="4.6" ry="2.2" fill="#83674a"/>`;
+    }
+    if(pole){
+      const x=b.cx(pole);
+      s+=`<ellipse cx="${x}" cy="${deck-6}" rx="7.5" ry="5.4" fill="${GHOST}" stroke="#cbe6b8" stroke-width="0.8"/>`;
+      s+=`<circle cx="${x-3}" cy="${deck-11}" r="2.3" fill="${GHOST}"/>`;
+      s+=`<circle cx="${x+3}" cy="${deck-11}" r="2.3" fill="${GHOST}"/>`;
+      s+=`<circle cx="${x-3}" cy="${deck-11.3}" r="1" fill="#16241c"/>`;
+      s+=`<circle cx="${x+3}" cy="${deck-11.3}" r="1" fill="#16241c"/>`;
+      /* the thread that ties the frog up there to its bead down here */
+      s+=`<line x1="${x}" y1="${yTop+h+2}" x2="${x}" y2="${(toY===undefined?b.y(1):toY)-2}" `+
+         `stroke="${GHOST}" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.8"/>`;
+    }
+    return s;
+  }
+  /* a veil over the turns that have not happened yet */
+  function veil(b,fromTurn){
+    if(fromTurn>b.T) return '';
+    return `<rect x="${b.x(1)-1}" y="${b.y(fromTurn)}" width="${b.N*b.cell+2}" `+
+           `height="${(b.T-fromTurn+1)*b.cell}" fill="${SEAM}" opacity="0.72"/>`;
   }
   /* one life, played against a plan; shotAt[t] is the pole shot on turn t */
   function life(N,start,T,shotAt){
@@ -852,7 +941,8 @@ const PB=(function(){
     return SVG(W,H,s);
   }
   return {DARK,LIGHT,FROG,GHOST,DOT,KILL,SOFT,MEAS,SEAM,isDark,startsOfClass,rnd,pick,
-          TX,SVG,BD,squares,labels,line,shotSq,cross,gapBar,life,cloud,survivor,chevron,minPlan,strip};
+          TX,SVG,BD,squares,labels,line,shotSq,cross,dominoes,miniSwamp,veil,
+          life,cloud,survivor,chevron,minPlan,strip};
 })();
 
 /* 01 — the cloud: shoot the places, not the frog */
@@ -885,121 +975,148 @@ const W1=(function(){
   return {reset,shoot};
 })();
 
-/* 02 — unroll time: one life becomes one line */
+/* 02 — the swamp, unrolled. No plan and no shooting here: the only job is to
+   show one pole per column and one turn per row, so the frog hopping above
+   becomes a line you can see all at once. */
 const W2=(function(){
-  const N=10, T=8, b=PB.BD(N,T,30,200,44);
-  let plan, frog, t;
+  const N=10, T=8, b=PB.BD(N,T,30,190,152);
+  let frog, t;
   function draw(){
     let s=PB.squares(b,false)+PB.labels(b,{words:true});
-    for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,plan[k],{op:k<=t?0.92:0.2});
-    const shown=frog.cells.slice(0,t);
-    if(shown.length) s+=PB.line(b,shown,{beads:true});
-    if(frog.dead&&t>=frog.killT) s+=PB.cross(b,frog.killT,frog.cells[frog.killT-1]);
-    document.getElementById('f2').innerHTML=PB.SVG(680,44+T*30+18,s);
+    if(t) s+=PB.line(b,frog.cells.slice(0,t),{beads:true,r:3.6});
+    s+=PB.veil(b,t+1);
+    s+=PB.miniSwamp(b,t?frog.cells[t-1]:0,t?b.cy(t):undefined);
+    document.getElementById('f2').innerHTML=PB.SVG(680,152+T*30+18,s);
     const st=document.getElementById('s2');
-    if(t===0) st.innerHTML='press <b>next turn</b>';
-    else if(frog.dead&&t>=frog.killT) st.innerHTML=`turn ${t} &mdash; <span class="hit">the line landed on a square.</span>`;
-    else st.innerHTML=`turn <b>${t}</b> &mdash; frog on pole <b>${frog.cells[t-1]}</b>, you shot pole ${plan[t]}`;
-    document.getElementById('b2').disabled=(t>=T)||(frog.dead&&t>=frog.killT);
+    st.innerHTML = t===0 ? 'the swamp, seen from above &mdash; press <b>next turn</b>'
+      : t<T ? `turn <b>${t}</b> &mdash; the frog is on pole <b>${frog.cells[t-1]}</b>`
+            : `eight turns, one line &mdash; <b>a whole life in one picture</b>`;
+    document.getElementById('b2').disabled=(t>=T);
   }
-  function step(){ if(t<T){ t++; SND.shot(0.34); draw(); } }
-  function reset(){
-    plan={}; for(let k=1;k<=T;k++) plan[k]=1+PB.rnd(N);
-    frog=PB.life(N,1+PB.rnd(N),T,plan);
-    t=0; draw();
-  }
+  function step(){ if(t<T){ t++; SND.quack(0.3); draw(); } }
+  function reset(){ frog=PB.life(N,1+PB.rnd(N),T,null); t=0; draw(); }
   reset();
   return {step,reset};
 })();
 
-/* 03 — the frog is a bishop: diagonal steps keep their colour */
+/* 03 — the frog is a bishop. The reader steers it themselves and is invited to
+   land on the other colour, which is impossible; watching random frogs prove it
+   is far weaker than trying it and failing. */
 const W3=(function(){
   const N=10, T=10, b=PB.BD(N,T,28,210,42);
-  let mode='one', frogs=[], dark=true;
+  let mode='steer', cells=[], dark=true, many=[];
+  const cur=()=>cells[cells.length-1];
   function draw(){
     let s=PB.squares(b,true)+PB.labels(b,{words:true});
-    frogs.forEach(f=>s+=PB.line(b,f.cells,mode==='one'
-      ? {beads:true}
-      : {beadsOnly:true,r:3,op:0.62}));
+    if(mode==='steer'){
+      s+=PB.line(b,cells,{beads:true,r:3.6});
+      s+=PB.veil(b,cells.length+1);
+    }else{
+      many.forEach(f=>s+=PB.line(b,f.cells,{beadsOnly:true,r:3.2,op:0.7,halo:false}));
+    }
     document.getElementById('f3').innerHTML=PB.SVG(680,42+T*28+18,s);
     const st=document.getElementById('s3');
-    st.innerHTML = mode==='one'
-      ? `one frog, starting on pole ${frogs[0].cells[0]} &mdash; it lives on the <b>${dark?'dark':'light'}</b> squares`
-      : `twenty <b>${dark?'dark':'light'}</b> frogs &mdash; not one bead on a ${dark?'light':'dark'} square`;
+    if(mode==='steer'){
+      const own=cells.length, other=0;   /* it can never be anything else */
+      st.innerHTML=`turn <b>${own}</b>/${T} &mdash; `+
+        `<b>${own}</b> ${dark?'dark':'light'} square${own===1?'':'s'}, `+
+        `<b>${other}</b> ${dark?'light':'dark'}`+
+        (own>=T?` &mdash; <b>you never got off your colour</b>`:'');
+    }else{
+      st.innerHTML=`twenty <b>${dark?'dark':'light'}</b> frogs &mdash; every ${dark?'light':'dark'} square still bare`;
+    }
+    const p=cur();
+    document.getElementById('b3l').disabled=(mode!=='steer')||cells.length>=T||p<=1;
+    document.getElementById('b3r').disabled=(mode!=='steer')||cells.length>=T||p>=N;
+  }
+  function hop(d){
+    if(mode!=='steer'||cells.length>=T) return;
+    const p=cur()+d;
+    if(p<1||p>N) return;
+    cells.push(p); SND.quack(0.26); draw();
   }
   function again(){
-    mode='one'; dark=Math.random()<0.5;
-    frogs=[PB.life(N,PB.pick(PB.startsOfClass(N,dark)),T,null)];
+    mode='steer'; dark=Math.random()<0.5;
+    cells=[PB.pick(PB.startsOfClass(N,dark))];
     draw();
   }
-  function many(){
+  function manyF(){
     mode='many'; dark=Math.random()<0.5;
     const starts=PB.startsOfClass(N,dark);
-    frogs=[]; for(let i=0;i<20;i++) frogs.push(PB.life(N,PB.pick(starts),T,null));
+    many=[]; for(let i=0;i<20;i++) many.push(PB.life(N,PB.pick(starts),T,null));
     draw();
   }
   again();
-  return {again,many};
+  return {hop,again,many:manyF};
 })();
 
-/* 04 — the rising wall, and the even gap that closes on the dark frog */
+/* 04 — the rising wall. The distance from frog to wall is drawn as dominoes,
+   so the two facts that matter are pictures instead of claims: a frog of the
+   wall's own colour always pairs up perfectly and loses whole dominoes until
+   none are left, while the other colour is stuck with a block that never pairs
+   and simply walks by. That leftover block is what section 05 goes after. */
 const W4=(function(){
   const N=10, T=8, b=PB.BD(N,T,30,190,44);
   const wall={}; for(let k=1;k<=T;k++) wall[k]=k+1;
-  let frog, t, mode='one', many=[];
+  let frog, t, dark=true, mode='one', many=[];
+  const gapAt=k=>Math.abs(frog.cells[k-1]-wall[k]);
   function draw(){
     let s=PB.squares(b,true)+PB.labels(b,{words:true});
     for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,wall[k]);
     if(mode==='many'){
       many.forEach(f=>{
-        s+=PB.line(b,f.cells,{op:0.5,w:1.6});
-        if(f.dead) s+=PB.cross(b,f.killT,f.cells[f.killT-1],{r:4.5,w:1.9,op:0.85});
+        s+=PB.line(b,f.cells,{op:0.42,w:1.6,halo:false});
+        if(f.dead) s+=PB.cross(b,f.killT,f.cells[f.killT-1],{r:4.5,w:1.9,halo:false});
       });
     }else{
-      const shown=frog.cells.slice(0,t);
-      if(shown.length) s+=PB.line(b,shown,{beads:true});
-      if(t>=1&&!(frog.dead&&t>frog.killT)){
-        const p=frog.cells[t-1];
-        s+=PB.gapBar(b,t,p,wall[t],Math.abs(p-wall[t]));
-      }
+      const alive=!(frog.dead&&t>frog.killT);
+      if(t&&alive) s+=PB.dominoes(b,t,frog.cells[t-1],wall[t]);
+      if(t) s+=PB.line(b,frog.cells.slice(0,t),{beads:true,r:3.4});
       if(frog.dead&&t>=frog.killT) s+=PB.cross(b,frog.killT,frog.cells[frog.killT-1]);
     }
     document.getElementById('f4').innerHTML=PB.SVG(680,44+T*30+18,s);
     const st=document.getElementById('s4');
     if(mode==='many'){
-      st.innerHTML=`twenty dark frogs, twenty crosses &mdash; <b>every one on the wall</b>`;
+      st.innerHTML = dark
+        ? `twenty dark frogs, twenty crosses &mdash; <b>every one on the wall</b>`
+        : `twenty light frogs &mdash; <b>not one of them stopped</b>`;
+    }else if(!t){
+      st.innerHTML='press <b>next turn</b>';
     }else{
-      const gaps=[];
-      for(let k=1;k<=t;k++){
-        if(frog.dead&&k>frog.killT) break;
-        gaps.push(Math.abs(frog.cells[k-1]-wall[k]));
-      }
-      st.innerHTML = t===0 ? 'press <b>next turn</b> and watch the gap'
-        : `gap: <b>${gaps.join(' &rarr; ')}</b>`+
-          (frog.dead&&t>=frog.killT?' &mdash; <span class="hit">zero. shot.</span>':'');
+      const g=gapAt(Math.min(t,frog.dead?frog.killT:t));
+      const pairs=Math.floor(g/2), odd=g%2;
+      const n=`${pairs} domino${pairs===1?'':'es'}`;
+      const past=t>=T?' &mdash; <b>it walked straight past</b>':'';
+      st.innerHTML = g===0 ? `<span class="hit">no dominoes left &mdash; the frog is standing on the bullet.</span>`
+        : !odd  ? `${n} &mdash; they pair up exactly`
+        : pairs ? `${n} and <b>one block over</b>`+past
+        :         `<b>one block</b>, with nothing to pair it with`+past;
     }
     document.getElementById('b4').disabled=(mode==='many')||(t>=T)||(frog.dead&&t>=frog.killT);
+    document.getElementById('b4d').classList.toggle('on',dark);
+    document.getElementById('b4w').classList.toggle('on',!dark);
   }
   function step(){ if(t<T){ t++; SND.shot(0.34); draw(); } }
-  /* any dark frog proves the point, but one shot on turn 1 shows no gap
-     closing — so keep looking for a frog that lives long enough to watch */
+  /* a frog shot on turn one shows no dominoes falling, so look for one that
+     lives long enough to watch (every dark frog dies either way) */
   function again(){
     mode='one';
-    const starts=PB.startsOfClass(N,true);
+    const starts=PB.startsOfClass(N,dark);
     for(let i=0;i<40;i++){
       frog=PB.life(N,PB.pick(starts),T,wall);
-      if(frog.dead&&frog.killT>=3) break;
+      if(!dark||(frog.dead&&frog.killT>=3)) break;
     }
     t=1; draw();
   }
+  function colour(d){ dark=d; again(); }
   function manyF(){
     mode='many'; many=[];
-    const starts=PB.startsOfClass(N,true);
+    const starts=PB.startsOfClass(N,dark);
     for(let i=0;i<20;i++) many.push(PB.life(N,PB.pick(starts),T,wall));
     draw();
   }
   again();
-  return {step,again,many:manyF};
+  return {step,again,colour,many:manyF};
 })();
 
 /* 05 — the falling wall catches the other colour */
