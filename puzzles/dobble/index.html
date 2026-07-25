@@ -530,7 +530,7 @@ const RC=(function(){
     3:{cw:54,ct:34,hsp:56,eh:20,cols:1,rowH:22,fs:12,es:14,lx0:400,colW:220},
     5:{cw:40,ct:20,hsp:46,eh:18,cols:2,rowH:19,fs:11,es:12,lx0:352,colW:168}
   };
-  const AMBER='#a8641f', BLUE='#356a7d', CORAL='#bb3b27';
+  const RED='#e0432a', BLUE='#2b7fd0';
   const HY=44, PX0=24, PW=312;
   function build(){deck=makeDeck(q);}
   function G(){ /* geometry of the plane area, in cell units (y up) */
@@ -559,14 +559,10 @@ const RC=(function(){
   function seg(g,p,color,op){
     return `<line x1="${g.px(p[0])}" y1="${g.py(p[1])}" x2="${g.px(p[2])}" y2="${g.py(p[3])}" stroke="${color}" stroke-width="2.2" opacity="${op}" stroke-linecap="round"/>`;
   }
-  function ring(x,y,r,color){return `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${color}" stroke-width="2.2"/>`;}
   function overlay(ci,color){
     const g=G(), card=deck[ci];
     let s='';
-    if(card.kind==='horizon'){
-      for(let m=0;m<=q;m++){const [x,y]=hxy(m); s+=ring(x,y,14,color);}
-      return s;
-    }
+    if(card.kind==='horizon') return s; /* its line is the horizon strip itself */
     const xlo=g.X0-0.5, xhi=g.X0+(g.tiled?3*q:q)-0.5, ylo=g.Ylo-0.5, yhi=g.Ytop+0.5;
     if(card.kind==='vert'){
       (g.tiled?[card.x-q,card.x,card.x+q]:[card.x]).forEach(x=>{
@@ -584,21 +580,30 @@ const RC=(function(){
         }
       }
     }
-    const [hx,hy]=hxy(card.kind==='vert'?q:card.m);
-    s+=ring(hx,hy,14,color);
     return s;
   }
   function draw(){
     const g=G(), C=g.C;
     let s='';
     /* horizon strip — identical in both views */
-    s+=`<line x1="${PX0}" y1="${HY}" x2="${PX0+PW}" y2="${HY}" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="6 5"/>`;
+    const selCards=[[selA,RED],[selB,BLUE]].filter(p=>p[0]>=0);
+    const hzSel=selCards.find(p=>deck[p[0]].kind==='horizon');
+    s+=`<line x1="${PX0}" y1="${HY}" x2="${PX0+PW}" y2="${HY}" stroke="${hzSel?hzSel[1]:'#c9bd9e'}" stroke-width="${hzSel?2:1.4}" stroke-dasharray="6 5"/>`;
     s+=TT(PX0,HY-18,'the horizon','#6c655a',10.5,500,'start');
     for(let m=0;m<=q;m++){
       const [x,y]=hxy(m);
       let dx,dy;
       if(m===q){dx=0;dy=1;}else{const L=Math.hypot(1,m);dx=1/L;dy=-m/L;}
-      s+=`<line x1="${x-dx*8}" y1="${y+13-dy*8}" x2="${x+dx*8}" y2="${y+13+dy*8}" stroke="#c9bd9e" stroke-width="2"/>`;
+      const owners=selCards.filter(([ci])=>{
+        const c=deck[ci];
+        return c.kind==='horizon'||(c.kind==='vert'?m===q:c.m===m);
+      }).map(p=>p[1]);
+      if(owners.length===0)
+        s+=`<line x1="${x-dx*8}" y1="${y+13-dy*8}" x2="${x+dx*8}" y2="${y+13+dy*8}" stroke="#c9bd9e" stroke-width="2"/>`;
+      else owners.forEach((col,idx)=>{
+        const off=owners.length===1?0:(idx?2.4:-2.4), ox=-dy*off, oy=dx*off;
+        s+=`<line x1="${x-dx*8+ox}" y1="${y+13-dy*8+oy}" x2="${x+dx*8+ox}" y2="${y+13+dy*8+oy}" stroke="${col}" stroke-width="2.6"/>`;
+      });
       s+=`<circle cx="${x}" cy="${y}" r="${C.eh*0.62}" fill="#FBF7EC"/>`;
       s+=EM(x,y,EMO[q*q+m],C.eh);
     }
@@ -609,7 +614,7 @@ const RC=(function(){
       s+=`<rect x="${g.px(ti*q-0.5)}" y="${g.py(tj*q+q-0.5)}" width="${q*g.cell}" height="${q*g.cell}" rx="8" fill="none" stroke="${cen?'#a89c82':'#ddd2b8'}" stroke-width="${cen?1.5:1}" ${cen?'':'stroke-dasharray="5 4"'}/>`;
     }
     /* the selected cards' lines, under the shapes */
-    if(selA>=0)s+=overlay(selA,AMBER);
+    if(selA>=0)s+=overlay(selA,RED);
     if(selB>=0)s+=overlay(selB,BLUE);
     /* shapes: the window, and its faded copies */
     for(const ti of tiles)for(const tj of tiles){
@@ -620,14 +625,16 @@ const RC=(function(){
     if(selA>=0&&selB>=0){
       const com=deck[selA].sh.filter(id=>deck[selB].sh.includes(id))[0];
       const [x,y]=shapePos(com);
-      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${com<q*q?g.cell*0.52:C.eh*0.85}" fill="none" stroke="${CORAL}" stroke-width="3"/>`;
+      const r=com<q*q?g.cell*0.52:C.eh*0.85;
+      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${r*1.24}" fill="none" stroke="${RED}" stroke-width="2.6"/>`;
+      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${r*0.88}" fill="none" stroke="${BLUE}" stroke-width="2.6"/>`;
     }
     /* card list */
     const perCol=Math.ceil(deck.length/C.cols);
     deck.forEach((card,i)=>{
       const col=Math.floor(i/perCol), y=36+(i%perCol)*C.rowH, x=C.lx0+col*C.colW;
-      const selCol=(i===selA)?AMBER:(i===selB)?BLUE:null;
-      s+=`<rect x="${x-6}" y="${y-C.rowH/2}" width="${C.colW-14}" height="${C.rowH-2}" rx="5" fill="${i===selA?'rgba(217,159,63,.10)':i===selB?'rgba(53,106,125,.08)':'transparent'}" stroke="${selCol||'transparent'}" stroke-width="1.6" style="cursor:pointer" onclick="RC.pick(${i})"/>`;
+      const selCol=(i===selA)?RED:(i===selB)?BLUE:null;
+      s+=`<rect x="${x-6}" y="${y-C.rowH/2}" width="${C.colW-14}" height="${C.rowH-2}" rx="5" fill="${i===selA?'rgba(224,67,42,.08)':i===selB?'rgba(43,127,208,.08)':'transparent'}" stroke="${selCol||'transparent'}" stroke-width="1.6" style="cursor:pointer" onclick="RC.pick(${i})"/>`;
       s+=TT(x+8,y,i+1,'#6c655a',C.fs,500);
       s+=`<text x="${x+26}" y="${y}" font-size="${C.es}" dominant-baseline="central" letter-spacing="2" style="pointer-events:none">${card.sh.map(j=>EMO[j]).join('')}</text>`;
     });
@@ -645,9 +652,11 @@ const RC=(function(){
     }
   }
   function pick(i){
-    if(selA<0)selA=i;
-    else if(selB<0&&i!==selA)selB=i;
-    else{selA=i;selB=-1;}
+    if(i===selA){selA=selB;selB=-1;}      /* uncheck; the other card turns red */
+    else if(i===selB){selB=-1;}
+    else if(selA<0){selA=i;}
+    else if(selB<0){selB=i;}
+    else{selA=i;selB=-1;}                 /* two already checked: start over, red */
     draw();
   }
   function setQ(nq){
