@@ -229,10 +229,10 @@ text.pk{cursor:pointer}
 </figure>
 
 <h2><span class="n">05</span> Where parallels meet</h2>
-<p>Can a deck reach the bound? Only if nothing sags: every shape of every card must sit on exactly k cards — fans of full size k meeting at every crossing. Ink cannot deliver that, and the page is what jams it: infinitely many points to waste, and parallels lurking everywhere. So change pages. Make the plane itself finite, and send the parallels where painters have always sent them — to the horizon, where they meet.</p>
-<p><b>The grid.</b> Coordinates 0&hellip;q&minus;1, arithmetic wrapping around mod q, with q a prime. A line y&thinsp;=&thinsp;mx&thinsp;+&thinsp;b still takes one point in every column — q points, wrapping as it climbs.</p>
-<p><b>The horizon.</b> The q lines of slope m never touch each other, so hand slope m its own new shape, sitting on all q of them, at the horizon. The q vertical lines get one too. That is q&thinsp;+&thinsp;1 horizon shapes — and together they form one last card: the horizon itself.</p>
-<p>Every card now carries q&thinsp;+&thinsp;1 shapes, so k&thinsp;=&thinsp;q&thinsp;+&thinsp;1. Lines of different slopes meet in exactly one grid point — wrap-around arithmetic with a prime q leaves the equation mx&thinsp;+&thinsp;b&thinsp;=&thinsp;m&#8242;x&thinsp;+&thinsp;b&#8242; exactly one solution. Lines of the same slope share only their horizon shape, and every line meets the horizon card at its slope. The rule holds everywhere, with no cheat star in sight. Count the cards: q slopes &times; q intercepts, plus q verticals, plus the horizon —</p>
+<p>Can a deck reach the bound? Only if nothing sags — every shape of every card sitting on exactly k cards. The page itself is what resists: infinitely many points to waste, and parallels everywhere. Two repairs.</p>
+<p><b>Make the plane finite.</b> Keep one q&times;q window of shapes, with q a prime, and tile the page with copies of it. A straight line on the tiled page meets the same q window shapes over and over; collapsed into the window, it wraps.</p>
+<p><b>Give parallels a meeting point.</b> Lines of equal slope still never touch — but painters have always known where parallels meet: the horizon. Hand each slope one new shape, sitting on all q of its lines. The verticals get one too, and the q&thinsp;+&thinsp;1 horizon shapes together form one last card: the horizon itself.</p>
+<p>Every card now carries q&thinsp;+&thinsp;1&thinsp;=&thinsp;k shapes. Different slopes cross in exactly one window shape (a prime q keeps the wrap-around division honest), equal slopes share only their horizon shape, and every line meets the horizon card at its slope. Count: q slopes &times; q shifts, plus q verticals, plus the horizon —</p>
 
 <div class="fact"><b>q² + q + 1 = k² &minus; k + 1 cards, on k² &minus; k + 1 shapes. The bound is reached.</b></div>
 
@@ -240,12 +240,13 @@ text.pk{cursor:pointer}
 <div class="ctl">
   <span class="lab">q</span>
   <span class="seg"><button id="rcQ2" onclick="RC.setQ(2)">2</button><button id="rcQ3" class="on" onclick="RC.setQ(3)">3</button><button id="rcQ5" onclick="RC.setQ(5)">5</button></span>
+  <span class="seg"><button id="rcVT" class="on" onclick="RC.setView('tiled')">tiled page</button><button id="rcVW" onclick="RC.setView('window')">one window</button></span>
   <span style="flex:1"></span>
   <span class="stat" id="rcN" style="margin:0"></span>
 </div>
 <div class="stat" id="rcS"></div>
 <div id="f5"></div>
-<figcaption>The deck, and its geometry. Pick two cards from the list: their lines light up on the grid — wrapping around as they leave it — and the one shape they share pulses. The last card is the horizon itself.</figcaption>
+<figcaption>Pick two cards. On the tiled page their lines run straight, meeting the same shapes in every copy of the window; collapse to one window and the same lines wrap. Their one shared shape pulses. The last card in the list is the horizon itself.</figcaption>
 </figure>
 
 <h2><span class="n">06</span> All fifty-seven</h2>
@@ -523,72 +524,118 @@ const FN=(function(){
 
 /* ---------- 05: the recipe ---------- */
 const RC=(function(){
-  let q=3, deck=[], selA=-1, selB=-1;
-  const CFG={2:{cell:66,cols:1,rowH:30,fs:15,es:17},3:{cell:54,cols:1,rowH:22,fs:12,es:14},5:{cell:40,cols:2,rowH:19,fs:11,es:12}};
+  let q=3, deck=[], selA=-1, selB=-1, view='tiled';
+  const CFG={
+    2:{cw:66,ct:46,hsp:64,eh:20,cols:1,rowH:30,fs:15,es:17,lx0:400,colW:220},
+    3:{cw:54,ct:34,hsp:56,eh:20,cols:1,rowH:22,fs:12,es:14,lx0:400,colW:220},
+    5:{cw:40,ct:20,hsp:46,eh:18,cols:2,rowH:19,fs:11,es:12,lx0:352,colW:168}
+  };
   const AMBER='#a8641f', BLUE='#356a7d', CORAL='#bb3b27';
+  const HY=44, PX0=24, PW=312;
   function build(){deck=makeDeck(q);}
-  function shapePos(id,C){
-    const gx0=64, hy=44, gy0=104;
-    if(id<q*q){const X=Math.floor(id/q), Y=id%q; return [gx0+X*C.cell, gy0+(q-1-Y)*C.cell];}
-    return [gx0+(id-q*q)*C.cell*(q>2?1:0.9)+(q>2?0:6), hy];
+  function G(){ /* geometry of the plane area, in cell units (y up) */
+    const C=CFG[q], tiled=(view==='tiled');
+    const cell=tiled?C.ct:C.cw, span=tiled?3*q:q;
+    const X0=tiled?-q:0, Ylo=tiled?-q:0, Ytop=tiled?2*q-1:q-1;
+    const ox=PX0+(PW-span*cell)/2+cell/2, oy=tiled?88:100;
+    return {C,tiled,cell,X0,Ylo,Ytop,
+      px:x=>ox+(x-X0)*cell, py:y=>oy+(Ytop-y)*cell};
   }
-  function stub(x,y,m,C,color){ /* m: slope number, or 'v' */
-    let dx,dy;
-    if(m==='v'){dx=0;dy=1;}
-    else{const L=Math.hypot(1,m);dx=1/L;dy=-m/L;}
-    const t=C.cell*0.46;
-    return `<line x1="${x-dx*t}" y1="${y-dy*t}" x2="${x+dx*t}" y2="${y+dy*t}" stroke="${color}" stroke-width="2.4" opacity="0.85"/>`;
+  function hxy(m){ /* horizon shape m=0..q (q = the verticals) */
+    const C=CFG[q], hx0=PX0+(PW-(q+1)*C.hsp)/2+C.hsp/2;
+    return [hx0+m*C.hsp, HY];
   }
-  function overlay(ci,color,C){
-    const card=deck[ci];
+  function shapePos(id){
+    if(id<q*q){const g=G(); return [g.px(Math.floor(id/q)), g.py(id%q)];}
+    return hxy(id-q*q);
+  }
+  function clipLine(m,c,x0,x1,y0,y1){ /* y=mx+c clipped to a box, or null */
+    if(m===0){ if(c<y0||c>y1) return null; return [x0,c,x1,c]; }
+    const xa=(y0-c)/m, xb=(y1-c)/m;
+    const a=Math.max(x0,Math.min(xa,xb)), b=Math.min(x1,Math.max(xa,xb));
+    if(a>b) return null;
+    return [a,m*a+c,b,m*b+c];
+  }
+  function seg(g,p,color,op){
+    return `<line x1="${g.px(p[0])}" y1="${g.py(p[1])}" x2="${g.px(p[2])}" y2="${g.py(p[3])}" stroke="${color}" stroke-width="2.2" opacity="${op}" stroke-linecap="round"/>`;
+  }
+  function ring(x,y,r,color){return `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${color}" stroke-width="2.2"/>`;}
+  function overlay(ci,color){
+    const g=G(), card=deck[ci];
     let s='';
-    card.sh.forEach(id=>{
-      const [x,y]=shapePos(id,C);
-      if(card.kind==='horizon'||id>=q*q)
-        s+=`<circle cx="${x}" cy="${y}" r="${C.cell*0.30}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
-      else
-        s+=stub(x,y,card.kind==='vert'?'v':card.m,C,color);
-    });
+    if(card.kind==='horizon'){
+      for(let m=0;m<=q;m++){const [x,y]=hxy(m); s+=ring(x,y,14,color);}
+      return s;
+    }
+    const xlo=g.X0-0.5, xhi=g.X0+(g.tiled?3*q:q)-0.5, ylo=g.Ylo-0.5, yhi=g.Ytop+0.5;
+    if(card.kind==='vert'){
+      (g.tiled?[card.x-q,card.x,card.x+q]:[card.x]).forEach(x=>{
+        s+=seg(g,[x,ylo,x,yhi],color,g.tiled?0.4:0.85);
+      });
+      if(g.tiled) s+=seg(g,[card.x,-0.5,card.x,q-0.5],color,0.95);
+    }else{
+      for(let t=-3*q;t<=3*q;t++){
+        const c=card.b-t*q;
+        const sp=clipLine(card.m,c,xlo,xhi,ylo,yhi);
+        if(sp) s+=seg(g,sp,color,g.tiled?0.4:0.85);
+        if(g.tiled){
+          const sw=clipLine(card.m,c,-0.5,q-0.5,-0.5,q-0.5);
+          if(sw) s+=seg(g,sw,color,0.95);
+        }
+      }
+    }
+    const [hx,hy]=hxy(card.kind==='vert'?q:card.m);
+    s+=ring(hx,hy,14,color);
     return s;
   }
   function draw(){
-    const C=CFG[q];
+    const g=G(), C=g.C;
     let s='';
-    const gx0=64, hy=44, gy0=104;
-    /* horizon */
-    s+=`<line x1="${gx0-40}" y1="${hy}" x2="${gx0+q*C.cell+40}" y2="${hy}" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="6 5"/>`;
-    s+=TT(gx0-40,hy-18,'the horizon','#6c655a',10.5,500,'start');
+    /* horizon strip — identical in both views */
+    s+=`<line x1="${PX0}" y1="${HY}" x2="${PX0+PW}" y2="${HY}" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="6 5"/>`;
+    s+=TT(PX0,HY-18,'the horizon','#6c655a',10.5,500,'start');
     for(let m=0;m<=q;m++){
-      const id=q*q+m,[x,y]=shapePos(id,C);
-      const mm=(m===q)?'v':m;
-      s+=stub(x,y+C.cell*0.34,mm,{cell:C.cell*0.5},'#c9bd9e');
-      s+=EM(x,y,EMO[id],C.cell*0.40);
+      const [x,y]=hxy(m);
+      let dx,dy;
+      if(m===q){dx=0;dy=1;}else{const L=Math.hypot(1,m);dx=1/L;dy=-m/L;}
+      s+=`<line x1="${x-dx*8}" y1="${y+13-dy*8}" x2="${x+dx*8}" y2="${y+13+dy*8}" stroke="#c9bd9e" stroke-width="2"/>`;
+      s+=`<circle cx="${x}" cy="${y}" r="${C.eh*0.62}" fill="#FBF7EC"/>`;
+      s+=EM(x,y,EMO[q*q+m],C.eh);
     }
-    /* grid */
-    for(let id=0;id<q*q;id++){
-      const [x,y]=shapePos(id,C);
-      s+=EM(x,y,EMO[id],C.cell*0.42);
+    /* window frames */
+    const tiles=g.tiled?[-1,0,1]:[0];
+    for(const ti of tiles)for(const tj of tiles){
+      const cen=(ti===0&&tj===0);
+      s+=`<rect x="${g.px(ti*q-0.5)}" y="${g.py(tj*q+q-0.5)}" width="${q*g.cell}" height="${q*g.cell}" rx="8" fill="none" stroke="${cen?'#a89c82':'#ddd2b8'}" stroke-width="${cen?1.5:1}" ${cen?'':'stroke-dasharray="5 4"'}/>`;
     }
-    /* overlays under selection rings */
-    if(selA>=0)s+=overlay(selA,AMBER,C);
-    if(selB>=0)s+=overlay(selB,BLUE,C);
+    /* the selected cards' lines, under the shapes */
+    if(selA>=0)s+=overlay(selA,AMBER);
+    if(selB>=0)s+=overlay(selB,BLUE);
+    /* shapes: the window, and its faded copies */
+    for(const ti of tiles)for(const tj of tiles){
+      const op=(ti===0&&tj===0)?1:0.35;
+      for(let id=0;id<q*q;id++)
+        s+=`<g opacity="${op}">`+EM(g.px(Math.floor(id/q)+ti*q),g.py(id%q+tj*q),EMO[id],g.cell*0.42)+`</g>`;
+    }
     if(selA>=0&&selB>=0){
       const com=deck[selA].sh.filter(id=>deck[selB].sh.includes(id))[0];
-      const [x,y]=shapePos(com,C);
-      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${C.cell*0.42}" fill="none" stroke="${CORAL}" stroke-width="3"/>`;
+      const [x,y]=shapePos(com);
+      s+=`<circle class="pulse" cx="${x}" cy="${y}" r="${com<q*q?g.cell*0.52:C.eh*0.85}" fill="none" stroke="${CORAL}" stroke-width="3"/>`;
     }
     /* card list */
-    const lx0=q===5?352:400, colW=q===5?168:220, perCol=Math.ceil(deck.length/C.cols);
+    const perCol=Math.ceil(deck.length/C.cols);
     deck.forEach((card,i)=>{
-      const col=Math.floor(i/perCol), y=36+(i%perCol)*C.rowH, x=lx0+col*colW;
+      const col=Math.floor(i/perCol), y=36+(i%perCol)*C.rowH, x=C.lx0+col*C.colW;
       const selCol=(i===selA)?AMBER:(i===selB)?BLUE:null;
-      s+=`<rect x="${x-6}" y="${y-C.rowH/2}" width="${colW-14}" height="${C.rowH-2}" rx="5" fill="${i===selA?'rgba(217,159,63,.10)':i===selB?'rgba(53,106,125,.08)':'transparent'}" stroke="${selCol||'transparent'}" stroke-width="1.6" style="cursor:pointer" onclick="RC.pick(${i})"/>`;
+      s+=`<rect x="${x-6}" y="${y-C.rowH/2}" width="${C.colW-14}" height="${C.rowH-2}" rx="5" fill="${i===selA?'rgba(217,159,63,.10)':i===selB?'rgba(53,106,125,.08)':'transparent'}" stroke="${selCol||'transparent'}" stroke-width="1.6" style="cursor:pointer" onclick="RC.pick(${i})"/>`;
       s+=TT(x+8,y,i+1,'#6c655a',C.fs,500);
       s+=`<text x="${x+26}" y="${y}" font-size="${C.es}" dominant-baseline="central" letter-spacing="2" style="pointer-events:none">${card.sh.map(j=>EMO[j]).join('')}</text>`;
     });
-    const H=Math.max(gy0+(q-1)*CFG[q].cell+50, 36+perCol*C.rowH+16);
+    const H=Math.max(g.py(g.Ylo)+g.cell*0.55+20, 36+perCol*C.rowH+16);
     document.getElementById('f5').innerHTML=SVG(680,H,s);
     document.getElementById('rcN').innerHTML=`q=${q}: <b>${deck.length}</b> cards &middot; <b>${q*q+q+1}</b> shapes &middot; ${q+1} per card`;
+    document.getElementById('rcVT').classList.toggle('on',view==='tiled');
+    document.getElementById('rcVW').classList.toggle('on',view!=='tiled');
     const st=document.getElementById('rcS');
     if(selA<0)st.innerHTML='click two cards in the list.';
     else if(selB<0)st.innerHTML=`card ${selA+1} — pick another.`;
@@ -604,12 +651,14 @@ const RC=(function(){
     draw();
   }
   function setQ(nq){
-    q=nq;selA=-1;selB=-1;build();
+    q=nq;build();
+    selA=q>2?q:0; selB=q>2?2*q:2;
     [2,3,5].forEach(v=>document.getElementById('rcQ'+v).classList.toggle('on',v===q));
     draw();
   }
-  build();draw();
-  return {pick,setQ};
+  function setView(v){view=v;draw();}
+  setQ(3);
+  return {pick,setQ,setView};
 })();
 
 /* ---------- 06: all 57 ---------- */
