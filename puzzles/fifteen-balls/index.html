@@ -52,7 +52,6 @@ p b{font-weight:600;color:var(--ink)}
   padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
 }
 .fact b{color:var(--blue)}
-.qed{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin:16px 0;font-weight:600}
 figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
 figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
 figcaption b{color:var(--ink);font-weight:600}
@@ -111,8 +110,6 @@ footer{
   <defs>
     <marker id="mA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M1.5 1L8.5 5L1.5 9" fill="none" stroke="#a8641f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
-    <marker id="mT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
-      <path d="M1.5 1L8.5 5L1.5 9" fill="none" stroke="#356a7d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
     <marker id="mG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M1.5 1L8.5 5L1.5 9" fill="none" stroke="#8a8072" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
     <marker id="mC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
@@ -270,18 +267,11 @@ function diagram(rows,o){
   const c=o.cell??32, g=o.gap??5, p=c+g, x0=o.x??20, y0=o.y??20;
   const X=col=>x0+(col-1)*p, Y=row=>y0+(row-1)*p;
   let s='';
-  if(o.ghostStair){
-    for(let r=1;r<=5;r++)for(let j=1;j<=6-r;j++)
-      s+=R(X(j),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"`);
-  }
   rows.forEach((len,i)=>{const r=i+1;
-    if(len===0){s+=`<rect x="${X(1)}" y="${Y(r)+c/2-2}" width="${c*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
     for(let j=1;j<=len;j++){
-      const d=r+j-1, onRing=o.ringD&&d===o.ringD;
-      const fill=o.plain?GRAY:(d<=5?RAMP[d]:OVER);
-      const dim=(o.dimOffRing&&!onRing)?'opacity="0.3"':'';
-      s+=B(X(j),Y(r),c,fill,dim);
-      if(o.depthNums&&!o.plain) s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d));
+      const d=r+j-1;
+      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER);
+      if(o.depthNums) s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d));
     }});
   if(o.ringD){
     const d=o.ringD;
@@ -289,13 +279,8 @@ function diagram(rows,o){
       const r=k, col=d+1-k, full=(r<=rows.length&&rows[r-1]>=col);
       if(full) s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="2.5"`);
       else     s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
-      if(o.slotNums) s+=T(X(col)+c/2,Y(r)+c/2,k, full?'#ffffff':AMBL,14,700);
     }
   }
-  (o.marks||[]).forEach(m=>{
-    if(m.kind==='ball') s+=B(X(m.c),Y(m.r),c,COR);
-    else s+=R(X(m.c),Y(m.r),c,'none',`stroke="${COR}" stroke-width="1.8" stroke-dasharray="4 3"`);
-  });
   return s;
 }
 
