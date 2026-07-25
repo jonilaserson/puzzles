@@ -140,7 +140,7 @@ footer{
 </div>
 <div class="stat" id="frS"></div>
 <div id="fFrog"></div>
-<figcaption>Click a pole to shoot it, or press its number — <b>0</b> shoots pole 10. This frog gets every benefit of the doubt: if it could still be alive somewhere, it is. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay, which shows where the frog sat on each of your shots. Start with a few poles, then work up to ten.</figcaption>
+<figcaption>Click a pole to shoot it, or press its number — <b>0</b> for ten. The frog is lucky: if it could still be alive, it is.</figcaption>
 </figure>
 </section>
 
@@ -163,23 +163,23 @@ function setMode(m){
 }
 
 /* Sounds, synthesised on the spot so the page stays one self-contained file.
-   The audio context is built on the first shot — never on load — so the page
-   is silent until you do something. */
+   Nothing is built until the page is first touched, so opening it is silent. */
 const SND=(function(){
-  let ctx=null, noiseBuf=null, on=true, lastT=-1;
+  const LEAD=0.02;   /* schedule a hair ahead of now, so no envelope starts in the past */
+  let ctx=null, noiseBuf=null, on=true;
   try{ on = localStorage.getItem('frog.mute')!=='1'; }catch(e){}
-  function ac(){
-    if(!on) return null;
+  function wake(){
     const C=window.AudioContext||window.webkitAudioContext;
     if(!C) return null;
     if(!ctx) ctx=new C();
-    if(ctx.state!=='running') ctx.resume();
-    /* A clock that has not moved since the last sound means there is no audio
-       device: everything we schedule would stack on one timestamp and blast
-       together if it ever started. Let one wait, drop the rest. */
-    if(ctx.currentTime===lastT) return null;
+    if(ctx.state!=='running'&&ctx.resume) ctx.resume();
     return ctx;
   }
+  function ac(){ return on ? wake() : null; }
+  /* Browsers keep audio asleep until the page is touched. Wake it on the first
+     touch of any kind, so the clock is already running by the first shot. */
+  ['pointerdown','keydown'].forEach(e=>
+    window.addEventListener(e,()=>{ if(on) wake(); },{capture:true,once:true}));
   function noise(c){
     if(!noiseBuf){
       noiseBuf=c.createBuffer(1,Math.floor(c.sampleRate*0.3),c.sampleRate);
@@ -192,7 +192,7 @@ const SND=(function(){
   function shot(v){
     const c=ac(); if(!c) return;
     v=(v===undefined?1:v);
-    const t=c.currentTime; lastT=t;
+    const t=c.currentTime+LEAD;
     const s=c.createBufferSource(); s.buffer=noise(c);
     const lp=c.createBiquadFilter(); lp.type='lowpass';
     lp.frequency.setValueAtTime(6000,t);
@@ -215,7 +215,7 @@ const SND=(function(){
   function quack(v){
     const c=ac(); if(!c) return;
     v=(v===undefined?1:v);
-    const t=c.currentTime; lastT=t;
+    const t=c.currentTime+LEAD;
     const o=c.createOscillator(); o.type='sawtooth';
     o.frequency.setValueAtTime(520,t);
     o.frequency.linearRampToValueAtTime(215,t+0.17);
