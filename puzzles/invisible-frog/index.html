@@ -60,6 +60,19 @@ button{
 button:hover{border-color:var(--ink)}
 button:disabled{opacity:.4;cursor:default}
 button:disabled:hover{border-color:var(--line)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.08)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.06em}
+input[type=range]{accent-color:var(--amber);width:190px;vertical-align:middle}
+#f7 .cell{cursor:crosshair}
+#f7 .cell:hover{stroke:var(--amber);stroke-width:2}
 .ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
 .seg{display:inline-flex}
 .seg>*{border-radius:0;margin-left:-1px;position:relative}
@@ -145,7 +158,129 @@ footer{
 </section>
 
 <section class="proof-only">
-<p style="text-align:center;color:var(--ink-soft);font-style:italic;margin:48px 0">The proof is being illustrated — coming soon.</p>
+
+<h2><span class="n">01</span> Hunt every frog at once</h2>
+<p>You never find out where the frog is. So keep every pole it could be on, and shoot until none are left.</p>
+
+<figure>
+<div class="ctl">
+  <span class="stat" id="s1" style="margin:0"></span>
+  <span style="flex:1"></span>
+  <button onclick="W1.reset()">start over</button>
+</div>
+<div id="f1"></div>
+<figcaption>Click a pole. Each ghost is a place the frog could still be.</figcaption>
+</figure>
+
+<h2><span class="n">02</span> Unroll time</h2>
+<p>Poles across, turns downward. A whole life of the frog becomes one line, and each shot becomes one square.</p>
+
+<figure>
+<div class="ctl">
+  <button id="b2" class="prime" onclick="W2.step()">next turn &#8594;</button>
+  <button onclick="W2.reset()">another frog &#8635;</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="s2" style="margin:0"></span>
+</div>
+<div id="f2"></div>
+<figcaption>Every turn the frog steps down-left or down-right. You win where its line lands on a square you shot.</figcaption>
+</figure>
+
+<h2><span class="n">03</span> The frog is a bishop</h2>
+<p>Colour the board like a chessboard. The frog only ever steps diagonally — so it can never change colour.</p>
+
+<figure>
+<div class="ctl">
+  <button class="prime" onclick="W3.again()">another frog &#8635;</button>
+  <button onclick="W3.many()">twenty frogs</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="s3" style="margin:0"></span>
+</div>
+<div id="f3"></div>
+<div class="legend">
+  <span><span class="sw" style="background:#a9c2cc"></span>dark</span>
+  <span><span class="sw" style="background:#f0e6cd"></span>light</span>
+  <span><span class="sw" style="background:#5c8a45;border-radius:50%"></span>the frog</span>
+  <span><span class="sw" style="background:#a8641f;border-radius:50%"></span>a shot</span>
+</div>
+<figcaption>Whatever it does, a frog stays on its own colour for life.</figcaption>
+</figure>
+
+<div class="fact">So there are only <b>two</b> frogs to catch — one on the dark squares, one on the light. And a square you shoot sits on one colour, so it can only ever catch <b>one</b> of them.</div>
+
+<h2><span class="n">04</span> A wall the dark frog cannot pass</h2>
+<p>Shoot pole 2, then 3, then 4, up to 9. On the board those eight shots make a diagonal — every square of it dark.</p>
+
+<figure>
+<div class="ctl">
+  <button id="b4" class="prime" onclick="W4.step()">next turn &#8594;</button>
+  <button onclick="W4.again()">another dark frog &#8635;</button>
+  <button onclick="W4.many()">twenty at once</button>
+  <span style="flex:1"></span>
+</div>
+<div class="stat" id="s4"></div>
+<div id="f4"></div>
+<figcaption>The bar measures the gap from the frog to the wall. Watch the numbers.</figcaption>
+</figure>
+
+<div class="fact">An even gap that only ever shrinks by two <b>must land on zero</b>. Landing on zero is being shot.</div>
+
+<h2><span class="n">05</span> Now the same wall, backwards</h2>
+<p>A light frog strolls straight through the first wall — it crosses between the squares, never on one. But watch where it stands on turn 9.</p>
+
+<figure>
+<div class="ctl">
+  <button class="prime" onclick="W5.again()">another light frog &#8635;</button>
+  <button onclick="W5.many()">twenty of each colour</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="s5" style="margin:0"></span>
+</div>
+<div id="f5"></div>
+<figcaption>Shots 9 down to 2 make the second diagonal, and every square of it is light. The same gap closes on the light frog.</figcaption>
+</figure>
+
+<h2><span class="n">06</span> Sixteen bullets</h2>
+<p class="mono">2 3 4 5 6 7 8 9 &nbsp; 9 8 7 6 5 4 3 2</p>
+
+<figure>
+<div class="ctl">
+  <button id="b6" class="prime" onclick="W6.fire()">fire all sixteen</button>
+  <button onclick="W6.reset()">start over</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="s6" style="margin:0"></span>
+</div>
+<div id="f6"></div>
+<figcaption>Back in the swamp, with every ghost still in play. Sixteen shots and there is nowhere left to be.</figcaption>
+</figure>
+
+<h2><span class="n">07</span> Why not fifteen?</h2>
+<p>Eight of those bullets are dark and eight are light, and neither colour can borrow from the other. Try to beat it: click squares to build your own plan.</p>
+
+<figure>
+<div class="ctl">
+  <button onclick="W7.clear()">clear</button>
+  <button onclick="W7.chevron()">use the sixteen</button>
+  <button onclick="W7.search()" id="b7">search every plan</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="s7" style="margin:0"></span>
+</div>
+<div id="f7"></div>
+<div class="stat" id="s7b"></div>
+<figcaption>One square per turn, at most one. Any frog that survives your plan is drawn in green.</figcaption>
+</figure>
+
+<h2><span class="n">08</span> Fewer poles, more poles</h2>
+
+<figure>
+<div class="ctl">
+  <span class="lab">poles</span>
+  <input type="range" id="r8" min="3" max="10" value="10" oninput="W8.set(+this.value)">
+  <span class="stat" id="s8" style="margin:0"></span>
+</div>
+<div id="f8"></div>
+<figcaption>The chevron just stretches, and the answer with it.</figcaption>
+</figure>
+
 </section>
 
 <footer>A classic pursuit puzzle, also told with a lion in a row of caves, or a princess who changes rooms each night.</footer>
@@ -529,6 +664,507 @@ const FR=(function(){
 
   newFrog();
   return {shoot,newFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay,sound};
+})();
+
+/* ==================== the proof, drawn ====================
+   One vocabulary for every figure below: poles run across, turns run down,
+   squares are coloured like a chessboard, a frog's whole life is a green line
+   stepping diagonally, and a shot is an amber square. Each figure is the
+   previous one with one thing added. */
+const PB=(function(){
+  const DARK='#a9c2cc', LIGHT='#f0e6cd', PLAIN='#e7dcc4', SEAM='#fbf7ec';
+  const FROG='#4e7d3a', GHOST='#8fbf74', DOT='#a8641f', KILL='#bb3b27';
+  const SOFT='#6c655a', MEAS='#356a7d';
+  const isDark=(p,t)=>((p+t)%2===1);
+  /* a frog's colour never changes, so its whole class is fixed by where it starts */
+  const startsOfClass=(N,dark)=>{
+    const a=[]; for(let p=1;p<=N;p++) if(isDark(p,1)===dark) a.push(p);
+    return a;
+  };
+  const rnd=n=>Math.floor(Math.random()*n);
+  const pick=a=>a[rnd(a.length)];
+
+  const TX=(x,y,str,fill,size,w,anchor)=>
+    `<text x="${x}" y="${y}" fill="${fill}" font-size="${size||11}" font-weight="${w||500}" `+
+    `text-anchor="${anchor||'middle'}" dominant-baseline="central" `+
+    `font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+  const SVG=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
+
+  function BD(N,T,cell,x0,y0){
+    return {N,T,cell,x0,y0,
+      x:p=>x0+(p-1)*cell, y:t=>y0+(t-1)*cell,
+      cx:p=>x0+(p-0.5)*cell, cy:t=>y0+(t-0.5)*cell};
+  }
+  function squares(b,coloured,cls){
+    let s='';
+    for(let t=1;t<=b.T;t++)for(let p=1;p<=b.N;p++){
+      const f=coloured?(isDark(p,t)?DARK:LIGHT):PLAIN;
+      s+=`<rect ${cls?`class="${cls}" `:''}data-p="${p}" data-t="${t}" x="${b.x(p)}" y="${b.y(t)}" `+
+         `width="${b.cell}" height="${b.cell}" fill="${f}" stroke="${SEAM}" stroke-width="1"/>`;
+    }
+    return s;
+  }
+  function labels(b,o){
+    o=o||{}; let s='';
+    for(let p=1;p<=b.N;p++) s+=TX(b.cx(p),b.y(1)-12,p,SOFT,10.5,600);
+    for(let t=1;t<=b.T;t++) s+=TX(b.x(1)-14,b.cy(t),t,SOFT,10,500,'end');
+    if(o.words){
+      s+=TX(b.x(1)+b.N*b.cell/2,b.y(1)-28,'pole',SOFT,10,500);
+      s+=TX(b.x(1)-14,b.y(1)-28,'turn',SOFT,10,500,'end');
+    }
+    return s;
+  }
+  function line(b,cells,o){
+    o=o||{};
+    const n=cells.length, st=o.stroke||FROG, op=o.op===undefined?0.95:o.op;
+    let d='';
+    for(let i=0;i<n;i++) d+=(i?' L ':'M ')+b.cx(cells[i])+' '+b.cy(i+1);
+    let s='';
+    if(!o.beadsOnly) s+=`<path d="${d}" fill="none" stroke="${st}" stroke-width="${o.w||2.2}" `+
+                        `stroke-linejoin="round" stroke-linecap="round" opacity="${op}"/>`;
+    if(o.beads||o.beadsOnly)
+      for(let i=0;i<n;i++) s+=`<circle cx="${b.cx(cells[i])}" cy="${b.cy(i+1)}" r="${o.r||3.2}" fill="${st}" opacity="${op}"/>`;
+    return s;
+  }
+  /* A bullet is drawn inside its square, never over it: the square's colour has
+     to stay visible, because the colour is the whole argument. */
+  function shotSq(b,t,p,o){
+    o=o||{};
+    const k=b.cell*0.52, off=(b.cell-k)/2;
+    return `<rect x="${b.x(p)+off}" y="${b.y(t)+off}" width="${k}" height="${k}" `+
+           `rx="${Math.max(2,k*0.2)}" fill="${o.fill||DOT}" opacity="${o.op===undefined?0.95:o.op}"/>`;
+  }
+  function cross(b,t,p,o){
+    o=o||{};
+    const x=b.cx(p), y=b.cy(t), r=o.r||5.5;
+    return `<g stroke="${KILL}" stroke-width="${o.w||2.4}" stroke-linecap="round" opacity="${o.op||1}">`+
+           `<line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}"/>`+
+           `<line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}"/></g>`;
+  }
+  /* the gap from frog to wall, measured right on the board */
+  function gapBar(b,t,pFrog,pWall,val){
+    const y=b.cy(t);
+    const x1=Math.min(b.cx(pFrog),b.cx(pWall)), x2=Math.max(b.cx(pFrog),b.cx(pWall));
+    let s='';
+    if(x2-x1>1) s+=`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${MEAS}" `+
+                   `stroke-width="2.4" opacity="0.9" stroke-linecap="round"/>`;
+    const mid=(x1+x2)/2;
+    s+=`<rect x="${mid-10}" y="${y-8}" width="20" height="16" rx="8" fill="${SEAM}" opacity="0.96"/>`;
+    s+=TX(mid,y,val,MEAS,11,700);
+    return s;
+  }
+  /* one life, played against a plan; shotAt[t] is the pole shot on turn t */
+  function life(N,start,T,shotAt){
+    const cells=[]; let p=start;
+    for(let t=1;t<=T;t++){
+      cells.push(p);
+      if(shotAt&&shotAt[t]===p) return {cells,dead:true,killT:t};
+      p += (p===1)?1 : (p===N)?-1 : (Math.random()<0.5?-1:1);
+    }
+    return {cells,dead:false};
+  }
+  const spread=(S,N)=>{const o=new Set();S.forEach(p=>{if(p>1)o.add(p-1);if(p<N)o.add(p+1);});return o;};
+  /* every place the frog could be, turn by turn */
+  function cloud(N,plan){
+    let S=new Set(); for(let p=1;p<=N;p++) S.add(p);
+    const hist=[new Set(S)];
+    for(let t=1;t<=plan.length;t++){
+      if(plan[t-1]) S.delete(plan[t-1]);
+      if(!S.size) return {hist,emptyAt:t};
+      S=spread(S,N); hist.push(new Set(S));
+    }
+    return {hist,emptyAt:0};
+  }
+  /* a frog that lives through the whole plan, rebuilt backwards from the cloud */
+  function survivor(N,plan){
+    const {hist,emptyAt}=cloud(N,plan);
+    if(emptyAt) return {alive:false,killT:emptyAt};
+    const K=plan.length;
+    let cur=pick([...hist[K]]);
+    const rev=[cur];
+    for(let t=K;t>=1;t--){
+      const prev=hist[t-1];
+      const cand=[cur-1,cur+1].filter(q=>q>=1&&q<=N&&prev.has(q)&&q!==plan[t-1]);
+      cur=pick(cand); rev.push(cur);
+    }
+    return {alive:true,cells:rev.reverse()};
+  }
+  /* up one diagonal and back down the other */
+  function chevron(N){
+    const a=[]; for(let p=2;p<=N-1;p++) a.push(p);
+    const b=[]; for(let p=N-1;p>=2;p--) b.push(p);
+    return a.concat(b);
+  }
+  /* every plan there is, shortest first — the floor, not a guess */
+  function minPlan(N){
+    const FULL=(1<<N)-1;
+    const sp=s=>{let o=0;for(let i=0;i<N;i++)if(s&(1<<i)){if(i>0)o|=1<<(i-1);if(i<N-1)o|=1<<(i+1);}return o;};
+    const dist=new Map([[FULL,0]]), par=new Map([[FULL,null]]), q=[FULL];
+    for(let h=0;h<q.length;h++){
+      const s=q[h], d=dist.get(s);
+      for(let p=0;p<N;p++){
+        const s2=s&~(1<<p);
+        if(s2===0){
+          const seq=[p+1]; let cur=s;
+          while(par.get(cur)){ const e=par.get(cur); seq.push(e[1]); cur=e[0]; }
+          return {n:d+1,plan:seq.reverse()};
+        }
+        const s3=sp(s2);
+        if(!dist.has(s3)){ dist.set(s3,d+1); par.set(s3,[s,p+1]); q.push(s3); }
+      }
+    }
+    return null;
+  }
+  /* ---- the swamp, compressed to a strip, for the cloud figures ---- */
+  const SW={W:680,H:132,TOP:56,POST:46};
+  const spx=(i,N)=>N===1?SW.W/2:44+(i-1)*((SW.W-88)/(N-1));
+  function ghostFrog(x,y,op){
+    return `<g opacity="${op===undefined?0.8:op}">
+      <ellipse cx="${x-6}" cy="${y-2}" rx="3.2" ry="1.9" fill="${GHOST}"/>
+      <ellipse cx="${x+6}" cy="${y-2}" rx="3.2" ry="1.9" fill="${GHOST}"/>
+      <ellipse cx="${x}" cy="${y-8}" rx="9.5" ry="6.8" fill="${GHOST}" stroke="#cbe6b8" stroke-width="0.8"/>
+      <circle cx="${x-4}" cy="${y-14}" r="3" fill="${GHOST}"/>
+      <circle cx="${x+4}" cy="${y-14}" r="3" fill="${GHOST}"/>
+      <circle cx="${x-4}" cy="${y-14.4}" r="1.2" fill="#16241c"/>
+      <circle cx="${x+4}" cy="${y-14.4}" r="1.2" fill="#16241c"/></g>`;
+  }
+  function strip(N,possible,o){
+    o=o||{};
+    const {W,H,TOP,POST}=SW;
+    let s=`<rect width="${W}" height="${H}" rx="12" fill="#1e3040"/>`;
+    s+=`<rect y="${TOP+POST-4}" width="${W}" height="${H-TOP-POST+4}" fill="#152530"/>`;
+    for(let i=1;i<=N;i++){
+      const x=spx(i,N);
+      s+=`<g class="spole" data-pole="${i}">`;
+      s+=`<rect x="${x-6}" y="${TOP}" width="12" height="${POST}" rx="3" fill="#5d4730"/>`;
+      s+=`<rect x="${x-6}" y="${TOP}" width="4" height="${POST}" rx="2" fill="#74593a"/>`;
+      s+=`<ellipse cx="${x}" cy="${TOP}" rx="6.5" ry="3" fill="#83674a"/>`;
+      s+=TX(x,TOP+POST+13,i,'#e4d6ae',10.5,600);
+      if(possible.has(i)) s+=ghostFrog(x,TOP,o.dim?0.5:0.82);
+      if(o.hit===i) s+=`<g stroke="#e8b04a" stroke-width="2" stroke-linecap="round">`+
+                       `<line x1="${x-13}" y1="${TOP-20}" x2="${x-6}" y2="${TOP-11}"/>`+
+                       `<line x1="${x+13}" y1="${TOP-20}" x2="${x+6}" y2="${TOP-11}"/>`+
+                       `<line x1="${x}" y1="${TOP-24}" x2="${x}" y2="${TOP-14}"/></g>`;
+      s+=`<rect x="${x-24}" y="${TOP-30}" width="48" height="${POST+56}" fill="transparent" `+
+         `role="button" aria-label="shoot pole ${i}"/>`;
+      s+=`</g>`;
+    }
+    return SVG(W,H,s);
+  }
+  return {DARK,LIGHT,FROG,GHOST,DOT,KILL,SOFT,MEAS,SEAM,isDark,startsOfClass,rnd,pick,
+          TX,SVG,BD,squares,labels,line,shotSq,cross,gapBar,life,cloud,survivor,chevron,minPlan,strip};
+})();
+
+/* 01 — the cloud: shoot the places, not the frog */
+const W1=(function(){
+  const N=10;
+  let S, shots;
+  function draw(hit){
+    document.getElementById('f1').innerHTML=PB.strip(N,S,{hit});
+    document.getElementById('f1').firstElementChild.addEventListener('click',ev=>{
+      const g=ev.target.closest('.spole'); if(g) shoot(+g.getAttribute('data-pole'));
+    });
+    const done=(S.size===0);
+    document.getElementById('s1').innerHTML = done
+      ? `<b>${shots}</b> shots &mdash; <span class="hit">nowhere left to be.</span>`
+      : `${shots} shot${shots===1?'':'s'} &mdash; <b>${S.size}</b> place${S.size===1?'':'s'} the frog could be`;
+  }
+  function shoot(p){
+    if(S.size===0) return;
+    shots++;
+    S=new Set(S); S.delete(p);
+    SND.shot(0.5);
+    if(S.size){
+      const o=new Set(); S.forEach(q=>{if(q>1)o.add(q-1);if(q<N)o.add(q+1);});
+      S=o;
+    }
+    draw(p);
+  }
+  function reset(){ S=new Set(); for(let p=1;p<=N;p++) S.add(p); shots=0; draw(); }
+  reset();
+  return {reset,shoot};
+})();
+
+/* 02 — unroll time: one life becomes one line */
+const W2=(function(){
+  const N=10, T=8, b=PB.BD(N,T,30,200,44);
+  let plan, frog, t;
+  function draw(){
+    let s=PB.squares(b,false)+PB.labels(b,{words:true});
+    for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,plan[k],{op:k<=t?0.92:0.2});
+    const shown=frog.cells.slice(0,t);
+    if(shown.length) s+=PB.line(b,shown,{beads:true});
+    if(frog.dead&&t>=frog.killT) s+=PB.cross(b,frog.killT,frog.cells[frog.killT-1]);
+    document.getElementById('f2').innerHTML=PB.SVG(680,44+T*30+18,s);
+    const st=document.getElementById('s2');
+    if(t===0) st.innerHTML='press <b>next turn</b>';
+    else if(frog.dead&&t>=frog.killT) st.innerHTML=`turn ${t} &mdash; <span class="hit">the line landed on a square.</span>`;
+    else st.innerHTML=`turn <b>${t}</b> &mdash; frog on pole <b>${frog.cells[t-1]}</b>, you shot pole ${plan[t]}`;
+    document.getElementById('b2').disabled=(t>=T)||(frog.dead&&t>=frog.killT);
+  }
+  function step(){ if(t<T){ t++; SND.shot(0.34); draw(); } }
+  function reset(){
+    plan={}; for(let k=1;k<=T;k++) plan[k]=1+PB.rnd(N);
+    frog=PB.life(N,1+PB.rnd(N),T,plan);
+    t=0; draw();
+  }
+  reset();
+  return {step,reset};
+})();
+
+/* 03 — the frog is a bishop: diagonal steps keep their colour */
+const W3=(function(){
+  const N=10, T=10, b=PB.BD(N,T,28,210,42);
+  let mode='one', frogs=[], dark=true;
+  function draw(){
+    let s=PB.squares(b,true)+PB.labels(b,{words:true});
+    frogs.forEach(f=>s+=PB.line(b,f.cells,mode==='one'
+      ? {beads:true}
+      : {beadsOnly:true,r:3,op:0.62}));
+    document.getElementById('f3').innerHTML=PB.SVG(680,42+T*28+18,s);
+    const st=document.getElementById('s3');
+    st.innerHTML = mode==='one'
+      ? `one frog, starting on pole ${frogs[0].cells[0]} &mdash; it lives on the <b>${dark?'dark':'light'}</b> squares`
+      : `twenty <b>${dark?'dark':'light'}</b> frogs &mdash; not one bead on a ${dark?'light':'dark'} square`;
+  }
+  function again(){
+    mode='one'; dark=Math.random()<0.5;
+    frogs=[PB.life(N,PB.pick(PB.startsOfClass(N,dark)),T,null)];
+    draw();
+  }
+  function many(){
+    mode='many'; dark=Math.random()<0.5;
+    const starts=PB.startsOfClass(N,dark);
+    frogs=[]; for(let i=0;i<20;i++) frogs.push(PB.life(N,PB.pick(starts),T,null));
+    draw();
+  }
+  again();
+  return {again,many};
+})();
+
+/* 04 — the rising wall, and the even gap that closes on the dark frog */
+const W4=(function(){
+  const N=10, T=8, b=PB.BD(N,T,30,190,44);
+  const wall={}; for(let k=1;k<=T;k++) wall[k]=k+1;
+  let frog, t, mode='one', many=[];
+  function draw(){
+    let s=PB.squares(b,true)+PB.labels(b,{words:true});
+    for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,wall[k]);
+    if(mode==='many'){
+      many.forEach(f=>{
+        s+=PB.line(b,f.cells,{op:0.5,w:1.6});
+        if(f.dead) s+=PB.cross(b,f.killT,f.cells[f.killT-1],{r:4.5,w:1.9,op:0.85});
+      });
+    }else{
+      const shown=frog.cells.slice(0,t);
+      if(shown.length) s+=PB.line(b,shown,{beads:true});
+      if(t>=1&&!(frog.dead&&t>frog.killT)){
+        const p=frog.cells[t-1];
+        s+=PB.gapBar(b,t,p,wall[t],Math.abs(p-wall[t]));
+      }
+      if(frog.dead&&t>=frog.killT) s+=PB.cross(b,frog.killT,frog.cells[frog.killT-1]);
+    }
+    document.getElementById('f4').innerHTML=PB.SVG(680,44+T*30+18,s);
+    const st=document.getElementById('s4');
+    if(mode==='many'){
+      st.innerHTML=`twenty dark frogs, twenty crosses &mdash; <b>every one on the wall</b>`;
+    }else{
+      const gaps=[];
+      for(let k=1;k<=t;k++){
+        if(frog.dead&&k>frog.killT) break;
+        gaps.push(Math.abs(frog.cells[k-1]-wall[k]));
+      }
+      st.innerHTML = t===0 ? 'press <b>next turn</b> and watch the gap'
+        : `gap: <b>${gaps.join(' &rarr; ')}</b>`+
+          (frog.dead&&t>=frog.killT?' &mdash; <span class="hit">zero. shot.</span>':'');
+    }
+    document.getElementById('b4').disabled=(mode==='many')||(t>=T)||(frog.dead&&t>=frog.killT);
+  }
+  function step(){ if(t<T){ t++; SND.shot(0.34); draw(); } }
+  /* any dark frog proves the point, but one shot on turn 1 shows no gap
+     closing — so keep looking for a frog that lives long enough to watch */
+  function again(){
+    mode='one';
+    const starts=PB.startsOfClass(N,true);
+    for(let i=0;i<40;i++){
+      frog=PB.life(N,PB.pick(starts),T,wall);
+      if(frog.dead&&frog.killT>=3) break;
+    }
+    t=1; draw();
+  }
+  function manyF(){
+    mode='many'; many=[];
+    const starts=PB.startsOfClass(N,true);
+    for(let i=0;i<20;i++) many.push(PB.life(N,PB.pick(starts),T,wall));
+    draw();
+  }
+  again();
+  return {step,again,many:manyF};
+})();
+
+/* 05 — the falling wall catches the other colour */
+const W5=(function(){
+  const N=10, T=16, b=PB.BD(N,T,24,230,40);
+  const plan=PB.chevron(N);          /* 2..9 then 9..2 */
+  const shotAt={}; plan.forEach((p,i)=>shotAt[i+1]=p);
+  let mode='one', frogs=[];
+  function slipTurn(f){
+    /* the turn it walks through the first wall: the side it stands on flips */
+    for(let k=1;k<f.cells.length&&k<8;k++){
+      const a=f.cells[k-1]-(k+1), c=f.cells[k]-(k+2);
+      if(a>0&&c<0) return k+1;
+    }
+    return 0;
+  }
+  function draw(){
+    let s=PB.squares(b,true)+PB.labels(b,{words:true});
+    for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,shotAt[k]);
+    frogs.forEach(f=>{
+      s+=PB.line(b,f.cells,mode==='one'?{beads:true,r:3.4}:{op:0.16,w:1.2});
+      if(f.dead) s+=PB.cross(b,f.killT,f.cells[f.killT-1],mode==='one'?{}:{r:3.6,w:1.8,op:0.9});
+    });
+    document.getElementById('f5').innerHTML=PB.SVG(680,40+T*24+18,s);
+    const st=document.getElementById('s5');
+    if(mode==='one'){
+      const f=frogs[0], sl=slipTurn(f);
+      st.innerHTML=(sl?`slipped past the first wall on turn ${sl}`:'never met the first wall')+
+        (f.dead?` &mdash; <span class="hit">shot on turn ${f.killT}</span>`:'');
+    }else{
+      st.innerHTML=`twenty frogs, ten of each colour &mdash; <b>every cross sits on the chevron</b>`;
+    }
+  }
+  /* prefer a frog that really does walk through the first wall — that is the
+     thing this figure is here to show */
+  function again(){
+    mode='one';
+    const starts=PB.startsOfClass(N,false);
+    let f;
+    for(let i=0;i<40;i++){
+      f=PB.life(N,PB.pick(starts),T,shotAt);
+      if(slipTurn(f)) break;
+    }
+    frogs=[f]; draw();
+  }
+  function manyF(){
+    mode='many'; frogs=[];
+    [true,false].forEach(d=>{
+      const starts=PB.startsOfClass(N,d);
+      for(let i=0;i<10;i++) frogs.push(PB.life(N,PB.pick(starts),T,shotAt));
+    });
+    draw();
+  }
+  again();
+  return {again,many:manyF};
+})();
+
+/* 06 — the sixteen, fired at the cloud */
+const W6=(function(){
+  const N=10, plan=PB.chevron(N);
+  let step=0, timer=null;
+  const at=k=>{
+    const c=PB.cloud(N,plan.slice(0,k));
+    return c.emptyAt? new Set() : c.hist[k];
+  };
+  function draw(){
+    const S=at(step);
+    document.getElementById('f6').innerHTML=PB.strip(N,S,{hit:step?plan[step-1]:0});
+    document.getElementById('s6').innerHTML = step===0
+      ? `<b>${S.size}</b> places, no shots yet`
+      : S.size===0
+        ? `shot <b>${step}</b> on pole ${plan[step-1]} &mdash; <span class="hit">nowhere left to be.</span>`
+        : `shot <b>${step}</b> on pole ${plan[step-1]} &mdash; <b>${S.size}</b> places left`;
+    document.getElementById('b6').disabled=(S.size===0&&step>0);
+  }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} }
+  function fire(){
+    stop(); step=0; draw();
+    timer=setInterval(()=>{
+      if(step>=plan.length||at(step).size===0){ stop(); return; }
+      step++; SND.shot(0.4); draw();
+    },430);
+  }
+  function reset(){ stop(); step=0; draw(); }
+  reset();
+  return {fire,reset};
+})();
+
+/* 07 — build your own plan, and meet the frog that survives it */
+const W7=(function(){
+  const N=10, T=16, b=PB.BD(N,T,26,210,44);
+  let plan=new Array(T).fill(0);      /* plan[t-1] = pole shot on turn t, 0 = no shot */
+  function bullets(){ return plan.filter(Boolean).length; }
+  function draw(){
+    let s=PB.squares(b,true,'cell')+PB.labels(b,{words:true});
+    for(let t=1;t<=T;t++) if(plan[t-1]) s+=PB.shotSq(b,t,plan[t-1]);
+    const trimmed=plan.slice(0, plan.reduce((m,v,i)=>v?i+1:m,0));
+    const r=trimmed.length?PB.survivor(N,trimmed):{alive:true,cells:null};
+    if(r.alive){
+      const f=trimmed.length?r:{cells:PB.life(N,1+PB.rnd(N),T,null).cells};
+      s+=PB.line(b,f.cells,{beads:true,r:2.8});
+    }else{
+      s+=PB.cross(b,r.killT,plan[r.killT-1],{r:7,w:2.6});
+    }
+    document.getElementById('f7').innerHTML=PB.SVG(680,44+T*26+18,s);
+    document.getElementById('f7').firstElementChild.addEventListener('click',ev=>{
+      const c=ev.target.closest('.cell'); if(!c) return;
+      const p=+c.getAttribute('data-p'), t=+c.getAttribute('data-t');
+      plan[t-1]=(plan[t-1]===p)?0:p;
+      SND.shot(0.3);
+      draw();
+    });
+    const n=bullets();
+    let d=0,l=0;
+    plan.forEach((p,i)=>{ if(p) (PB.isDark(p,i+1)?d++:l++); });
+    document.getElementById('s7').innerHTML=
+      `<b>${n}</b> bullet${n===1?'':'s'}`+(n?` &mdash; ${d} dark, ${l} light`:'');
+    document.getElementById('s7b').innerHTML = !n
+      ? 'click squares to shoot &mdash; one per turn'
+      : r.alive
+        ? `<span class="hit">a frog survives</span> &mdash; it is drawn in green`
+        : `no frog survives &mdash; <b>this plan always wins</b>`;
+  }
+  function clear(){ plan=new Array(T).fill(0); draw(); }
+  function chev(){
+    plan=new Array(T).fill(0);
+    PB.chevron(N).forEach((p,i)=>plan[i]=p);
+    draw();
+  }
+  function search(){
+    const btn=document.getElementById('b7');
+    btn.disabled=true; btn.textContent='searching&hellip;';
+    setTimeout(()=>{
+      const m=PB.minPlan(N);
+      document.getElementById('s7b').innerHTML=
+        `every plan checked: <b>${m.n}</b> bullets is the floor &mdash; ${m.plan.join(' ')}`;
+      btn.disabled=false; btn.textContent='search every plan';
+    },30);
+  }
+  chev();
+  return {clear,chevron:chev,search};
+})();
+
+/* 08 — the chevron stretches with the swamp */
+const W8=(function(){
+  let N=10;
+  function draw(){
+    const plan=PB.chevron(N), T=plan.length;
+    const cell=Math.max(16,Math.min(30,Math.floor(300/T)));
+    const b=PB.BD(N,T,cell,(680-N*cell)/2,40);
+    let s=PB.squares(b,true)+PB.labels(b,{});
+    plan.forEach((p,i)=>s+=PB.shotSq(b,i+1,p));
+    document.getElementById('f8').innerHTML=PB.SVG(680,40+T*cell+18,s);
+    const m=PB.minPlan(N);
+    document.getElementById('s8').innerHTML=
+      `<b>${N}</b> poles &rarr; <b>${T}</b> bullets`+(m&&m.n===T?' &nbsp;(checked)':` &nbsp;(search says ${m?m.n:'?'})`);
+  }
+  function set(n){
+    N=n;
+    const r=document.getElementById('r8');
+    if(r&&+r.value!==n) r.value=n;
+    draw();
+  }
+  draw();
+  return {set};
 })();
 </script>
 </body>
