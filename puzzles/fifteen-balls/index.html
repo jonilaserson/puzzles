@@ -220,10 +220,7 @@ footer{
 <figure><div id="f7"></div>
 <figcaption>The staircase: every diagonal full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
 
-<h2><span class="n">06</span> Why 15</h2>
-<p>The count is the only place the number 15 entered the proof &mdash; and 15 = 1+2+3+4+5 is exactly what the staircase holds. Give the game 14 balls instead and everything runs the same until the count: diagonals 1 through 4 fill up, taking 10 balls, and the remaining 4 balls cycle around diagonal 5 forever without ever filling it. The game ends in a cycle instead of freezing. A frozen state exists exactly when the ball count is 1+2+&#8943;+k &mdash; try it in the playground below.</p>
-
-<h2><span class="n">07</span> Playground</h2>
+<h2><span class="n">06</span> Playground</h2>
 <p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the board's left edge steps one column right, collecting the balls it passes along their diagonals.</p>
 <figure>
 <div class="ctl">
@@ -245,6 +242,9 @@ footer{
   <span><span class="swd" style="border-color:#c9bd9e"></span>target staircase</span>
 </div>
 <figcaption>Depth is a property of the spot, so a ball never changes color. The status line tracks total depth: watch it fall exactly when a gap closes, and settle for good once the drops are over.</figcaption></figure>
+
+<h2><span class="n">07</span> Why 15?</h2>
+<p>The number 15 entered the proof exactly once: the count works because 15 = 1+2+3+4+5. Numbers that can be written as 1+2+3+&#8943;+k are called <b>triangular numbers</b>. Can you predict what happens when the total number of balls is <em>not</em> triangular? Make a prediction, then test it in the playground above.</p>
 
 </section>
 
@@ -425,7 +425,7 @@ C.draw();
 const PG=(function(){
   let start=[5,3,7], states=[[5,3,7]], gp=[0], t=0, tmax=0, T=-1, fixedAt=-1;
   let C=20, Rn=12, px=20, timer=null;
-  let K=5, n=15, tri=true, cyc=0;
+  let K=5, n=15, cyc=0;
   const M=14;
   const LO=[228,237,241], HI=[53,106,125];
   const depth=s=>s.reduce((a,len,i)=>a+len*i+len*(len+1)/2,0);
@@ -482,7 +482,7 @@ const PG=(function(){
   function statusLine(){
     const st=states[t];
     if(t===0) return `(${show(st)}) — ${n} ball${n>1?'s':''}, as given. Total depth <b>${depth(st)}</b>.`+
-      (tri?' Press step.':` <span class="drop">${n} &ne; 1+2+&#8943;+k — no resting state.</span>`);
+      ' Press step.';
     const after=depth(st), before=depth(states[t-1]);
     if(t===fixedAt) return `(${show(st)}) — move ${t}: <b>frozen</b>. Total depth ${after}. Forever.`;
     if(cyc>0&&t===T) return `(${show(st)}) — move ${t}: <span class="drop">the shape of move ${t-cyc}, again</span> — a cycle of length <b>${cyc}</b>. Keep stepping.`;
@@ -505,7 +505,6 @@ const PG=(function(){
     stopAuto(); start=a.slice();
     n=start.reduce((x,y)=>x+y,0);
     K=1; while((K+1)*(K+2)/2<=n) K++;
-    tri=(K*(K+1)/2===n);
     const b=build(start);
     states=b.sts; gp=b.g; fixedAt=b.fx; T=b.rep; cyc=b.per;
     tmax=states.length-1;
