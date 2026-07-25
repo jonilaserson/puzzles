@@ -139,7 +139,7 @@ footer{
 </div>
 <div class="stat" id="frS"></div>
 <div id="fFrog"></div>
-<figcaption>Click a pole to shoot it. This frog gets every benefit of the doubt: if it could still be alive somewhere, it is. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay, which shows where the frog sat on each of your shots. Start with a few poles, then work up to ten.</figcaption>
+<figcaption>Click a pole to shoot it, or press its number — <b>0</b> shoots pole 10. This frog gets every benefit of the doubt: if it could still be alive somewhere, it is. A kill — or giving up with <b>reveal</b> — ends the hunt and opens the replay, which shows where the frog sat on each of your shots. Start with a few poles, then work up to ten.</figcaption>
 </figure>
 </section>
 
@@ -419,6 +419,17 @@ const FR=(function(){
   const rpBack =()=>{ if(!over)return; stopRp(); rp.t=Math.max(1,rp.t-1); rpDraw(false); };
   const rpFwd  =()=>{ if(!over)return; stopRp(); rp.t=Math.min(path.length,rp.t+1); rpDraw(false); };
   const rpPlay =()=>{ if(!over)return; if(rp.timer)stopRp(); else playRp(); };
+
+  /* the poles wear their numbers, so the matching key shoots them — 0 is pole 10 */
+  document.addEventListener('keydown',ev=>{
+    if(!document.body.classList.contains('mode-play')) return;
+    if(ev.metaKey||ev.ctrlKey||ev.altKey) return;
+    if(!/^[0-9]$/.test(ev.key)) return;
+    const p = ev.key==='0' ? 10 : +ev.key;
+    if(p>N) return;
+    ev.preventDefault();
+    shoot(p);
+  });
 
   newFrog();
   return {shoot,newFrog,poles,reveal,rp0,rpBack,rpFwd,rpPlay};
