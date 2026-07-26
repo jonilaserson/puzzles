@@ -163,8 +163,8 @@ function App() {
           Three poles hold discs — say 3, 14 and 16. You may move discs from one pole to
           another, but only in the exact amount that <b>doubles the receiving pole</b>: a pole
           holding 5 discs can only receive exactly 5 more. <b>Show that from any starting
-          position you can empty one of the poles.</b> Try it below in <em>Play</em> mode —
-          then let <em>Proof</em> mode show you a strategy that never fails.
+          position you can empty one of the poles.</b> Try it below<span className="proof-cta"> in <em>Play</em> mode —
+          then let <em>Proof</em> mode show you a strategy that never fails</span>.
         </p>
       </header>
 
