@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take the last stone — if the pile lets you</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+input.pgIn{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 10px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);width:96px;
+}
+input.pgIn:focus{outline:none;border-color:var(--amber);z-index:1}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .win{color:var(--blue);font-weight:600}
+.stat .loss{color:var(--coral);font-weight:600}
+.hist{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:2}
+.hist b{color:var(--blue)}
+.hist .site{color:var(--coral);font-weight:600}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+#lsSvg .zone{cursor:pointer}
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">take-away game · last stone<span class="proof-cta"> · a visual proof</span></p>
+<h1>Take the last stone &mdash;<br>if the pile lets you</h1>
+<p class="sub">One pile, alternating takes, and a single rule that makes every take cap the next. Most piles fall to careful play. Some sizes cannot be beaten.</p>
+
+<div class="box">
+  <p><b>The game.</b> A pile of n stones. You and the site take turns removing stones; <b>whoever takes the last stone wins</b>. The opening take can be any number of stones &mdash; just not the whole pile. Every later take is at least 1 and <b>at most twice the take before it</b>.</p>
+  <p><b>The puzzle.</b> Which pile sizes can the opener always win, and how? Which piles are lost the moment the game starts?</p>
+  <p>Play below &mdash; the site never blunders. Win a few piles as opener, and note the sizes where you can't<span class="proof-cta">, before flipping to the proof</span>.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">stones:</span>
+  <span class="seg"><input class="pgIn" id="lsN" value="20" style="width:56px" onkeydown="if(event.key==='Enter')LS.custom()"><button onclick="LS.custom()">set</button></span>
+  <span class="seg"><button id="lsYou" class="on" onclick="LS.starter(true)">you open</button><button id="lsSite" onclick="LS.starter(false)">site opens</button></span>
+  <span style="flex:1"></span>
+  <button onclick="LS.reset()">replay pile</button>
+</div>
+<div class="stat" id="lsS"></div>
+<div id="fPlay"></div>
+<div class="hist" id="lsHist"></div>
+<figcaption>Click a stone to take it and every stone after it; amber rings mark the stones your cap lets you reach. Taken stones stay as dashed circles, labeled by who took them. Finished piles are recorded under the stones &mdash; hunt for the sizes where the site cannot be beaten.</figcaption>
+</figure>
+</section>
+
+<footer class="proof-only">The game is Fibonacci Nim, first analysed by Michael Whinihan (1963); the winning strategy runs on Zeckendorf's theorem.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const LS=(function(){
+  const W=680, MAXN=100;
+  const FIBS=[1,2,3,5,8,13,21,34,55,89,144];
+  let n=20, youStart=true;
+  let rem=20, cap=19, turn='you', over=false, winner='', busy=false, recorded=false;
+  let takes=[];              /* {who, count} — stones run 1..n, takes eat the tail */
+  let hov=0;                 /* stone the cursor rests on, 0 = none */
+  let D=30, cols=20, rows=1, H=120;
+  const hist=[];
+  let siteT=null;
+
+  /* the mover wins iff the smallest Zeckendorf part of the pile is within the cap */
+  function smallestZeck(m){
+    let r=m, s=0;
+    while(r>0){
+      let f=FIBS[0];
+      for(const v of FIBS) if(v<=r) f=v;
+      s=f; r-=f;
+    }
+    return s;
+  }
+  function siteMove(){
+    if(rem<=cap) return rem;
+    const s=smallestZeck(rem);
+    return s<=cap ? s : 1;
+  }
+
+  /* ---------- geometry ---------- */
+  function layout(){
+    D = n<=24?30 : n<=48?26 : 22;
+    cols = Math.min(n, Math.floor((W-40)/D));
+    rows = Math.ceil(n/cols);
+    H = 20 + rows*(D+16) + 8;
+  }
+  const px=i=>20+((i-1)%cols)*D + D/2;
+  const py=i=>16+Math.floor((i-1)/cols)*(D+16) + D/2;
+
+  /* ---------- drawing ---------- */
+  function draw(hover){
+    const zoneLo = rem-Math.min(cap,rem)+1;                 /* clickable tail */
+    const showZone = (turn==='you' && !over && !busy);
+    let s='';
+    for(let i=1;i<=n;i++){
+      const x=px(i), y=py(i), r=D/2-3;
+      if(i<=rem){
+        const inZone=showZone && i>=zoneLo;
+        const picked=inZone && hover && i>=hover;
+        s+=`<g class="${inZone?'zone':''}" data-i="${i}">`;
+        s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${picked?'#d99f3f':'#5f92a6'}" ${inZone?`stroke="#d99f3f" stroke-width="2"`:''}/>`;
+        s+=`</g>`;
+      }else{
+        s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+      }
+    }
+    /* label each take under the middle stone of its group —
+       the first take owns the topmost chunk, later takes eat downward */
+    let hi=n;
+    for(let g=0;g<takes.length;g++){
+      const tk=takes[g], lo=hi-tk.count+1, mid=Math.floor((lo+hi)/2);
+      s+=`<text x="${px(mid)}" y="${py(mid)+D/2+8}" fill="${tk.who==='you'?'#356a7d':'#6c655a'}" font-size="10" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${tk.who}</text>`;
+      hi=lo-1;
+    }
+    document.getElementById('fPlay').innerHTML=
+      `<svg id="lsSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+    const svg=document.getElementById('lsSvg');
+    /* rebuilding the svg under a resting cursor refires mouseover, so only
+       redraw when the hovered stone actually changes */
+    svg.addEventListener('mouseover',ev=>{
+      const g=ev.target.closest('.zone');
+      const i=g?+g.getAttribute('data-i'):0;
+      if(i!==hov){ hov=i; draw(hov||undefined); }
+    });
+    svg.addEventListener('mouseleave',()=>{ if(hov){ hov=0; draw(); } });
+    svg.addEventListener('click',ev=>{
+      const g=ev.target.closest('.zone');
+      if(g) youTake(rem - (+g.getAttribute('data-i')) + 1);
+    });
+  }
+
+  /* ---------- status ---------- */
+  const say=h=>{document.getElementById('lsS').innerHTML=h;};
+  function yourTurnLine(prefix){
+    const a=Math.min(cap,rem);
+    return `${prefix}your move: take ${a===1?'1':'1 to '+a}.`;
+  }
+  function record(){
+    if(recorded) return;
+    recorded=true;
+    hist.push(`${n}, ${youStart?'you':'site'} opened &rarr; ${winner==='you'?'<b>you</b>':'<span class="site">site</span>'}`);
+    if(hist.length>12) hist.shift();
+    document.getElementById('lsHist').innerHTML=hist.join('&ensp;&middot;&ensp;');
+  }
+
+  /* ---------- moves ---------- */
+  function apply(who,m){
+    takes.push({who,count:m});
+    rem-=m;
+    cap=Math.min(2*m, rem);
+    turn = who==='you'?'site':'you';
+    if(rem===0){ over=true; winner=who; }
+  }
+  function youTake(m){
+    if(over||busy||turn!=='you') return;
+    if(m<1||m>Math.min(cap,rem)) return;
+    hov=0;
+    apply('you',m);
+    if(over){
+      draw(); say(`you take ${m} &mdash; the last stone. <span class="win">you win the pile of ${n}.</span>`);
+      record(); return;
+    }
+    busy=true; draw();
+    say(`you take ${m} &mdash; ${rem} remain. site may take up to ${cap}&hellip;`);
+    siteT=setTimeout(siteGo, 650);
+  }
+  function siteGo(){
+    siteT=null;
+    const m=siteMove();
+    apply('site',m);
+    busy=false;
+    if(over){
+      draw(); say(`site takes ${m} &mdash; the last stone. <span class="loss">site wins the pile of ${n}.</span>`);
+      record(); return;
+    }
+    draw(); say(`site takes ${m} &mdash; ${rem} remain. `+yourTurnLine(''));
+  }
+
+  /* ---------- setup ---------- */
+  function set(nn,ys){
+    if(siteT){clearTimeout(siteT);siteT=null;}
+    n=nn; youStart=ys;
+    rem=n; cap=n-1; takes=[]; over=false; busy=false; recorded=false; winner='';
+    turn = ys?'you':'site';
+    document.getElementById('lsYou').classList.toggle('on',ys);
+    document.getElementById('lsSite').classList.toggle('on',!ys);
+    layout(); draw();
+    if(ys){ say(`a pile of ${n}. `+yourTurnLine('')+` (not all ${n}.)`); }
+    else{ busy=true; say(`a pile of ${n}. site opens&hellip;`); siteT=setTimeout(siteGo,650); }
+  }
+  function starter(ys){ set(n,ys); }
+  function custom(){
+    const nn=parseInt(document.getElementById('lsN').value,10);
+    if(!(nn>=2)){say('a pile needs at least 2 stones.');return;}
+    if(nn>MAXN){say(`${nn} stones is a boulder field &mdash; keep it &le; ${MAXN}.`);return;}
+    set(nn,youStart);
+  }
+  function reset(){ set(n,youStart); }
+
+  set(20,true);
+  return {custom,starter,reset,youTake};
+})();
+</script>
+</body>
+</html>

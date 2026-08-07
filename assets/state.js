@@ -9,4 +9,5 @@ window.PUZZLE_STATE = {
   "invisible-frog": { published: true, proof: false },
   "dobble":         { published: true, proof: false },
   "josephus":       { published: true, proof: false },
+  "last-stone":     { published: true, proof: false },
 };
