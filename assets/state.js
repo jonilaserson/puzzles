@@ -10,4 +10,5 @@ window.PUZZLE_STATE = {
   "dobble":         { published: true, proof: false },
   "josephus":       { published: true, proof: false },
   "last-stone":     { published: true, proof: false },
+  "counterfeit-coin": { published: true, proof: false },
 };

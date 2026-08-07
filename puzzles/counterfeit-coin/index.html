@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twelve coins, and one of them lies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button.alert{border-color:var(--coral);color:var(--coral);font-weight:600}
+button.alert.on{background:var(--coral);color:#fffdf6}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.seg button.ro{cursor:default;font-weight:600}
+.seg button.ro:hover{border-color:var(--line)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .win{color:var(--blue);font-weight:600}
+.stat .loss{color:var(--coral);font-weight:600}
+.wlog{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.9}
+.wlog b{color:var(--ink)}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+#ccSvg .coin{cursor:pointer}
+#ccSvg .coin:hover .body{stroke:var(--amber);stroke-width:2.4}
+#ccSvg.accuse .coin{cursor:crosshair}
+#ccSvg.accuse .coin:hover .body{stroke:var(--coral);stroke-width:2.6}
+#ccSvg.done .coin{cursor:default;pointer-events:none}
+#ccSvg text{user-select:none;pointer-events:none}
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">counterfeit coin · balance scale<span class="proof-cta"> · a visual proof</span></p>
+<h1>Twelve coins,<br>and one of them lies</h1>
+<p class="sub">Identical to the eye, except one &mdash; a shade heavier or a shade lighter, nobody says which. All you have is a balance scale, and it only ever says which pan is heavier.</p>
+
+<div class="box">
+  <p><b>The setup.</b> Twelve coins, identical to the eye. One is fake: a touch heavier or a touch lighter than the rest &mdash; you don't know which.</p>
+  <p><b>The move.</b> Load coins on the two pans, the same number on each, and weigh. The scale tips to the heavier pan, or balances.</p>
+  <p><b>The puzzle.</b> Name the fake <b>with certainty</b>, in as few weighings as possible. How few are always enough? And does thirteen coins change the answer?</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">coins:</span>
+  <span class="seg"><button id="ccNm" onclick="CC.coins(-1)">&minus;</button><button id="ccN" class="ro" tabindex="-1">12</button><button id="ccNp" onclick="CC.coins(1)">+</button></span>
+  <span style="flex:1"></span>
+  <span class="stat" id="ccCnt" style="margin:0"></span>
+</div>
+<div class="ctl">
+  <button id="ccWeigh" class="prime" onclick="CC.weigh()">weigh</button>
+  <button id="ccAcc" class="alert" onclick="CC.accuseMode()">accuse&hellip;</button>
+  <button id="ccClear" onclick="CC.clearPans()">clear pans</button>
+  <button onclick="CC.fresh()">new coins &#8635;</button>
+</div>
+<div class="stat" id="ccS"></div>
+<div id="fPlay"></div>
+<div class="wlog" id="ccLog"></div>
+<figcaption>Click a coin to move it: bench &rarr; left pan &rarr; right pan &rarr; bench. A dashed circle keeps its seat on the bench. The fake is sly: whenever more than one story fits your weighings so far, the scale answers so that the most stories stay alive.</figcaption>
+</figure>
+</section>
+
+<footer>A wartime classic: the twelve-coin problem swept the common rooms of the 1940s fast enough to be blamed, half-seriously, for slowing the war effort.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const CC=(function(){
+  const W=680, MAXN=30, MINN=3;
+  let N=12;
+  let pos=[];          /* pos[i] for coin i (1-based): 'b' | 'L' | 'R' */
+  let P=[];            /* stories still alive: {c, d}, d=+1 heavy, -1 light */
+  let w=0, res=null;   /* weighings so far; last result 'L'|'R'|'='|null */
+  let over=false, accusing=false;
+  let fake=null;       /* set when the game ends: {c, d} (d=0: never learned) */
+  let lines=[];
+  const best={};
+
+  const num=s=>[...s].sort((a,b)=>a-b).join(' ');
+  const T=(x,y,str,fill,size,wt)=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${wt}" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+
+  /* ---------- geometry ---------- */
+  const PIVX=340, PIVY=58, ARM=160, DROP=70, TILT=7*Math.PI/180;
+  const benchCols=()=>Math.min(N,15);
+  const benchRows=()=>Math.ceil(N/benchCols());
+  const BY=228;
+  const H=()=>BY+benchRows()*30+14;
+  const benchXY=i=>{
+    const c=benchCols(), col=(i-1)%c, row=Math.floor((i-1)/c);
+    return [ (W-c*30)/2+15+col*30, BY+14+row*30 ];
+  };
+
+  function coinSVG(x,y,i,r){
+    const isFake = fake && fake.c===i;
+    const fill = isFake ? '#bb3b27' : '#e8d59a';
+    const line = isFake ? '#7e2417' : '#ab9257';
+    const txt  = isFake ? '#fffdf6' : '#6b5a2a';
+    return `<g class="coin" data-i="${i}">
+      <circle class="body" cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${line}" stroke-width="1.5"/>
+      <circle cx="${x}" cy="${y}" r="${r-3.5}" fill="none" stroke="${line}" stroke-width="0.8" opacity="0.55"/>
+      ${T(x,y,i,txt,r>11?11:10,600)}
+    </g>`;
+  }
+
+  function draw(){
+    const a = res==='L'?TILT : res==='R'?-TILT : 0;
+    const ex1=PIVX-ARM*Math.cos(a), ey1=PIVY+ARM*Math.sin(a);   /* left end */
+    const ex2=PIVX+ARM*Math.cos(a), ey2=PIVY-ARM*Math.sin(a);   /* right end */
+    let s='';
+    /* stand */
+    s+=`<line x1="${PIVX}" y1="${PIVY}" x2="${PIVX}" y2="198" stroke="#8a8072" stroke-width="4" stroke-linecap="round"/>`;
+    s+=`<line x1="${PIVX-46}" y1="200" x2="${PIVX+46}" y2="200" stroke="#8a8072" stroke-width="4" stroke-linecap="round"/>`;
+    /* beam */
+    s+=`<line x1="${ex1}" y1="${ey1}" x2="${ex2}" y2="${ey2}" stroke="#5d4730" stroke-width="5" stroke-linecap="round"/>`;
+    s+=`<circle cx="${PIVX}" cy="${PIVY}" r="5" fill="#5d4730"/>`;
+    /* pans */
+    for(const [side,ex,ey] of [['L',ex1,ey1],['R',ex2,ey2]]){
+      const py=ey+DROP;
+      s+=`<line x1="${ex}" y1="${ey}" x2="${ex-52}" y2="${py}" stroke="#8a8072" stroke-width="1.4"/>`;
+      s+=`<line x1="${ex}" y1="${ey}" x2="${ex+52}" y2="${py}" stroke="#8a8072" stroke-width="1.4"/>`;
+      s+=`<line x1="${ex-72}" y1="${py}" x2="${ex+72}" y2="${py}" stroke="#5d4730" stroke-width="4" stroke-linecap="round"/>`;
+      const on=[]; for(let i=1;i<=N;i++) if(pos[i]===side) on.push(i);
+      on.forEach((i,k)=>{
+        const col=k%6, row=Math.floor(k/6);
+        s+=coinSVG(ex+(col-2.5)*25, py-13-row*25, i, 12);
+      });
+    }
+    /* bench: fixed seats, dashed when the coin is away */
+    for(let i=1;i<=N;i++){
+      const [x,y]=benchXY(i);
+      if(pos[i]==='b') s+=coinSVG(x,y,i,13);
+      else s+=`<circle cx="${x}" cy="${y}" r="12" fill="none" stroke="#c9bd9e" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+    }
+    document.getElementById('fPlay').innerHTML=
+      `<svg id="ccSvg" viewBox="0 0 ${W} ${H()}" width="100%" role="img">${s}</svg>`;
+    const svg=document.getElementById('ccSvg');
+    svg.classList.toggle('accuse',accusing);
+    svg.classList.toggle('done',over);
+    svg.addEventListener('click',ev=>{
+      const g=ev.target.closest('.coin');
+      if(g) clickCoin(+g.getAttribute('data-i'));
+    });
+  }
+
+  /* ---------- status & log ---------- */
+  const say=h=>{document.getElementById('ccS').innerHTML=h;};
+  function sync(){
+    const nl=[],nr=[];
+    for(let i=1;i<=N;i++){ if(pos[i]==='L')nl.push(i); if(pos[i]==='R')nr.push(i); }
+    document.getElementById('ccWeigh').disabled = over||accusing||nl.length===0||nl.length!==nr.length;
+    document.getElementById('ccAcc').disabled = over;
+    document.getElementById('ccAcc').classList.toggle('on',accusing);
+    document.getElementById('ccClear').disabled = over||(nl.length===0&&nr.length===0);
+    document.getElementById('ccN').textContent=N;
+    document.getElementById('ccNm').disabled=N<=MINN;
+    document.getElementById('ccNp').disabled=N>=MAXN;
+    document.getElementById('ccCnt').innerHTML=
+      `weighings <b>${w}</b>${best[N]?` &nbsp;·&nbsp; fewest on ${N} coins: <b>${best[N]}</b>`:''}`;
+    document.getElementById('ccLog').innerHTML=lines.join('<br>');
+    return [nl,nr];
+  }
+
+  /* ---------- game ---------- */
+  function fresh(){
+    pos=[]; for(let i=1;i<=N;i++) pos[i]='b';
+    P=[]; for(let i=1;i<=N;i++){ P.push({c:i,d:1}); P.push({c:i,d:-1}); }
+    w=0; res=null; over=false; accusing=false; fake=null; lines=[];
+    draw(); sync();
+    say(`${N} coins, one fake &mdash; heavier or lighter, unknown. load the pans.`);
+  }
+  function coins(d){
+    const n=Math.min(MAXN,Math.max(MINN,N+d));
+    if(n===N) return;
+    N=n; fresh();
+  }
+  function clickCoin(i){
+    if(over) return;
+    if(accusing){ accuse(i); return; }
+    pos[i] = pos[i]==='b'?'L' : pos[i]==='L'?'R' : 'b';
+    res=null;
+    draw();
+    const [nl,nr]=sync();
+    if(nl.length===0&&nr.length===0){ say('the pans are empty.'); return; }
+    say(`left pan ${nl.length} &middot; right pan ${nr.length}`+
+        (nl.length===nr.length?' &mdash; press weigh.':' &mdash; pans must hold the same number.'));
+  }
+  function clearPans(){
+    if(over) return;
+    for(let i=1;i<=N;i++) pos[i]='b';
+    res=null; accusing=false;
+    draw(); sync();
+    say('pans cleared.');
+  }
+  /* the scale answers so that the most stories stay alive */
+  function weigh(){
+    const [nl,nr]=sync();
+    if(over||accusing||nl.length===0||nl.length!==nr.length) return;
+    const A=new Set(nl), B=new Set(nr);
+    const buckets={'=':[],'L':[],'R':[]};
+    for(const p of P){
+      const o = A.has(p.c) ? (p.d>0?'L':'R') : B.has(p.c) ? (p.d>0?'R':'L') : '=';
+      buckets[o].push(p);
+    }
+    res='='; for(const o of ['L','R']) if(buckets[o].length>buckets[res].length) res=o;
+    P=buckets[res]; w++;
+    const word = res==='='?'balance' : res==='L'?'left sinks':'right sinks';
+    lines.push(`#${w}&ensp;${num(nl)} | ${num(nr)} &mdash; <b>${word}</b>`);
+    draw(); sync();
+    say(`weighing ${w}: <b>${word}</b>.`);
+  }
+  function accuseMode(){
+    if(over) return;
+    accusing=!accusing;
+    draw(); sync();
+    say(accusing?'accuse: click the coin you believe is fake.':'accusation withdrawn.');
+  }
+  function accuse(i){
+    accusing=false; over=true;
+    const others=P.filter(p=>p.c!==i);
+    if(others.length===0){
+      const dirs=new Set(P.map(p=>p.d));
+      fake={c:i, d:dirs.size===1?P[0].d:0};
+      if(!best[N]||w<best[N]) best[N]=w;
+      say(`coin ${i} is the fake`+
+          (fake.d!==0?` &mdash; ${fake.d>0?'heavier':'lighter'}.`:` &mdash; though you never learned whether it is heavy or light.`)+
+          ` <span class="win">found in ${w} weighing${w===1?'':'s'}.</span>`);
+    }else{
+      fake=others[0];
+      say(`not coin ${i} &mdash; that one is genuine. <span class="loss">the fake was coin ${fake.c}, ${fake.d>0?'heavier':'lighter'}.</span> it got away.`);
+    }
+    draw(); sync();
+  }
+
+  fresh();
+  return {coins,weigh,accuseMode,clearPans,fresh};
+})();
+</script>
+</body>
+</html>
