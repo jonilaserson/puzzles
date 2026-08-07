@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Count around the circle: who is left standing?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+input.pgIn{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 10px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);width:96px;
+}
+input.pgIn:focus{outline:none;border-color:var(--amber);z-index:1}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.hist{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:2}
+.hist b{color:var(--blue)}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">josephus · counting circle<span class="proof-cta"> · a visual proof</span></p>
+<h1>Count around the circle:<br>who is left standing?</h1>
+<p class="sub">People in a circle, a count that never stops, an empty seat each round. One person remains &mdash; and you can know who before the counting starts.</p>
+
+<div class="box">
+  <p><b>The game.</b> n people stand in a circle, numbered 1 to n. Count around, starting at person 1: the person who says <b>k</b> steps out, the count restarts at 1 on the next person, and the circle tightens &mdash; around and around, skipping empty seats.</p>
+  <p><b>The puzzle.</b> One person is left at the end. <b>Predict who, from n and k alone.</b></p>
+  <p>Run a few circles below<span class="proof-cta"> before flipping to the proof</span>: keep k at 2 and grow n one step at a time &mdash; the survivors, written in a row, give the game away.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">people:</span>
+  <input class="pgIn" id="joN" value="10" style="width:56px" onkeydown="if(event.key==='Enter')JO.custom()">
+  <span class="lab">count:</span>
+  <span class="seg"><input class="pgIn" id="joK" value="2" style="width:48px" onkeydown="if(event.key==='Enter')JO.custom()"><button onclick="JO.custom()">set</button></span>
+  <span style="flex:1"></span>
+  <span class="seg"><button id="joBack" onclick="JO.back()">&#8592; back</button><button id="joStep" class="prime" onclick="JO.step()">step &#8594;</button></span>
+  <button id="joAuto" onclick="JO.auto()">auto</button>
+  <button onclick="JO.reset()">reset</button>
+</div>
+<div class="stat" id="joS"></div>
+<div id="fPlay"></div>
+<div class="hist" id="joHist"></div>
+<figcaption>Amber is the next to step out; dashed circles are empty seats. Every finished circle is recorded under the drawing &mdash; the record is where the pattern hides.</figcaption>
+</figure>
+</section>
+
+<footer>Named for Flavius Josephus, who &mdash; the story goes &mdash; stood in a circle of 41 rebels counting off every third man, and talked his way out of the whole affair by knowing where to stand.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const JO=(function(){
+  const W=680, H=400, CX=340, CY=200, R=164;
+  let n=10, k=2, order=[], surv=1, t=0, timer=null, recorded=false;
+  let pr=15, fs=13;
+  const hist=[];
+
+  const T=(x,y,str,fill,size,w)=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+
+  function build(){
+    order=[];
+    const alive=Array.from({length:n},(_,i)=>i+1);
+    let idx=0;
+    while(alive.length>1){
+      idx=(idx+k-1)%alive.length;
+      order.push(alive.splice(idx,1)[0]);
+    }
+    surv=alive[0];
+  }
+  const pos=i=>{
+    const a=-Math.PI/2+(i-1)*2*Math.PI/n;
+    return [CX+R*Math.cos(a), CY+R*Math.sin(a)];
+  };
+  function draw(){
+    const gone=new Set(order.slice(0,t));
+    const nxt = t<order.length ? order[t] : 0;
+    let s=`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#ddd2b8" stroke-width="1.2" stroke-dasharray="2 5"/>`;
+    for(let i=1;i<=n;i++){
+      const [x,y]=pos(i);
+      if(gone.has(i)){
+        s+=`<circle cx="${x}" cy="${y}" r="${pr}" fill="none" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+        s+=T(x,y,i,'#c9bd9e',fs,500);
+      }else if(i===nxt){
+        s+=`<circle cx="${x}" cy="${y}" r="${pr}" fill="#d99f3f"/>`;
+        s+=T(x,y,i,'#fffdf6',fs,600);
+      }else if(t===order.length&&i===surv){
+        s+=`<circle cx="${x}" cy="${y}" r="${pr+4.5}" fill="none" stroke="#d99f3f" stroke-width="2"/>`;
+        s+=`<circle cx="${x}" cy="${y}" r="${pr}" fill="#356a7d"/>`;
+        s+=T(x,y,i,'#fffdf6',fs,600);
+      }else{
+        s+=`<circle cx="${x}" cy="${y}" r="${pr}" fill="#5f92a6"/>`;
+        s+=T(x,y,i,'#fffdf6',fs,600);
+      }
+    }
+    document.getElementById('fPlay').innerHTML=
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+  }
+  function statusLine(){
+    if(t===0) return `${n} people, counting by ${k} &mdash; person 1 starts the count. Press step.`;
+    if(t===order.length) return `person <b>${surv}</b> is the last one standing.`;
+    return `person <b>${order[t-1]}</b> steps out &mdash; ${n-t} remain.`;
+  }
+  function refresh(){
+    draw();
+    document.getElementById('joS').innerHTML=statusLine();
+    document.getElementById('joBack').disabled=(t===0);
+    document.getElementById('joStep').disabled=(t===order.length);
+    if(t===order.length){
+      stopAuto();
+      if(!recorded){
+        recorded=true;
+        hist.push(`n=${n}, k=${k} &rarr; <b>${surv}</b>`);
+        if(hist.length>12) hist.shift();
+      }
+      document.getElementById('joHist').innerHTML=hist.join('&ensp;&middot;&ensp;');
+    }
+  }
+  function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById('joAuto').textContent='auto';}
+  function step(){ if(t>=order.length){stopAuto();return;} t++; refresh(); }
+  function back(){ stopAuto(); if(t>0){t--; refresh();} }
+  function auto(){
+    if(timer){stopAuto();return;}
+    if(t>=order.length){t=0;refresh();}
+    document.getElementById('joAuto').textContent='stop';
+    timer=setInterval(step, Math.max(150, Math.round(4000/n)));
+  }
+  function reset(){stopAuto(); t=0; refresh();}
+  function set(nn,kk){
+    stopAuto();
+    n=nn; k=kk; t=0; recorded=false;
+    const spacing=2*Math.PI*R/n;
+    pr=Math.min(15, spacing*0.40);
+    fs=Math.max(7, Math.round(pr*0.95));
+    build(); refresh();
+  }
+  function custom(){
+    const nn=parseInt(document.getElementById('joN').value,10);
+    const kk=parseInt(document.getElementById('joK').value,10);
+    if(!(nn>=2)||!(kk>=1)){document.getElementById('joS').innerHTML='people &ge; 2 and count &ge; 1, please.';return;}
+    if(nn>60){document.getElementById('joS').innerHTML=`${nn} people is a crowd &mdash; keep it &le; 60.`;return;}
+    if(kk>999){document.getElementById('joS').innerHTML='count &le; 999, please.';return;}
+    set(nn,kk);
+  }
+  set(10,2);
+  return {step,back,auto,reset,custom};
+})();
+</script>
+</body>
+</html>
