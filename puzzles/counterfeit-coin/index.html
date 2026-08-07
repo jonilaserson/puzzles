@@ -83,7 +83,8 @@ footer{
 }
 @media (max-width:520px){ h1{font-size:30px} }
 
-#ccSvg .coin{cursor:pointer}
+#ccSvg{user-select:none;-webkit-user-select:none}
+#ccSvg .coin{cursor:grab;touch-action:none}
 #ccSvg .coin:hover .body{stroke:var(--amber);stroke-width:2.4}
 #ccSvg.accuse .coin{cursor:crosshair}
 #ccSvg.accuse .coin:hover .body{stroke:var(--coral);stroke-width:2.6}
@@ -130,7 +131,7 @@ footer{
 <div class="stat" id="ccS"></div>
 <div id="fPlay"></div>
 <div class="wlog" id="ccLog"></div>
-<figcaption>Click a coin to move it: bench &rarr; left pan &rarr; right pan &rarr; bench. A dashed circle keeps its seat on the bench. The fake is sly: whenever more than one story fits your weighings so far, the scale answers so that the most stories stay alive.</figcaption>
+<figcaption>Drag a coin onto either pan, or back down to the bench; a click moves it one stop along bench &rarr; left pan &rarr; right pan &rarr; bench. A dashed circle keeps its seat on the bench. The fake is sly: whenever more than one story fits your weighings so far, the scale answers so that the most stories stay alive.</figcaption>
 </figure>
 </section>
 
@@ -158,6 +159,7 @@ const CC=(function(){
   let fake=null;       /* set when the game ends: {c, d} (d=0: never learned) */
   let lines=[];
   const best={};
+  let drag=null, justDragged=false;   /* drag: {i, sx, sy, pid, active} */
 
   const num=s=>[...s].sort((a,b)=>a-b).join(' ');
   const T=(x,y,str,fill,size,wt)=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${wt}" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
@@ -220,9 +222,49 @@ const CC=(function(){
     svg.classList.toggle('accuse',accusing);
     svg.classList.toggle('done',over);
     svg.addEventListener('click',ev=>{
+      if(justDragged){justDragged=false;return;}
       const g=ev.target.closest('.coin');
       if(g) clickCoin(+g.getAttribute('data-i'));
     });
+    /* drag a coin straight to a pan or the bench; a still click keeps cycling */
+    svg.addEventListener('pointerdown',ev=>{
+      if(over||accusing) return;
+      const g=ev.target.closest('.coin');
+      if(!g) return;
+      drag={i:+g.getAttribute('data-i'), sx:ev.clientX, sy:ev.clientY, pid:ev.pointerId, active:false};
+    });
+    svg.addEventListener('pointermove',ev=>{
+      if(!drag) return;
+      if(!drag.active){
+        if(Math.hypot(ev.clientX-drag.sx, ev.clientY-drag.sy)<6) return;
+        drag.active=true;
+        try{svg.setPointerCapture(drag.pid);}catch(e){}
+        const g=svg.querySelector(`.coin[data-i="${drag.i}"]`);
+        if(g) g.setAttribute('opacity','0.25');
+        svg.insertAdjacentHTML('beforeend',
+          `<g id="ccGhost" pointer-events="none" opacity="0.9">${coinSVG(0,0,drag.i,13)}</g>`);
+      }
+      const [x,y]=svgXY(ev);
+      const gh=document.getElementById('ccGhost');
+      if(gh) gh.setAttribute('transform',`translate(${x},${y})`);
+    });
+    svg.addEventListener('pointerup',ev=>{
+      if(!drag) return;
+      const was=drag; drag=null;
+      if(!was.active) return;
+      justDragged=true;
+      const [x,y]=svgXY(ev);
+      dropCoin(was.i,x,y);
+    });
+    svg.addEventListener('pointercancel',()=>{
+      const was=drag; drag=null;
+      if(was&&was.active) draw();
+    });
+  }
+  function svgXY(ev){
+    const svg=document.getElementById('ccSvg');
+    const p=new DOMPoint(ev.clientX,ev.clientY).matrixTransform(svg.getScreenCTM().inverse());
+    return [p.x,p.y];
   }
 
   /* ---------- status & log ---------- */
@@ -256,16 +298,23 @@ const CC=(function(){
     if(n===N) return;
     N=n; fresh();
   }
+  function placed(){
+    const [nl,nr]=sync();
+    if(nl.length===0&&nr.length===0){ say('the pans are empty.'); return; }
+    say(`left pan ${nl.length} &middot; right pan ${nr.length}`+
+        (nl.length===nr.length?' &mdash; press weigh.':' &mdash; pans must hold the same number.'));
+  }
   function clickCoin(i){
     if(over) return;
     if(accusing){ accuse(i); return; }
     pos[i] = pos[i]==='b'?'L' : pos[i]==='L'?'R' : 'b';
     res=null;
-    draw();
-    const [nl,nr]=sync();
-    if(nl.length===0&&nr.length===0){ say('the pans are empty.'); return; }
-    say(`left pan ${nl.length} &middot; right pan ${nr.length}`+
-        (nl.length===nr.length?' &mdash; press weigh.':' &mdash; pans must hold the same number.'));
+    draw(); placed();
+  }
+  function dropCoin(i,x,y){
+    const t = y>BY-18 ? 'b' : (x<PIVX ? 'L' : 'R');
+    if(pos[i]!==t){ pos[i]=t; res=null; }
+    draw(); placed();
   }
   function clearPans(){
     if(over) return;
