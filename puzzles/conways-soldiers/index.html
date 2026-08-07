@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An endless army, and a line to cross</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .up{color:var(--blue);font-weight:600}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+#csSvg .peg{cursor:pointer}
+#csSvg .tgt{cursor:pointer}
+#csSvg text{user-select:none;pointer-events:none}
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">conway's soldiers · peg jumps<span class="proof-cta"> · a visual proof</span></p>
+<h1>An endless army,<br>and a line to cross</h1>
+<p class="sub">Below the line, a soldier on every square, forever. One kind of jump moves them. Each row above the line is harder to reach than the last &mdash; climb as high as you can.</p>
+
+<div class="box">
+  <p><b>The game.</b> Below the line stands an endless army: one soldier on every square. A soldier may jump <b>horizontally or vertically</b> over a soldier right next to it, landing on the empty square just beyond &mdash; and the soldier jumped over <b>leaves the board</b>.</p>
+  <p><b>The puzzle.</b> Send a soldier as high above the line as you can. You may use as many soldiers and as many jumps as you like. <b>How high can a scout get?</b></p>
+  <p>Row 1 is a warm-up; row 2 takes planning. Climb below<span class="proof-cta"> before flipping to the proof</span>.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <button id="csUndo" onclick="CS.undo()">&#8592; undo</button>
+  <button onclick="CS.reset()">reset army</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="csCnt" style="margin:0"></span>
+</div>
+<div class="stat" id="csS"></div>
+<div id="fPlay"></div>
+<figcaption>Click a soldier, then one of its dashed amber squares: a jump straight over a neighbor, two cells at a time; the neighbor leaves the board. The frame is a window on an endless army &mdash; only soldiers inside it can play.</figcaption>
+</figure>
+</section>
+
+<footer class="proof-only">Conway's Soldiers, devised by John Conway (1961). The proof of how high a scout can get &mdash; and no higher &mdash; is his.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const CS=(function(){
+  const XR=10, YTOP=6, YBOT=-11;              /* x in [-XR,XR], y in [YBOT,YTOP] */
+  const C=30, M=25, W=680, H=2*M+(YTOP-YBOT+1)*C;
+  const occ=new Set();
+  let hist=[], sel=null, last=null, best=0;
+  const key=(x,y)=>x+','+y;
+  const PX=x=>M+(x+XR)*C+C/2, PY=y=>M+(YTOP-y)*C+C/2;
+
+  function fill(){
+    occ.clear();
+    for(let x=-XR;x<=XR;x++) for(let y=YBOT;y<=0;y++) occ.add(key(x,y));
+  }
+  function targets(x,y){
+    const t=[];
+    for(const [dx,dy] of [[2,0],[-2,0],[0,2],[0,-2]]){
+      const tx=x+dx, ty=y+dy;
+      if(tx<-XR||tx>XR||ty<YBOT||ty>YTOP) continue;
+      if(occ.has(key(x+dx/2,y+dy/2)) && !occ.has(key(tx,ty))) t.push([tx,ty]);
+    }
+    return t;
+  }
+  const highNow=()=>{
+    let h=0;
+    for(const k of occ){ const y=+k.split(',')[1]; if(y>h) h=y; }
+    return h;
+  };
+
+  function draw(){
+    const tg = sel ? targets(sel.x,sel.y) : [];
+    const isT=(x,y)=>tg.some(([a,b])=>a===x&&b===y);
+    let s='';
+    /* the line */
+    s+=`<line x1="${M-4}" y1="${PY(1)+C/2}" x2="${W-M+4}" y2="${PY(1)+C/2}" stroke="#1E1B16" stroke-width="2.5" stroke-linecap="round"/>`;
+    /* row labels above the line */
+    for(let y=1;y<=YTOP;y++)
+      s+=`<text x="${M-11}" y="${PY(y)}" fill="#6c655a" font-size="10" font-weight="500" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${y}</text>`;
+    for(let y=YTOP;y>=YBOT;y--){
+      for(let x=-XR;x<=XR;x++){
+        const cx=PX(x), cy=PY(y);
+        if(occ.has(key(x,y))){
+          const isSel = sel && sel.x===x && sel.y===y;
+          const isLast = last && last.x===x && last.y===y;
+          s+=`<g class="peg" data-x="${x}" data-y="${y}">`;
+          s+=`<circle cx="${cx}" cy="${cy}" r="${C/2-3.2}" fill="${isLast?'#d99f3f':'#5f92a6'}" ${isSel?`stroke="#a8641f" stroke-width="2.6"`:''} ${y===YBOT?'opacity="0.5"':''}/>`;
+          s+=`</g>`;
+        }else if(isT(x,y)){
+          s+=`<rect class="tgt" data-x="${x}" data-y="${y}" x="${cx-C/2+3}" y="${cy-C/2+3}" width="${C-6}" height="${C-6}" rx="5" fill="none" stroke="#a8641f" stroke-width="2" stroke-dasharray="5 4"/>`;
+        }else{
+          s+=`<rect x="${cx-C/2+3.5}" y="${cy-C/2+3.5}" width="${C-7}" height="${C-7}" rx="5" fill="none" stroke="${y>0?'#e7ddc6':'#c9bd9e'}" stroke-width="1.1" stroke-dasharray="4 3" ${sel?'pointer-events="none"':''}/>`;
+        }
+      }
+    }
+    document.getElementById('fPlay').innerHTML=
+      `<svg id="csSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+    document.getElementById('csSvg').addEventListener('click',ev=>{
+      const el=ev.target.closest('[data-x]');
+      if(!el){ if(sel){sel=null;draw();} return; }
+      const x=+el.getAttribute('data-x'), y=+el.getAttribute('data-y');
+      if(el.classList.contains('peg')){
+        sel = (sel&&sel.x===x&&sel.y===y) ? null : {x,y};
+        draw();
+      }else if(el.classList.contains('tgt')){
+        jump(sel.x,sel.y,x,y);
+      }
+    });
+  }
+
+  const say=h=>{document.getElementById('csS').innerHTML=h;};
+  function sync(){
+    const h=highNow();
+    if(h>best) best=h;
+    document.getElementById('csCnt').innerHTML=
+      `jumps <b>${hist.length}</b> &nbsp;·&nbsp; highest row: <b>${h||'&mdash;'}</b>${best?` &nbsp;·&nbsp; best this session: <b>${best}</b>`:''}`;
+    document.getElementById('csUndo').disabled=(hist.length===0);
+  }
+
+  function jump(x,y,tx,ty){
+    const mx=(x+tx)/2, my=(y+ty)/2;
+    const before=highNow();
+    occ.delete(key(x,y)); occ.delete(key(mx,my)); occ.add(key(tx,ty));
+    hist.push({x,y,mx,my,tx,ty});
+    sel=null; last={x:tx,y:ty};
+    draw(); sync();
+    const h=highNow();
+    if(ty>0&&ty>before) say(`a soldier stands on <span class="up">row ${ty}</span> &mdash; the highest of this game.`);
+    else say(`jump ${hist.length}.`);
+  }
+  function undo(){
+    const m=hist.pop();
+    if(!m) return;
+    occ.delete(key(m.tx,m.ty)); occ.add(key(m.mx,m.my)); occ.add(key(m.x,m.y));
+    sel=null; last=hist.length?{x:hist[hist.length-1].tx,y:hist[hist.length-1].ty}:null;
+    draw(); sync();
+    say(`undone &mdash; ${hist.length} jump${hist.length===1?'':'s'} stand.`);
+  }
+  function reset(){
+    fill(); hist=[]; sel=null; last=null;
+    draw(); sync();
+    say('a fresh army. click a soldier.');
+  }
+
+  reset();
+  return {undo,reset};
+})();
+</script>
+</body>
+</html>

@@ -11,4 +11,5 @@ window.PUZZLE_STATE = {
   "josephus":       { published: true, proof: false },
   "last-stone":     { published: true, proof: false },
   "counterfeit-coin": { published: true, proof: false },
+  "conways-soldiers": { published: true, proof: false },
 };
