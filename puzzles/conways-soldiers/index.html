@@ -171,7 +171,7 @@ const CS=(function(){
           s+=`<circle cx="${cx}" cy="${cy}" r="${C/2-3.2}" fill="${isLast?'#d99f3f':'#5f92a6'}" ${isSel?`stroke="#a8641f" stroke-width="2.6"`:''} ${y===YBOT?'opacity="0.5"':''}/>`;
           s+=`</g>`;
         }else if(isT(x,y)){
-          s+=`<rect class="tgt" data-x="${x}" data-y="${y}" x="${cx-C/2+3}" y="${cy-C/2+3}" width="${C-6}" height="${C-6}" rx="5" fill="none" stroke="#a8641f" stroke-width="2" stroke-dasharray="5 4"/>`;
+          s+=`<rect class="tgt" data-x="${x}" data-y="${y}" x="${cx-C/2+3}" y="${cy-C/2+3}" width="${C-6}" height="${C-6}" rx="5" fill="none" pointer-events="all" stroke="#a8641f" stroke-width="2" stroke-dasharray="5 4"/>`;
         }else{
           s+=`<rect x="${cx-C/2+3.5}" y="${cy-C/2+3.5}" width="${C-7}" height="${C-7}" rx="5" fill="none" stroke="${y>0?'#e7ddc6':'#c9bd9e'}" stroke-width="1.1" stroke-dasharray="4 3" ${sel?'pointer-events="none"':''}/>`;
         }
@@ -186,6 +186,9 @@ const CS=(function(){
       if(el.classList.contains('peg')){
         sel = (sel&&sel.x===x&&sel.y===y) ? null : {x,y};
         draw();
+        if(sel) say(targets(sel.x,sel.y).length
+          ? 'now click a dashed amber square to land there.'
+          : 'this soldier has nowhere to jump.');
       }else if(el.classList.contains('tgt')){
         jump(sel.x,sel.y,x,y);
       }
