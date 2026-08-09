@@ -230,6 +230,37 @@ footer{
 
 <p>Set the count to 2 and the recurrence retells the record: the survivor's seat climbs by two per circle, and every wrap lands it back on seat 1. These wraps are the resets at the powers of two. Why can a wrap land only on seat 1?</p>
 
+<h2><span class="n">06</span> The distance to go</h2>
+
+<p>Measure the survivor not by his seat but by what the seat lacks &mdash; the distance to go:</p>
+<p class="mono">D = kn + 1 &minus; seat</p>
+<p>Along a climb, each circle adds k to the seat and k to kn&thinsp;+&thinsp;1, so D stands still. All the motion of the graph is in the wraps.</p>
+
+<p>A wrap at circle size n throws the seat down by n, so it lifts D by n. And it fires as soon as the seat can overshoot the circle: seat&thinsp;+&thinsp;k &gt; n, which written in D reads (k&minus;1)n &ge; D. So the wraps compute themselves:</p>
+<p class="mono">wrap at n = &lceil;D/(k&minus;1)&rceil;, &ensp; landing on seat (k&minus;1)n + 1 &minus; D, &ensp; lifting D to &lceil;kD/(k&minus;1)&rceil;</p>
+
+<p>The landing seat sits between 1 and k&minus;1. At k = 2 nothing is rounded: (k&minus;1)n equals D exactly, so every wrap lands on seat 1 &mdash; the question above &mdash; and D doubles, running the powers of two of the record. At k = 3, D grows by half instead, and the rounding wobbles each landing between seat 1 and seat 2: every tooth of the graph above bottoms out on one of those two seats.</p>
+
+<div class="fact"><b>Fact 3.</b> Start at D = k, a circle of one. Grow D &rarr; &lceil;kD/(k&minus;1)&rceil; while D &le; (k&minus;1)n. The survivor is seat <b>kn + 1 &minus; D</b>.</div>
+
+<p>This is what Josephus could do standing in the cave &mdash; no circle, no counting, one number in his head, grown by half and rounded up:</p>
+<p class="mono">3, 5, 8, 12, 18, 27, 41, 62, 93 &mdash; past 2&middot;41, stop: &ensp; seat = 3&middot;41 + 1 &minus; 93 = <b>31</b></p>
+<p>Nine numbers for forty-one men: the chant takes about log n wraps, not n circles.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">people:</span>
+  <input class="pgIn" id="chN" value="41" style="width:72px" onkeydown="if(event.key==='Enter')CH.go()">
+  <span class="lab">count:</span>
+  <span class="seg"><input class="pgIn" id="chK" value="3" style="width:48px" onkeydown="if(event.key==='Enter')CH.go()"><button class="prime" onclick="CH.go()">chant</button></span>
+</div>
+<div class="stat" id="chS"></div>
+<p class="mono" id="pf7"></p>
+<figcaption>Josephus' own case. Try k = 2: the chant runs the powers of two, and n = 41 lands on seat 19 &mdash; the rotation of section 04.</figcaption>
+</figure>
+
+<p>Only the roundings stand between this chant and a closed formula: each wobble is one bit a formula would have to call in advance, and past k = 2 nobody knows how. The chant, one wrap at a time, is the best there is.</p>
+
 </section>
 
 <footer>Named for Flavius Josephus, who &mdash; the story goes &mdash; stood in a circle of 41 rebels counting off every third man, and talked his way out of the whole affair by knowing where to stand.</footer>
@@ -553,6 +584,24 @@ const LD=(function(){
   }
   set(41,3);
   return {step,auto,reset,custom};
+})();
+
+/* PF7 — the chant: D -> ceil(kD/(k-1)) */
+const CH=(function(){
+  function go(){
+    const S=document.getElementById('chS'), P=document.getElementById('pf7');
+    const n=parseInt(document.getElementById('chN').value,10);
+    const k=parseInt(document.getElementById('chK').value,10);
+    if(!(n>=1)||!(k>=2)){S.innerHTML='people &ge; 1 and count &ge; 2, please.';P.innerHTML='';return;}
+    if(n>10000000){S.innerHTML='n &le; 10000000, please.';P.innerHTML='';return;}
+    let D=k; const chant=[D];
+    while(D<=(k-1)*n){D+=Math.ceil(D/(k-1));chant.push(D);}
+    if(chant.length>60){S.innerHTML=`that chant runs ${chant.length-1} wraps &mdash; a smaller count or crowd, please.`;P.innerHTML='';return;}
+    S.innerHTML=`${chant.length-1} wraps; &ensp;seat = ${k}&middot;${n} + 1 &minus; ${D} = <b>${k*n+1-D}</b>`;
+    P.innerHTML=chant.join(' &rarr; ');
+  }
+  go();
+  return {go};
 })();
 </script>
 </body>
