@@ -161,12 +161,16 @@ footer{
 <div class="fact"><b>Fact 1.</b> On square boards the opener wins: erase all but the last row and column, then mirror.</div>
 
 <h2><span class="n">02</span> Every board: steal the win</h2>
-<p>Boards are finite and every move erases at least one square, so no game loops or draws: every board hands one of the two players a forced win &mdash; but which?</p>
-<p>Suppose the smallest opening &mdash; the corner square alone &mdash; loses. Then some reply beats it: a rectangle that leaves the opener facing a board with no winning move. But every rectangle covers the corner square, so played as the opening instead, the same rectangle builds the same board &mdash; with the answerer now facing it.</p>
-<p>Hence one of two openings wins: the corner square, or the reply that would have beaten it.</p>
+<p>Boards are finite and every move erases at least one square, so no game loops or draws: one of the two players can force the win &mdash; but which?</p>
+<p>Assume it is the answerer.</p>
+<p>Let the opener open with the smallest move: the corner square alone.</p>
+<p>Let <span class="mono">m</span> be the answerer's reply on the way to their win.</p>
+<p>Every rectangle covers the corner square, so <span class="mono">m</span>, played as the opening instead, leaves the very same board.</p>
+<p>Hence the opener could have forced that same win &mdash; contradiction.</p>
+<p>Therefore the opener can force the win, on every board bigger than 1&times;1.</p>
 
 <figure><div id="pf2"></div>
-<figcaption>A 4&times;6 board, where the corner opening loses &mdash; to exactly one reply, 3&times;4. Left: the corner opening (move 1), then that reply (move 2). Right: the same rectangle as the opening. The boards match, and whoever must move next is lost: the opener on the left, the answerer on the right.</figcaption></figure>
+<figcaption>A 4&times;6 board, where the corner opening loses; the only winning reply <b>m</b> is 3&times;4. Left: the corner opening (1), then <b>m</b> (2). Right: <b>m</b> as the opening. The boards match, and whoever must move next is lost: the opener on the left, the answerer on the right.</figcaption></figure>
 
 <div class="fact"><b>Fact 2.</b> On every board bigger than 1&times;1, the opener can force the win.</div>
 
