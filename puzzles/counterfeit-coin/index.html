@@ -40,6 +40,23 @@ h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);l
 p{margin:9px 0;color:#463f31}
 p b{font-weight:600;color:var(--ink)}
 .box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.note{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue);min-height:20px;margin-top:6px}
+.tb{font-family:'JetBrains Mono',monospace;font-size:13px;border-collapse:collapse;margin:14px auto}
+.tb th{font-weight:600;color:var(--ink-soft);font-size:11px;padding:3px 16px;border-bottom:1px solid var(--line)}
+.tb td{padding:3px 16px;text-align:center;color:#463f31}
+.tb tr.hl td{color:var(--amber);font-weight:600}
 figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
 figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
 figcaption b{color:var(--ink);font-weight:600}
@@ -133,6 +150,100 @@ footer{
 <div class="wlog" id="ccLog"></div>
 <figcaption>Drag a coin onto either pan, or back down to the bench; a click moves it one stop along bench &rarr; left pan &rarr; right pan &rarr; bench. A dashed circle keeps its seat on the bench. The fake is sly: whenever more than one story fits your weighings so far, the scale answers so that the most stories stay alive.</figcaption>
 </figure>
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> Twenty-four stories</h2>
+<p>There are 12 coins, one of them is heavier or lighter than the others. Hence there are 24 possible <b>stories</b>. A <b>story</b> is the fake coin's number, and the direction.</p>
+<p>Each weighing ends in one of three answers: the left pan sinks, the right pan sinks, or the scale balances.</p>
+
+<figure><div id="pf1"></div>
+<figcaption>The three answers: L (left sinks), B (balance), R (right sinks).</figcaption></figure>
+
+<p>A <b>plan</b> says what to load on the pans at each weighing &mdash; each choice may depend on the answers so far &mdash; and at the end should provide enough information to decide which story is true.</p>
+<p>A plan of two weighings can end in at most 3 &times; 3 = 9 different ways. Since 9 &lt; 24, two weighings are not enough. A plan of three weighings can end in 3&sup3; = 27 ways, and 27 &ge; 24 &mdash; so three weighings might be enough.</p>
+
+<div class="fact"><b>Fact 1.</b> <b>At least three weighings are necessary.</b></div>
+
+<h2><span class="n">02</span> Three bins</h2>
+<p>Each story determines the answer of any weighing. On a pan, the fake sinks it if heavier and lifts it if lighter; on the bench, it leaves the scale balanced.</p>
+<p>Each weighing partitions the possible stories into three <b>bins</b>. The answer keeps one bin and rules out the other two.</p>
+
+<figure><div id="pf2"></div>
+<figcaption>The 24 stories, binned by the first weighing.</figcaption></figure>
+
+<p>After the first weighing, the two weighings that remain can end in at most 9 ways. Hence every bin of the first weighing must hold at most 9 stories &mdash; the answer might land there.</p>
+<p>Now bin the 24 stories under every possible first weighing:</p>
+
+<table class="tb">
+<tr><th>first weighing</th><th>L</th><th>B</th><th>R</th><th></th></tr>
+<tr><td>1 v 1</td><td>2</td><td>20</td><td>2</td><td>balance 20 &gt; 9</td></tr>
+<tr><td>2 v 2</td><td>4</td><td>16</td><td>4</td><td>balance 16 &gt; 9</td></tr>
+<tr><td>3 v 3</td><td>6</td><td>12</td><td>6</td><td>balance 12 &gt; 9</td></tr>
+<tr class="hl"><td>4 v 4</td><td>8</td><td>8</td><td>8</td><td>fits</td></tr>
+<tr><td>5 v 5</td><td>10</td><td>4</td><td>10</td><td>tipped 10 &gt; 9</td></tr>
+<tr><td>6 v 6</td><td>12</td><td>0</td><td>12</td><td>tipped 12 &gt; 9</td></tr>
+</table>
+
+<div class="fact"><b>Fact 2.</b> The first weighing must be <b>4 v 4</b>.</div>
+
+<h2><span class="n">03</span> Twelve words</h2>
+<p>Now is the time to decide what the weighings will be. Each could depend on the answers before it &mdash; but in fact, we will show a single plan that fixes all three in advance.</p>
+<p>In each weighing, a coin sits in one of three places: the left pan, the right pan, or the bench &mdash; the letters L, R, and B. A coin's places in the three weighings spell its three-letter <b>word</b>:</p>
+
+<figure><div id="pf3"></div>
+<figcaption>Each coin's word reads downward; each row is one weighing. Row #2 puts coins 1, 2, 3, 5 on the left pan and coins 4, 9, 10, 11 on the right.</figcaption></figure>
+
+<p>Suppose coin 8 is heavier. Weighing #1 answers R: coin 8 sinks the right pan. Weighings #2 and #3 answer B: coin 8 waits on the bench, and the pans hold only true coins. The three answers spell RBB &mdash; exactly coin 8's word.</p>
+<p>Every coin works the same way: a heavier fake spells its own word. A lighter fake tips every weighing the other way &mdash; coin 8 lighter spells LBB, its word with L and R swapped: its <b>mirror</b>.</p>
+
+<p>For the plan to work, the 24 stories must spell 24 different answers. Check the list: every row holds four L and four R, so each weighing is 4 v 4, as Fact 2 demands. No two words are equal, so no two heavier fakes spell alike. No word is another's mirror, so a heavier fake never spells like a lighter one &mdash; and BBB, the one word that is its own mirror, was left out. Hence all 24 spellings differ, and the three answers you hear name the fake and its direction.</p>
+
+<div class="fact"><b>Fact 3.</b> Three weighings suffice for twelve coins &mdash; fake and direction &mdash; with all three weighings fixed in advance.</div>
+
+<figure>
+<div class="ctl">
+  <span class="lab">story:</span>
+  <span class="seg"><button id="pwCm" onclick="PW.coin(-1)">&minus;</button><button id="pwC" class="ro" tabindex="-1">7</button><button id="pwCp" onclick="PW.coin(1)">+</button></span>
+  <span class="seg"><button id="pwH" onclick="PW.dir(1)">heavier</button><button id="pwLt" onclick="PW.dir(-1)">lighter</button></span>
+  <span style="flex:1"></span>
+  <button id="pwGo" class="prime" onclick="PW.go()">weigh #1</button>
+  <button onclick="PW.reset()">reset</button>
+</div>
+<div class="stat" id="pwS"></div>
+<div id="pwFig"></div>
+<div class="note" id="pwN"></div>
+<figcaption>Pick a story and run the plan. The answers spell the fake coin's word, mirrored when it is lighter.</figcaption>
+</figure>
+
+<h2><span class="n">04</span> The thirteenth coin</h2>
+<p>Now add a thirteenth coin: 26 stories. The plan above never used the word BBB &mdash; give it to coin 13, and bench it in all three weighings. Coin 13 heavier spells BBB; coin 13 lighter spells BBB too, since BBB is its own mirror. The other 24 stories spell their answers as before, all different. Hence three balances convict coin 13 &mdash; and its direction is never learned: it never sat on a pan.</p>
+
+<figure><div id="pf5"></div>
+<figcaption>Coin 13 wears BBB: three balances prove coins 1&ndash;12 genuine and name the fake from the bench.</figcaption></figure>
+
+<p>Could a cleverer plan learn the direction too? Bin the 26 stories under every possible first weighing:</p>
+
+<table class="tb">
+<tr><th>first weighing</th><th>L</th><th>B</th><th>R</th><th></th></tr>
+<tr><td>1 v 1</td><td>2</td><td>22</td><td>2</td><td>balance 22 &gt; 9</td></tr>
+<tr><td>2 v 2</td><td>4</td><td>18</td><td>4</td><td>balance 18 &gt; 9</td></tr>
+<tr><td>3 v 3</td><td>6</td><td>14</td><td>6</td><td>balance 14 &gt; 9</td></tr>
+<tr class="hl"><td>4 v 4</td><td>8</td><td>10</td><td>8</td><td>balance 10 &gt; 9</td></tr>
+<tr><td>5 v 5</td><td>10</td><td>6</td><td>10</td><td>tipped 10 &gt; 9</td></tr>
+<tr><td>6 v 6</td><td>12</td><td>2</td><td>12</td><td>tipped 12 &gt; 9</td></tr>
+</table>
+
+<p>Every first weighing leaves a bin of ten stories or more, and the two weighings that remain can end in at most 9 ways. So two stories in that bin spell the same answer. On a pan a coin's two stories tip opposite ways, so a heavier-and-lighter pair can spell alike only from the bench &mdash; benched to the end, both spelling BB. Now, if the two sharing stories name different coins, the plan cannot even name the fake. If they are one coin's benched pair, the fake is named and the direction is the loss. Either way, no plan can promise the direction of a thirteenth coin.</p>
+
+<div class="fact"><b>Fact 4.</b> Thirteen coins: three weighings always name the fake, but no plan can promise its direction.</div>
+
+<h2><span class="n">05</span> Fourteen, and beyond</h2>
+<p>Fourteen coins make 28 stories &mdash; more than the 27 ways three weighings can end. Two stories must spell the same answer, so no plan learns fake and direction both. Even the name is out of reach: a tipped bin holds one story per pan coin and must stay within 9, so each pan holds at most four coins. Then at least six coins sit on the bench, and the balance bin holds their twelve stories: six pairs. A pair can share only the answer BB, and only one pair can have it. The other five pairs need ten different answers, and only eight remain. Hence fourteen coins need a fourth weighing.</p>
+<p>The same counts run for any number of weighings and close at a formula: <b>w weighings name the fake and its direction among (3<sup>w</sup>&thinsp;&minus;&thinsp;3)/2 coins</b>, and one coin more when the direction may stay unknown. The sequence runs 3, 12, 39, 120, &hellip; The play bench tops out at 30 coins, well within four weighings.</p>
+<p>A last question. Borrow one extra coin that is known genuine. Three weighings can now name the fake among thirteen coins, direction included. Which count does the borrowed coin loosen?</p>
+
 </section>
 
 <footer>A wartime classic: the twelve-coin problem swept the common rooms of the 1940s fast enough to be blamed, half-seriously, for slowing the war effort.</footer>
@@ -365,6 +476,181 @@ const CC=(function(){
 
   fresh();
   return {coins,weigh,accuseMode,clearPans,fresh};
+})();
+
+/* ---------- proof figures & widget ---------- */
+const PW=(function(){
+  const WORDS=['LLL','LLR','LL.','LRL','RL.','R.L','R.R','R..','.RL','.RR','.R.','..R'];
+  const MIR={L:'R',R:'L','.':'.'};
+  const LC='#a8641f', RC='#356a7d', DC='#8a8072', SOFT='#6c655a',
+        GOLD='#e8d59a', GLN='#ab9257', GTX='#6b5a2a',
+        COR='#bb3b27', CORL='#7e2417', GHOST='#c9bd9e', AMBF='#d99f3f';
+  const T=(x,y,str,fill,size=12,wt=600,an='middle')=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${wt}" text-anchor="${an}" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+  const SVG=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
+  const el=(id,html)=>{document.getElementById(id).innerHTML=html;};
+  const coin=(x,y,r,i,fake)=>{
+    const f=fake?COR:GOLD, l=fake?CORL:GLN, tx=fake?'#fffdf6':GTX;
+    return `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="${l}" stroke-width="1.4"/>`+
+           `<circle cx="${x}" cy="${y}" r="${r-3}" fill="none" stroke="${l}" stroke-width="0.7" opacity="0.55"/>`+
+           (i?T(x,y,i,tx, r>=11?10.5: r>=9?8:7.5):'');
+  };
+  const lcol=ch=>ch==='L'?LC:ch==='R'?RC:DC;
+  const disp=ch=>ch==='.'?'B':ch;
+  const wsets=k=>{const L=[],R=[];WORDS.forEach((w,i)=>{if(w[k]==='L')L.push(i+1);if(w[k]==='R')R.push(i+1);});return [L,R];};
+  /* a balance scale; res 'L' = left sinks, 'R' = right sinks, '=' level */
+  function scale(px,py,arm,drop,hang,plate,res,standLen,baseW){
+    const a=(res==='L'?1:res==='R'?-1:0)*7*Math.PI/180;
+    const e=[[px-arm*Math.cos(a),py+arm*Math.sin(a)],[px+arm*Math.cos(a),py-arm*Math.sin(a)]];
+    let s=`<line x1="${px}" y1="${py}" x2="${px}" y2="${py+standLen}" stroke="#8a8072" stroke-width="3" stroke-linecap="round"/>`;
+    s+=`<line x1="${px-baseW}" y1="${py+standLen+2}" x2="${px+baseW}" y2="${py+standLen+2}" stroke="#8a8072" stroke-width="3" stroke-linecap="round"/>`;
+    s+=`<line x1="${e[0][0]}" y1="${e[0][1]}" x2="${e[1][0]}" y2="${e[1][1]}" stroke="#5d4730" stroke-width="4" stroke-linecap="round"/>`;
+    s+=`<circle cx="${px}" cy="${py}" r="4" fill="#5d4730"/>`;
+    const pans=[];
+    for(const [ex,ey] of e){
+      const pyl=ey+drop;
+      s+=`<line x1="${ex}" y1="${ey}" x2="${ex-hang}" y2="${pyl}" stroke="#8a8072" stroke-width="1.2"/>`;
+      s+=`<line x1="${ex}" y1="${ey}" x2="${ex+hang}" y2="${pyl}" stroke="#8a8072" stroke-width="1.2"/>`;
+      s+=`<line x1="${ex-plate}" y1="${pyl}" x2="${ex+plate}" y2="${pyl}" stroke="#5d4730" stroke-width="3.2" stroke-linecap="round"/>`;
+      pans.push([ex,pyl]);
+    }
+    return {s,pans};
+  }
+
+  /* F1 - the three answers, lettered */
+  (function(){
+    const items=[['L','left sinks'],['=','balance'],['R','right sinks']];
+    let s=''; const cx=[150,340,530];
+    items.forEach(([res,label],k)=>{
+      const sc=scale(cx[k],26,52,26,24,34,res,52,20);
+      s+=sc.s;
+      for(const [pxx,pyy] of sc.pans) s+=coin(pxx-10,pyy-11,9,'',false)+coin(pxx+10,pyy-11,9,'',false);
+      s+=T(cx[k],104, res==='='?'B':res, lcol(res==='='?'.':res),20,600);
+      s+=T(cx[k],126,label,SOFT,11,500);
+    });
+    el('pf1',SVG(680,140,s));
+  })();
+
+  /* F2 - the 24 stories binned by 6v6 vs 4v4 */
+  (function(){
+    const panels=[
+      {x0:10, title:'6 v 6: pans 1–6 | 7–12', L:[1,2,3,4,5,6], R:[7,8,9,10,11,12]},
+      {x0:352,title:'4 v 4: pans 1–4 | 5–8',  L:[1,2,3,4],     R:[5,6,7,8]}
+    ];
+    let s='';
+    for(const P of panels){
+      const gx=P.x0+66, pitch=22, r=9.5;
+      s+=T(P.x0,12,P.title,SOFT,11.5,500,'start');
+      const bins={L:0,R:0,'.':0};
+      [['heavier',1],['lighter',-1]].forEach(([lab,d],ri)=>{
+        const y=40+ri*24;
+        s+=T(P.x0+50,y,lab,SOFT,10,500,'end');
+        for(let i=1;i<=12;i++){
+          const b = P.L.includes(i) ? (d>0?'L':'R') : P.R.includes(i) ? (d>0?'R':'L') : '.';
+          bins[b]++;
+          const x=gx+(i-1)*pitch;
+          if(b==='.')      s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${GHOST}" stroke-width="1.2" stroke-dasharray="3 2.5"/>`+T(x,y,i,SOFT,8,500);
+          else if(b==='L') s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${AMBF}" stroke="${LC}" stroke-width="1"/>`+T(x,y,i,'#4a2c07',8,600);
+          else             s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${RC}"/>`+T(x,y,i,'#fffdf6',8,600);
+        }
+      });
+      const cy=98;
+      s+=T(gx+30,cy,`L ${bins.L}`,LC,12);
+      s+=T(gx+118,cy,`B ${bins['.']}`,DC,12);
+      s+=T(gx+206,cy,`R ${bins.R}`,RC,12);
+    }
+    el('pf2',SVG(680,112,s));
+  })();
+
+  /* F3 - the word list */
+  (function(){
+    let s='';
+    const x=i=>116+(i-1)*44;
+    for(let i=1;i<=12;i++) s+=coin(x(i),26,12.5,i,false);
+    ['#1','#2','#3'].forEach((lab,k)=>{
+      const y=64+k*28;
+      s+=T(84,y,lab,SOFT,11,600,'end');
+      for(let i=1;i<=12;i++){
+        const ch=WORDS[i-1][k];
+        s+=T(x(i),y,disp(ch),lcol(ch),14.5,600);
+      }
+    });
+    el('pf3',SVG(680,140,s));
+  })();
+
+  /* F5 - the all-balance path with coin 13 on the bench */
+  (function(){
+    let s=''; const cx=[115,340,565];
+    for(let k=0;k<3;k++){
+      const [L,R]=wsets(k);
+      s+=T(cx[k],10,'#'+(k+1),SOFT,11,600);
+      const sc=scale(cx[k],30,58,26,30,44,'=',56,22);
+      s+=sc.s;
+      [[L,sc.pans[0]],[R,sc.pans[1]]].forEach(([set,[pxx,pyy]])=>{
+        set.forEach((ci,j)=> s+=coin(pxx+(j-1.5)*19,pyy-11,9,ci,false));
+      });
+      s+=T(cx[k],104,'balance',DC,10.5,600);
+    }
+    s+=`<line x1="250" y1="164" x2="430" y2="164" stroke="${GHOST}" stroke-width="1.6" stroke-linecap="round"/>`;
+    s+=coin(340,148,14,13,true);
+    s+=T(340,182,'coin 13 never touches a pan',SOFT,11,500);
+    el('pf5',SVG(680,196,s));
+  })();
+
+  /* the plan, run against a chosen story */
+  const BY=196, SEATX=i=>153+(i-1)*34;
+  let c=7, dir=1, t=0;
+  const ans=k=> dir>0 ? WORDS[c-1][k] : MIR[WORDS[c-1][k]];
+  function draw(){
+    const res = t===0 ? '=' : (ans(t-1)==='.'?'=':ans(t-1));
+    const sc=scale(340,48,130,58,42,58,res,112,38);
+    let s=sc.s;
+    if(t>0){
+      const [L,R]=wsets(t-1);
+      [[L,sc.pans[0]],[R,sc.pans[1]]].forEach(([set,[pxx,pyy]])=>{
+        set.forEach((ci,j)=> s+=coin(pxx+(j-1.5)*25,pyy-13,11.5,ci,ci===c));
+      });
+    }
+    const onPan=new Set(t>0 ? wsets(t-1).flat() : []);
+    for(let i=1;i<=12;i++){
+      if(onPan.has(i)) s+=`<circle cx="${SEATX(i)}" cy="${BY}" r="12" fill="none" stroke="${GHOST}" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      else s+=coin(SEATX(i),BY,13,i,i===c);
+    }
+    el('pwFig',SVG(680,218,s));
+  }
+  const wordSpan=n=>{
+    let h='';
+    for(let k=0;k<n;k++) h+=`<span style="color:${lcol(ans(k))};font-weight:600">${disp(ans(k))}</span> `;
+    return h.trim();
+  };
+  function refresh(){
+    draw();
+    const dw=dir>0?'heavier':'lighter';
+    document.getElementById('pwC').textContent=c;
+    document.getElementById('pwCm').disabled=c<=1;
+    document.getElementById('pwCp').disabled=c>=12;
+    document.getElementById('pwH').classList.toggle('prime',dir>0);
+    document.getElementById('pwLt').classList.toggle('prime',dir<0);
+    const go=document.getElementById('pwGo');
+    go.disabled=t>=3;
+    go.textContent='weigh #'+Math.min(t+1,3);
+    let st, note='';
+    if(t===0) st=`the story: <b>coin ${c}, ${dw}</b> &mdash; press weigh #1.`;
+    else{
+      const [L,R]=wsets(t-1), ch=ans(t-1);
+      const word= ch==='L'?'left sinks' : ch==='R'?'right sinks' : 'balance';
+      st=`weighing ${t} (${L.join(' ')} | ${R.join(' ')}): <b>${word}</b>.`;
+      note = t<3 ? `word so far: ${wordSpan(t)}`
+        : `answer ${wordSpan(3)} &mdash; coin ${c}'s word${dir<0?', mirrored':''} &mdash; <b>coin ${c}, ${dw}</b>.`;
+    }
+    document.getElementById('pwS').innerHTML=st;
+    document.getElementById('pwN').innerHTML=note;
+  }
+  function coinStep(d){const n=Math.max(1,Math.min(12,c+d)); if(n!==c){c=n;t=0;refresh();}}
+  function dirSet(d){if(d!==dir){dir=d;t=0;refresh();}}
+  function go(){if(t<3){t++;refresh();}}
+  function reset(){if(t>0){t=0;refresh();}else refresh();}
+  refresh();
+  return {coin:coinStep,dir:dirSet,go,reset};
 })();
 </script>
 </body>
