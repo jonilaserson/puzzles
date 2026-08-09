@@ -37,6 +37,19 @@ main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
 .kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
 h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
 .sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
 p{margin:9px 0;color:#463f31}
 p b{font-weight:600;color:var(--ink)}
 .box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
@@ -87,7 +100,7 @@ footer{
 }
 @media (max-width:520px){ h1{font-size:30px} }
 
-#lsSvg .zone{cursor:pointer}
+#lsSvg .zone,#pfSvg .zone{cursor:pointer}
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
@@ -126,6 +139,79 @@ footer{
 <div class="hist" id="lsHist"></div>
 <figcaption>Click a stone to take it and every stone after it; amber rings mark the stones your cap lets you reach. Taken stones stay as dashed circles, labeled by who took them. Finished piles are recorded under the stones &mdash; hunt for the sizes where the site cannot be beaten.</figcaption>
 </figure>
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> The record</h2>
+<p>The piles where the site cannot be beaten &mdash; even when you open &mdash; are 2, 3, 5, 8, 13, 21, 34, &hellip; Set a 1 in front of the list, and each number is the sum of the two before it: the <b>Fibonacci numbers</b>.</p>
+
+<figure><div id="pf1"></div>
+<figcaption>The lost piles, stacked. Each row is the two rows above it, laid end to end: the darker stones copy the row above, the lighter stones the row before that.</figcaption></figure>
+
+<h2><span class="n">02</span> Blocks</h2>
+<p>What about the piles off the list? Break off the largest Fibonacci number that fits, and repeat: from 20 break 13, from the leftover 7 break 5, and 2 remains. Every pile splits into <b>blocks</b>. A Fibonacci pile is a single block, taken whole at the first break.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">pile:</span>
+  <span class="seg"><input class="pgIn" id="pfIn" value="20" style="width:56px" onkeydown="if(event.key==='Enter')PZ.custom()"><button onclick="PZ.custom()">set</button></span>
+</div>
+<div class="stat" id="pfZS"></div>
+<div id="pf2"></div>
+<figcaption>Type a pile and see its split. Try the piles around a Fibonacci number: 33, 34, 35.</figcaption>
+</figure>
+
+<p>A remainder never reaches the Fibonacci number just below the block it left. Watch the 13 broken from 20: a remainder of 8 or more would mean the pile holds 13 + 8 = 21, so 21 would have been broken off instead. The remainder is 7, so the next block is at most 5. And 13 is more than twice 5:</p>
+<p class="mono">13 = 8 + 5 &gt; 5 + 5</p>
+
+<div class="fact"><b>Fact 1.</b> In a split, each block is more than twice the block after it &mdash; the blocks are <b>spaced</b>.</div>
+
+<p>Could a pile split into spaced blocks in a second way? Spaced blocks kept below some Fibonacci number can never reach it. Below 13, the top block is at most 8; the next must stay under half of 8 (Fact 1), so it is at most 3; the block after that stays under half of 3, so it is at most 1; and nothing fits under half of 1. The total:</p>
+<p class="mono">8 + 3 + 1 = 12</p>
+
+<figure><div id="pf2b"></div>
+<figcaption>The tightest spaced packing below 13: one stone short.</figcaption></figure>
+
+<p>The shortfall nests: 3 + 1 falls one short of 5, so 8 + 3 + 1 falls one short of 8 + 5 = 13. Below every Fibonacci number, the tightest packing lands one stone short.</p>
+<p>So a spaced arrangement cannot keep all its blocks below the largest Fibonacci number that fits &mdash; it would total less than the pile. The top block is forced; then, remainder by remainder, every block is forced.</p>
+
+<div class="fact"><b>Fact 2.</b> Spaced blocks that add up to a pile are that pile's split &mdash; <b>Zeckendorf's theorem</b>.</div>
+
+<h2><span class="n">03</span> The winning move</h2>
+<p>The winning move is to <b>take the whole smallest block</b>. Watch it beat you on the pile of 20, then read why.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">pile: 20</span>
+  <span style="flex:1"></span>
+  <button onclick="PF.reset()">replay</button>
+</div>
+<div class="stat" id="pfS"></div>
+<div id="pf3"></div>
+<figcaption>The site takes whole smallest blocks, and you respond however you like. Replay and hunt for an escape.</figcaption>
+</figure>
+
+<p>Suppose the smallest block is within your cap. Take it whole. If it was the only block, that was the last stone. Otherwise the bigger blocks stand: still spaced, so still the split (Fact 2). The site's cap is twice your take, and the next block up is more than twice your take (Fact 1). The site is left short.</p>
+<p>Suppose instead the smallest block is beyond your cap. The last stone is out of reach. Your take comes off the smallest block, and the leftover splits into blocks of its own. Each of them is smaller than the old block &mdash; which every bigger block more than doubles (Fact 1) &mdash; so the pile stays spaced, and stays the split (Fact 2).</p>
+<p>Could the leftover's smallest block be more than twice your take? Split your take into blocks too. Every leftover block would be more than twice the whole take, and so more than twice each of the take's blocks: the two lists together would be spaced. But they add up to the old smallest block &mdash; a Fibonacci pile, whose split is a single block, not two or more (Fact 2). So the new smallest block is within the site's cap.</p>
+<p>Round after round the same two positions return, and the pile shrinks; hence the side taking whole blocks takes the last stone.</p>
+
+<div class="fact"><b>Fact 3.</b> If the smallest block is within your cap, taking whole smallest blocks wins the pile. If it is beyond your cap, the pile is lost.</div>
+
+<h2><span class="n">04</span> The lost piles</h2>
+<p>A Fibonacci pile is a single block, and the opener may take any number but not all: a cap one stone short of the block. That is the losing side of Fact 3.</p>
+<p>Every other pile has two blocks or more, so its smallest block is within the opening cap. The opener takes it, and wins.</p>
+
+<figure><div id="pf4"></div>
+<figcaption>A pile of 13 is a single block. The opening cap reaches 12 stones: every take but the one that wins.</figcaption></figure>
+
+<div class="fact"><b>Fact 4.</b> The Fibonacci piles are lost the moment the game starts; every other pile falls to the opener who takes the whole smallest block.</div>
+
+<h2><span class="n">05</span> Back to the pile</h2>
+<p>The site plays Fact 3 and nothing else. When its cap covers the whole pile, it takes everything; when its cap covers the smallest block, it takes that block whole; otherwise it takes a lone stone and waits for a slip. Flip back to Play: a pile of 20 opens with a take of 2.</p>
+<p>Who wins a pile of 100, and with what opening take? And when two piles sit on the table and each take comes from one of them, which pairs are lost?</p>
+
 </section>
 
 <footer class="proof-only">The game is Fibonacci Nim, first analysed by Michael Whinihan (1963); the winning strategy runs on Zeckendorf's theorem.</footer>
@@ -291,6 +377,176 @@ const LS=(function(){
 
   set(20,true);
   return {custom,starter,reset,youTake};
+})();
+
+/* ================= proof figures ================= */
+const PFIB=[1,2,3,5,8,13,21,34,55,89];
+const zeck=m=>{const out=[];let r=m;while(r>0){let f=1;for(const v of PFIB)if(v<=r)f=v;out.push(f);r-=f;}return out;};
+const pfB=(x,y,d,fill,extra='')=>`<circle cx="${x}" cy="${y}" r="${d/2-1.2}" fill="${fill}" ${extra}/>`;
+const pfT=(x,y,str,fill,size=11,w=600,anchor='middle')=>`<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${str}</text>`;
+const pfR=(x,y,w,h)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" fill="none" stroke="#a89c82" stroke-width="1.3"/>`;
+const pfSVG=(w,h,inner,id='')=>`<svg ${id?`id="${id}" `:''}viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
+
+/* PF1 — the Fibonacci ladder: each row is the two rows above, end to end */
+(function(){
+  const rows=[1,2,3,5,8,13,21], p=23, d=20, x0=64, y0=18, dy=28;
+  let s='';
+  rows.forEach((n,i)=>{
+    const y=y0+i*dy, darkLen=i>=2?rows[i-1]:n;
+    for(let j=1;j<=n;j++) s+=pfB(x0+(j-0.5)*p, y, d, j<=darkLen?'#5f92a6':'#93bac8');
+    s+=pfT(x0-16, y, n, '#6c655a', 12, 600, 'end');
+  });
+  s+=pfT(x0-16, y0+rows.length*dy, '34, 55, 89, &#8230;', '#6c655a', 12, 500, 'start');
+  document.getElementById('pf1').innerHTML=pfSVG(680, y0+rows.length*dy+16, s);
+})();
+
+/* PF2 — the greedy split, interactive */
+const PZ=(function(){
+  let n=20;
+  const W=680, gap=12;
+  function draw(){
+    const parts=zeck(n), k=parts.length;
+    const p=Math.min(24, Math.floor((W-40-gap*(k-1))/n)), d=p-3;
+    const cy=20;
+    let x=(W-(n*p+gap*(k-1)))/2, s='';
+    parts.forEach(part=>{
+      s+=pfR(x, cy-d/2-3.5, part*p, d+7);
+      for(let j=1;j<=part;j++) s+=pfB(x+(j-0.5)*p, cy, d, '#5f92a6');
+      s+=pfT(x+part*p/2, cy+d/2+14, part, '#6c655a', 11.5, 600);
+      x+=part*p+gap;
+    });
+    document.getElementById('pf2').innerHTML=pfSVG(W, cy+d/2+26, s);
+    document.getElementById('pfZS').innerHTML=
+      k>1?`${n} = ${parts.join(' + ')}`:`${n} is a single block`;
+  }
+  function custom(){
+    const nn=parseInt(document.getElementById('pfIn').value,10);
+    if(!(nn>=2)){document.getElementById('pfZS').innerHTML='a pile needs at least 2 stones.';return;}
+    if(nn>40){document.getElementById('pfZS').innerHTML=`${nn} stones &mdash; keep it &le; 40.`;return;}
+    n=nn; draw();
+  }
+  draw();
+  return {custom};
+})();
+
+/* PF2b — the tightest packing below 13: one stone short */
+(function(){
+  const p=24, d=20, x0=(680-13*p)/2, cy1=24, cy2=88;
+  const cx=i=>x0+(i-0.5)*p;
+  let s='';
+  s+=pfR(cx(1)-d/2-3.5, cy1-d/2-3.5, cx(13)-cx(1)+d+7, d+7);
+  for(let i=1;i<=13;i++) s+=pfB(cx(i), cy1, d, '#5f92a6');
+  s+=pfT((cx(1)+cx(13))/2, cy1+d/2+15, 13, '#6c655a', 11.5, 600);
+  let a=1;
+  for(const part of [8,3,1]){
+    const b=a+part-1;
+    s+=pfR(cx(a)-d/2-1, cy2-d/2-3.5, cx(b)-cx(a)+d+2, d+7);
+    for(let i=a;i<=b;i++) s+=pfB(cx(i), cy2, d, '#5f92a6');
+    s+=pfT((cx(a)+cx(b))/2, cy2+d/2+15, part, '#6c655a', 11.5, 600);
+    a=b+1;
+  }
+  s+=`<circle cx="${cx(13)}" cy="${cy2}" r="${d/2-1.2}" fill="none" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+  document.getElementById('pf2b').innerHTML=pfSVG(680, cy2+d/2+26, s);
+})();
+
+/* PF3 — the proof, played: site opens 20 and takes whole smallest blocks */
+const PF=(function(){
+  const N=20, W=680, p=26, d=22, x0=(W-N*p)/2, cy=34;
+  let rem, cap, turn, over, busy, takes, hov, timer;
+  const cx=i=>x0+(i-0.5)*p;
+  const say=h=>{document.getElementById('pfS').innerHTML=h;};
+  const splitStr=m=>{const ps=zeck(m);return ps.length>1?`${m} = ${ps.join(' + ')}`:`${m}`;};
+  const capLine=()=>{const a=Math.min(cap,rem);return `your move: take ${a===1?'1':'1 to '+a}.`;};
+  function draw(hover){
+    const zoneLo=rem-Math.min(cap,rem)+1;
+    const showZone=(turn==='you'&&!over&&!busy);
+    let s='';
+    let a=1;
+    zeck(rem).forEach(part=>{
+      const b=a+part-1;
+      s+=pfR(cx(a)-d/2-1, cy-d/2-4, cx(b)-cx(a)+d+2, d+8);
+      s+=pfT((cx(a)+cx(b))/2, 11, part, '#6c655a', 11, 600);
+      a=b+1;
+    });
+    for(let i=1;i<=N;i++){
+      if(i<=rem){
+        const inZone=showZone&&i>=zoneLo, picked=inZone&&hover&&i>=hover;
+        s+=`<g class="${inZone?'zone':''}" data-i="${i}"><circle cx="${cx(i)}" cy="${cy}" r="${d/2-1.2}" fill="${picked?'#d99f3f':'#5f92a6'}" ${inZone?'stroke="#d99f3f" stroke-width="2"':''}/></g>`;
+      }else{
+        s+=`<circle cx="${cx(i)}" cy="${cy}" r="${d/2-1.2}" fill="none" stroke="#c9bd9e" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+      }
+    }
+    let hi=N;
+    for(const tk of takes){
+      const lo=hi-tk.count+1, mid=Math.floor((lo+hi)/2);
+      s+=pfT(cx(mid), cy+d/2+12, tk.who, tk.who==='you'?'#356a7d':'#6c655a', 10, 600);
+      hi=lo-1;
+    }
+    document.getElementById('pf3').innerHTML=pfSVG(W, 70, s, 'pfSvg');
+    const svg=document.getElementById('pfSvg');
+    svg.addEventListener('mouseover',ev=>{
+      const g=ev.target.closest('.zone');
+      const i=g?+g.getAttribute('data-i'):0;
+      if(i!==hov){ hov=i; draw(hov||undefined); }
+    });
+    svg.addEventListener('mouseleave',()=>{ if(hov){ hov=0; draw(); } });
+    svg.addEventListener('click',ev=>{
+      const g=ev.target.closest('.zone');
+      if(g) youTake(rem - (+g.getAttribute('data-i')) + 1);
+    });
+  }
+  function apply(who,m){
+    takes.push({who,count:m});
+    rem-=m;
+    cap=Math.min(2*m,rem);
+    turn=who==='you'?'site':'you';
+    if(rem===0){over=true;}
+  }
+  function youTake(m){
+    if(over||busy||turn!=='you') return;
+    if(m<1||m>Math.min(cap,rem)) return;
+    hov=0;
+    apply('you',m);
+    if(over){ draw(); say(`you take ${m}, the last stone. <span class="win">you win the pile of ${N}.</span>`); return; }
+    busy=true; draw();
+    say(`you take ${m}; ${splitStr(rem)} remain${rem===1?'s':''}. site may take up to ${cap}&hellip;`);
+    timer=setTimeout(siteGo,650);
+  }
+  function siteGo(){
+    timer=null;
+    const parts=zeck(rem), small=parts[parts.length-1];
+    const m = rem<=cap?rem : (small<=cap?small:1);
+    const whole = (m===small && m<rem);
+    apply('site',m);
+    busy=false;
+    if(over){ draw(); say(`site takes ${m}, the last stone. <span class="loss">the pile of ${N} falls to the site.</span>`); return; }
+    draw();
+    say(`site takes ${m}${whole?', the whole smallest block':''}; ${splitStr(rem)} remain${rem===1?'s':''}. ${capLine()}`);
+  }
+  function reset(){
+    if(timer){clearTimeout(timer);timer=null;}
+    rem=N; cap=N-1; takes=[]; over=false; busy=true; turn='site'; hov=0;
+    draw();
+    say(`a pile of ${N} = ${zeck(N).join(' + ')}. site opens&hellip;`);
+    timer=setTimeout(siteGo,650);
+  }
+  reset();
+  return {reset,youTake};
+})();
+
+/* PF4 — a Fibonacci pile is one block; the cap is one short of it */
+(function(){
+  const n=13, p=26, d=24, x0=(680-n*p)/2, cy=32;
+  const cx=i=>x0+(i-0.5)*p;
+  let s='';
+  s+=pfR(cx(1)-d/2-3.5, cy-d/2-3.5, (n-1)*p+d+7, d+7);
+  for(let i=1;i<=n;i++)
+    s+=pfB(cx(i), cy, d, '#5f92a6', i>=2?'stroke="#d99f3f" stroke-width="2"':'');
+  s+=pfT(x0-16, cy, n, '#6c655a', 12, 600, 'end');
+  const y=cy+d/2+11, xa=cx(2)-d/2, xb=cx(n)+d/2;
+  s+=`<path d="M ${xa} ${y-4} L ${xa} ${y} L ${xb} ${y} L ${xb} ${y-4}" fill="none" stroke="#d99f3f" stroke-width="1.6"/>`;
+  s+=pfT((xa+xb)/2, y+14, 'may take up to 12', '#a8641f', 11.5, 500);
+  document.getElementById('pf4').innerHTML=pfSVG(680, y+26, s);
 })();
 </script>
 </body>
