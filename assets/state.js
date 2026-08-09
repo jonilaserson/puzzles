@@ -13,4 +13,5 @@ window.PUZZLE_STATE = {
   "last-stone":     { published: true, proof: false },
   "counterfeit-coin": { published: true, proof: false },
   "conways-soldiers": { published: true, proof: false },
+  "poisoned-barrels": { published: true, proof: false },
 };

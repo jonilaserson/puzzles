@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A thousand barrels, and two of them kill</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.mline{font-family:'JetBrains Mono',monospace;font-size:13.5px;text-align:center;color:#463f31;margin:14px 0;line-height:1.9}
+.mline b{color:var(--ink)}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button.alert{border-color:var(--coral);color:var(--coral);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.seg button.ro{cursor:default;font-weight:600}
+.seg button.ro:hover{border-color:var(--line)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .win{color:var(--blue);font-weight:600}
+.stat .loss{color:var(--coral);font-weight:600}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+#pbSvg text{user-select:none;pointer-events:none}
+#pbSvg.planning .cell{cursor:pointer}
+#pbSvg.serving .barrel{cursor:pointer}
+#p5svg .edgehit{cursor:pointer}
+#p5svg text{user-select:none;pointer-events:none}
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">poisoned wine · one night of tasting<span class="proof-cta"> · a visual proof</span></p>
+<h1>A thousand barrels,<br>and two of them kill</h1>
+<p class="sub">An assassin has poisoned two of the king's thousand barrels. The poison shows nothing for thirty days, then kills within hours &mdash; and the feast is in thirty-one. Ten prisoners, one night of tasting.</p>
+
+<div class="box">
+  <p><b>The setup.</b> A thousand barrels of wine, numbered 0 to 999. An assassin has poisoned exactly two. One sip is fatal: silent for thirty days, deadly on the thirtieth.</p>
+  <p><b>The move.</b> The king writes each of his ten prisoners a drink list. Tonight every prisoner sips from every barrel on his list; the night before the feast, the poison collects its dead.</p>
+  <p><b>The puzzle.</b> Reading the deaths, the king serves only barrels that cannot be poisoned. One poisoned barrel is a famous riddle &mdash; ten prisoners can name it exactly. With two: how many barrels can the king promise the feast?</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">barrels:</span>
+  <span class="seg"><button id="pbNm" onclick="PB.size('N',-1)">&minus;</button><button id="pbN" class="ro" tabindex="-1">12</button><button id="pbNp" onclick="PB.size('N',1)">+</button></span>
+  <span class="lab">prisoners:</span>
+  <span class="seg"><button id="pbKm" onclick="PB.size('K',-1)">&minus;</button><button id="pbK" class="ro" tabindex="-1">5</button><button id="pbKp" onclick="PB.size('K',1)">+</button></span>
+  <span class="lab">poisoned:</span>
+  <span class="seg"><button id="pbPm" onclick="PB.size('P',-1)">&minus;</button><button id="pbP" class="ro" tabindex="-1">2</button><button id="pbPp" onclick="PB.size('P',1)">+</button></span>
+  <span style="flex:1"></span>
+  <span class="stat" id="pbCnt" style="margin:0"></span>
+</div>
+<div class="ctl">
+  <button id="pbPour" class="prime" onclick="PB.pour()">pour the tasting</button>
+  <button id="pbFeast" class="alert" onclick="PB.feast()">hold the feast</button>
+  <button id="pbAgain" onclick="PB.again()">restock &#8635;</button>
+  <button id="pbClear" onclick="PB.clear()">clear lists</button>
+</div>
+<div class="stat" id="pbS"></div>
+<div id="fPlay"></div>
+<figcaption>Columns are barrels, rows are prisoners: click a square to mark a sip. Pour, read the deaths, then click the barrels you dare to serve and hold the feast. The poison is sly: it settles wherever your tasting leaves the most barrels under suspicion.</figcaption>
+</figure>
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> One barrel, ten digits</h2>
+<p>Warm up with the famous riddle: one poisoned barrel. Write each barrel's number in ten binary digits and stand the ten prisoners under them, A under the first digit, J under the last. Each prisoner sips every barrel that shows a 1 above him.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">poisoned barrel:</span>
+  <span class="seg"><button onclick="PF1.step(-100)">&minus;100</button><button onclick="PF1.step(-1)">&minus;1</button><button id="p1N" class="ro" tabindex="-1">723</button><button onclick="PF1.step(1)">+1</button><button onclick="PF1.step(100)">+100</button></span>
+</div>
+<div id="pf1"></div>
+<figcaption>The poisoned barrel kills exactly the prisoners under its 1s: the deaths spell its number. Barrel 0 alone kills no one &mdash; and is named by ten survivors.</figcaption>
+</figure>
+
+<p>Every barrel leaves its own pattern of dead. One barrel thrown, 999 served.</p>
+
+<div class="fact"><b>Fact 1.</b> Ten prisoners name the one poisoned barrel among a thousand.</div>
+
+<h2><span class="n">02</span> Two barrels blur the digits</h2>
+<p>Now poison two barrels &mdash; call them the <b>guilty pair</b>. A prisoner dies if either guilty barrel is on his list, so the deaths show the two numbers merged: every 1 of either.</p>
+
+<figure><div id="pf2"></div>
+<figcaption>Barrels 3 and 4 &mdash; or barrels 7 and 0. Two different guilty pairs, one pattern of dead: H, I, J. The king cannot tell them apart.</figcaption></figure>
+
+<p>No cleverer drink lists escape this. Count what ten prisoners can say against what they must say:</p>
+
+<p class="mline">death patterns &le; 2<sup>10</sup> = <b>1024</b> &nbsp;&nbsp;&middot;&nbsp;&nbsp; guilty pairs = 1000&middot;999/2 = <b>499,500</b></p>
+
+<p>Patterns are outnumbered 488 to one; hence some pattern fits hundreds of guilty pairs, and no lists can say which is true.</p>
+
+<div class="fact"><b>Fact 2.</b> No ten drink lists can always name both poisoned barrels.</div>
+
+<p>The feast, though, needs no names &mdash; it needs safe wine. Call a barrel <b>suspect</b> if some guilty pair that fits the deaths contains it. The king throws every suspect and serves the rest; good drink lists leave few suspects.</p>
+<p>One drinker per barrel &mdash; ten groups of a hundred &mdash; already does well. One dead prisoner: both guilty barrels are on his list, 100 suspects. Two dead: one guilty barrel in each group, 200 suspects. The king promises 800 barrels.</p>
+<p>Two drinkers per barrel promise more.</p>
+
+<h2><span class="n">03</span> Barrels become edges</h2>
+<p>Two drinkers, and a drawing: ten dots for the prisoners, and each barrel becomes an <b>edge</b> &mdash; the line joining its two drinkers. Ten dots offer only 45 edges, so barrels must share; the barrels on one edge are suspects together or cleared together. Call them the edge's <b>cell</b>.</p>
+<p>The guilty pair sits on two edges &mdash; or one &mdash; and kills their ends: two, three, or four prisoners. When can the deaths point at two different pairs of edges?</p>
+
+<figure><div id="pf3"></div>
+<figcaption>Four dead read two ways exactly when the four edges close a <b>square</b>; three dead, exactly when they close a <b>triangle</b>. Dashed edges are the second reading.</figcaption></figure>
+
+<p>If the drawn edges close no triangle and no square, no second reading exists: the deaths point at one pair of edges, and the suspects are exactly its cells.</p>
+
+<div class="fact"><b>Fact 3.</b> No triangle, no square: the deaths name the guilty cells.</div>
+
+<h2><span class="n">04</span> Ten dots, fifteen edges</h2>
+<p>How many edges can ten dots carry with no triangle and no square? Call two edges meeting at a dot a <b>cherry</b>. A cherry's outer ends are never themselves an edge &mdash; that closes a triangle &mdash; and no two cherries share the same outer ends &mdash; that closes a square. Hence the non-edge dot-pairs carry all the cherries, one each at most:</p>
+
+<p class="mline">cherries &le; 45 &minus; edges</p>
+
+<p>A dot with d edges holds d(d&minus;1)/2 cherries. Suppose 16 edges: the degrees sum to 32, and even their evenest split &mdash; eight dots of degree 3, two of degree 4 &mdash; holds 8&middot;3 + 2&middot;6 = 36 cherries (an uneven split holds more). But 45 &minus; 16 = 29. Sixteen edges are impossible; fifteen are not:</p>
+
+<figure><div id="pf4"></div>
+<figcaption>Left: grow from any dot &mdash; itself, 3 neighbors, 2 new dots per neighbor: 1 + 3 + 6 = 10, nothing repeated, since a repeat would close a triangle or a square. Six more edges among the outer six complete the fifteen. Right: the same ten letters, combed &mdash; the <b>Petersen graph</b>.</figcaption></figure>
+
+<div class="fact"><b>Fact 4.</b> Ten dots, no triangle, no square: at most 15 edges. The Petersen graph has 15.</div>
+
+<h2><span class="n">05</span> The feast</h2>
+<p>Assign the thousand barrels to the Petersen graph's fifteen edges: 67 barrels in every cell of the outer ring and the inner star, 66 in every spoke's. Each prisoner drinks his three cells &mdash; about 200 barrels.</p>
+<p>The deaths name the guilty cells (Fact 3), and the king throws at most two of them:</p>
+
+<p class="mline">thrown &le; 67 + 67 = 134 &nbsp;&rarr;&nbsp; served &ge; 1000 &minus; 134 = <b>866</b></p>
+
+<figure>
+<div class="ctl">
+  <button onclick="P5.reset()">reset</button>
+  <span class="lab">outer &amp; star cells hold 67 barrels &middot; spoke cells 66</span>
+</div>
+<div class="stat" id="p5S"></div>
+<div id="pf5"></div>
+<figcaption>Poison two cells &mdash; click two edges, or one edge twice &mdash; then read the deaths, the thrown cells, and the feast.</figcaption>
+</figure>
+
+<div class="fact"><b>Fact 5.</b> Two poisoned barrels, ten prisoners: the king serves 866 barrels, certain of every glass.</div>
+
+<p>A kindness, too: at most four prisoners die. The binary lists of the warm-up, handed the guilty pair 511 and 512, kill all ten.</p>
+<p>Could different lists beat 866? All 499,500 guilty pairs split among at most 1024 patterns, and a pattern with t suspects fits at most t(t&minus;1)/2 of them:</p>
+
+<p class="mline">1024 &middot; t(t&minus;1)/2 &ge; 499,500 &nbsp;&rarr;&nbsp; some pattern leaves t &ge; 32 suspects &nbsp;&rarr;&nbsp; served &le; <b>968</b></p>
+
+<p>Between 866 and 968 the answer is unknown &mdash; not just to this page; to everyone.</p>
+<p>Two questions to take away. With more prisoners, cells could shrink to single barrels: a graph with no triangle, no square, and a thousand edges names the guilty pair exactly. How few dots can carry it? And if the assassin poisons <em>three</em> barrels &mdash; which shapes must the drawing avoid then?</p>
+
+</section>
+
+<footer>Tasting in batches is <em>group testing</em>, invented in 1943 to screen army blood samples by the poolful; with two culprits instead of one, the best possible schemes are an open problem to this day. The Petersen graph is older &mdash; drawn in 1898, and turning up wherever a tidy conjecture needs a counterexample.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const LET='ABCDEFGHIJ';
+const byId=id=>document.getElementById(id);
+const T=(x,y,s,f,sz,wt)=>`<text x="${x}" y="${y}" fill="${f}" font-size="${sz}" font-weight="${wt||600}" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${s}</text>`;
+const SVG=(id,w,h,inner)=>{byId(id).innerHTML=`<svg id="${id}svg" viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;};
+const joinAnd=a=>a.length<2?String(a[0]):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+
+/* ---------------- play: the tasting table ---------------- */
+const PB=(function(){
+  const W=680, NMIN=4,NMAX=16,KMIN=2,KMAX=6,PMIN=1,PMAX=3;
+  let N=12,K=5,P=2;
+  let sip=new Array(NMAX).fill(0);          /* sip[j] = bitmask of prisoners sipping barrel j */
+  let phase='plan';                          /* 'plan' | 'poured' | 'done' */
+  let deaths=0, live=[], serve=new Set(), tale=null;
+  const best={};
+
+  const px=()=>Math.min(38,(W-120)/N);
+  const gx0=()=>(W-N*px())/2+16;
+  const colX=j=>gx0()+(j+.5)*px();
+  const rowY=i=>92+i*32;
+  const HGT=()=>92+K*32+6;
+  const pop=m=>{let c=0;while(m){c+=m&1;m>>=1;}return c;};
+  const deadLetters=()=>{const a=[];for(let i=0;i<K;i++)if((deaths>>i)&1)a.push(LET[i]);return a;};
+  const say=h=>{byId('pbS').innerHTML=h;};
+
+  function barrelSVG(x,j){
+    const poisoned = tale && tale.story.includes(j);
+    const served = serve.has(j);
+    const bw=Math.min(26,px()-8), bh=36, ty=12;
+    let fill='#e8d59a', ln='#ab9257', tx='#6b5a2a', extra='';
+    if(phase!=='plan' && !served && !poisoned){ fill='#efe8d3'; ln='#c9bd9e'; tx='#8a8072'; }
+    if(served) extra=`<rect x="${x-bw/2-3.5}" y="${ty-3.5}" width="${bw+7}" height="${bh+7}" rx="8" fill="none" stroke="#a8641f" stroke-width="2"/>`;
+    if(poisoned){ fill='#bb3b27'; ln='#7e2417'; tx='#fffdf6'; }
+    return `<g class="barrel" data-b="${j}">${extra}
+      <rect x="${x-bw/2}" y="${ty}" width="${bw}" height="${bh}" rx="6" fill="${fill}" stroke="${ln}" stroke-width="1.5"/>
+      <line x1="${x-bw/2}" y1="${ty+7}" x2="${x+bw/2}" y2="${ty+7}" stroke="${ln}" stroke-width="1" opacity=".7"/>
+      <line x1="${x-bw/2}" y1="${ty+bh-7}" x2="${x+bw/2}" y2="${ty+bh-7}" stroke="${ln}" stroke-width="1" opacity=".7"/>
+      ${T(x,ty+bh/2,j+1,tx,10.5)}</g>`;
+  }
+
+  function draw(){
+    let s='';
+    for(let i=0;i<K;i++){
+      const y=rowY(i), dead=(deaths>>i)&1;
+      s+=`<circle cx="${gx0()-26}" cy="${y}" r="12.5" fill="${dead?'#bb3b27':'#fffdf6'}" stroke="${dead?'#7e2417':'#8a8072'}" stroke-width="1.5"/>`;
+      s+=T(gx0()-26,y,LET[i],dead?'#fffdf6':'#1E1B16',11);
+    }
+    for(let j=0;j<N;j++){
+      const x=colX(j);
+      s+=barrelSVG(x,j);
+      for(let i=0;i<K;i++){
+        const y=rowY(i), on=(sip[j]>>i)&1;
+        s+= on ? `<circle cx="${x}" cy="${y}" r="7" fill="#356a7d"/>`
+               : `<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="#c9bd9e" stroke-width="1.4"/>`;
+        s+=`<rect class="cell" data-c="${i},${j}" x="${x-px()/2}" y="${y-16}" width="${px()}" height="32" fill="transparent"/>`;
+      }
+    }
+    byId('fPlay').innerHTML=`<svg id="pbSvg" viewBox="0 0 ${W} ${HGT()}" width="100%" role="img">${s}</svg>`;
+    const svg=byId('pbSvg');
+    svg.classList.toggle('planning', phase==='plan');
+    svg.classList.toggle('serving', phase==='poured');
+    svg.addEventListener('click',ev=>{
+      const c=ev.target.closest('.cell');
+      if(c && phase==='plan'){
+        const [i,j]=c.getAttribute('data-c').split(',').map(Number);
+        sip[j]^=(1<<i); draw(); sync(); return;
+      }
+      const b=ev.target.closest('.barrel');
+      if(b && phase==='poured'){
+        const j=+b.getAttribute('data-b');
+        serve.has(j)?serve.delete(j):serve.add(j);
+        draw(); sync(); sayPoured();
+      }
+    });
+  }
+
+  function sync(){
+    byId('pbPour').disabled = phase!=='plan';
+    byId('pbFeast').disabled = phase!=='poured';
+    byId('pbAgain').disabled = phase==='plan';
+    byId('pbClear').disabled = phase!=='plan' || sip.slice(0,N).every(m=>!m);
+    byId('pbN').textContent=N; byId('pbK').textContent=K; byId('pbP').textContent=P;
+    byId('pbNm').disabled=N<=NMIN; byId('pbNp').disabled=N>=NMAX;
+    byId('pbKm').disabled=K<=KMIN; byId('pbKp').disabled=K>=KMAX;
+    byId('pbPm').disabled=P<=PMIN; byId('pbPp').disabled=P>=PMAX;
+    const sc=sip.slice(0,N).reduce((a,m)=>a+pop(m),0);
+    const key=N+'/'+K+'/'+P;
+    byId('pbCnt').innerHTML=`sips <b>${sc}</b>${best[key]!==undefined?` &nbsp;&middot;&nbsp; best safe feast here: <b>${best[key]}</b>`:''}`;
+  }
+
+  function sayPoured(){
+    const dl=deadLetters();
+    say((dl.length?`prisoners <b>${dl.join(', ')}</b> died.`:'no prisoner died.')+
+        ` serving <b>${serve.size}</b> barrel${serve.size===1?'':'s'}.`);
+  }
+
+  /* the poison settles where the most barrels stay under suspicion */
+  function pour(){
+    if(phase!=='plan') return;
+    const groups=new Map(), st=[];
+    (function rec(s0){
+      if(st.length===P){
+        let pat=0; for(const b of st) pat|=sip[b];
+        let g=groups.get(pat); if(!g){g={stories:[],susp:new Set()};groups.set(pat,g);}
+        g.stories.push(st.slice()); for(const b of st) g.susp.add(b);
+        return;
+      }
+      for(let j=s0;j<N;j++){ st.push(j); rec(j+1); st.pop(); }
+    })(0);
+    let bp=0,bg=null;
+    for(const [pat,g] of groups)
+      if(!bg || g.susp.size>bg.susp.size || (g.susp.size===bg.susp.size && g.stories.length>bg.stories.length)){bg=g;bp=pat;}
+    deaths=bp; live=bg.stories; serve.clear(); tale=null; phase='poured';
+    draw(); sync(); sayPoured();
+  }
+
+  function feast(){
+    if(phase!=='poured') return;
+    let hit=null,hb=-1;
+    outer: for(const sty of live) for(const b of sty) if(serve.has(b)){hit=sty;hb=b;break outer;}
+    tale={story: hit||live[0]};
+    phase='done';
+    const names=joinAnd(tale.story.map(b=>b+1));
+    if(hb<0){
+      const key=N+'/'+K+'/'+P;
+      if(best[key]===undefined||serve.size>best[key]) best[key]=serve.size;
+      say(`the poison sat in barrel${P>1?'s':''} <b>${names}</b> &mdash; held back. <span class="win">safe feast: ${serve.size} barrel${serve.size===1?'':'s'} served.</span>`);
+    }else{
+      say(`barrel <b>${hb+1}</b> was served &mdash; <span class="loss">and poisoned.</span> the poison sat in barrel${P>1?'s':''} <b>${names}</b>.`);
+    }
+    draw(); sync();
+  }
+
+  function again(){
+    if(phase==='plan') return;
+    phase='plan'; deaths=0; live=[]; serve.clear(); tale=null;
+    draw(); sync();
+    say('the cellar is restocked. adjust the lists, then pour.');
+  }
+  function clear(){
+    if(phase!=='plan') return;
+    sip.fill(0); draw(); sync();
+    say('lists cleared.');
+  }
+  function size(which,d){
+    if(which==='N') N=Math.max(NMIN,Math.min(NMAX,N+d));
+    if(which==='K'){ K=Math.max(KMIN,Math.min(KMAX,K+d)); const m=(1<<K)-1; for(let j=0;j<NMAX;j++) sip[j]&=m; }
+    if(which==='P') P=Math.max(PMIN,Math.min(PMAX,P+d));
+    phase='plan'; deaths=0; live=[]; serve.clear(); tale=null;
+    draw(); sync();
+    say('mark sips on the table, then pour.');
+  }
+
+  draw(); sync();
+  say('mark sips on the table, then pour.');
+  return {pour,feast,again,clear,size};
+})();
+
+/* ---------------- proof figures ---------------- */
+const INK='#1E1B16', SOFT='#6c655a', GHOST='#c9bd9e', CORAL='#bb3b27', CORD='#7e2417',
+      GRAY='#8a8072', LINE='#ddd2b8';
+const prisoner=(x,y,l,dead,r)=>{
+  r=r||13;
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${dead?CORAL:'#fffdf6'}" stroke="${dead?CORD:GRAY}" stroke-width="1.5"/>`+
+         T(x,y,l,dead?'#fffdf6':INK,r>=12?11:9.5);
+};
+
+/* 01 — binary tasting, steppable */
+const PF1=(function(){
+  let b=723;
+  function draw(){
+    const w=b.toString(2).padStart(10,'0');
+    const pitch=46, x0=(680-10*pitch)/2+pitch/2;
+    let s='';
+    for(let k=0;k<10;k++){
+      const x=x0+k*pitch, one=w[k]==='1';
+      s+=T(x,20,w[k],one?CORAL:GHOST,22);
+      s+=`<line x1="${x}" y1="38" x2="${x}" y2="58" stroke="${LINE}" stroke-width="1"/>`;
+      s+=prisoner(x,80,LET[k],one);
+    }
+    SVG('pf1',680,104,s);
+    byId('p1N').textContent=b;
+  }
+  function step(d){ b=Math.max(0,Math.min(999,b+d)); draw(); }
+  draw();
+  return {step};
+})();
+
+/* 02 — the collision */
+(function(){
+  const panels=[
+    {cx:170, t:'barrels 3 &amp; 4', rows:[[3,'0000000011'],[4,'0000000100']]},
+    {cx:510, t:'barrels 7 &amp; 0', rows:[[7,'0000000111'],[0,'0000000000']]}
+  ];
+  const merged='0000000111';
+  let s='';
+  for(const p of panels){
+    s+=T(p.cx,12,p.t,SOFT,11.5,500);
+    p.rows.forEach((row,ri)=>{
+      const y=40+ri*22, str=String(row[0]).padStart(3,' ')+' · ';
+      let t=`<text x="${p.cx}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="600" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">`;
+      t+=`<tspan fill="${SOFT}" xml:space="preserve">${str}</tspan>`;
+      for(const ch of row[1]) t+=`<tspan fill="${ch==='1'?CORAL:GHOST}">${ch}</tspan>`;
+      s+=t+'</text>';
+    });
+    for(let k=0;k<10;k++) s+=prisoner(p.cx-9*13.5+k*27,112,LET[k],merged[k]==='1',10);
+  }
+  s+=T(340,75,'or',SOFT,13,500);
+  SVG('pf2',680,140,s);
+})();
+
+/* 03 — the square and the triangle */
+(function(){
+  const edge=(a,b,solid)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${solid?CORAL:GHOST}" stroke-width="${solid?3.4:1.7}" ${solid?'':'stroke-dasharray="5 4"'}/>`;
+  let s='';
+  s+=T(170,12,'four dead prisoners',SOFT,11.5,500);
+  s+=T(510,12,'three dead prisoners',SOFT,11.5,500);
+  /* squares */
+  [[100,true],[240,false]].forEach(([mcx,horiz])=>{
+    const A=[mcx-32,46],B=[mcx+32,46],C=[mcx+32,114],D=[mcx-32,114];
+    s+=edge(A,B,horiz)+edge(D,C,horiz)+edge(A,D,!horiz)+edge(B,C,!horiz);
+    s+=prisoner(A[0],A[1],'A',1,11)+prisoner(B[0],B[1],'B',1,11)+prisoner(C[0],C[1],'C',1,11)+prisoner(D[0],D[1],'D',1,11);
+  });
+  s+=T(170,82,'or',SOFT,13,500);
+  /* triangles */
+  [[450,'A'],[590,'C']].forEach(([mcx,apex])=>{
+    const A=[mcx,42],B=[mcx-38,114],C=[mcx+38,114];
+    s+=edge(A,B,apex!=='C')+edge(A,C,true)+edge(B,C,apex!=='A');
+    s+=prisoner(A[0],A[1],'A',1,11)+prisoner(B[0],B[1],'B',1,11)+prisoner(C[0],C[1],'C',1,11);
+  });
+  s+=T(520,82,'or',SOFT,13,500);
+  SVG('pf3',680,140,s);
+})();
+
+/* the Petersen graph */
+const petersen=(cx,cy,R,r)=>{
+  const v=[];
+  for(let k=0;k<5;k++){const a=-Math.PI/2+k*2*Math.PI/5; v.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}
+  for(let k=0;k<5;k++){const a=-Math.PI/2+k*2*Math.PI/5; v.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}
+  return v;
+};
+const PEDGES=(()=>{     /* outer ring 67 · spokes 66 · inner star 67 */
+  const e=[];
+  for(let k=0;k<5;k++) e.push({a:k,b:(k+1)%5,sz:67});
+  for(let k=0;k<5;k++) e.push({a:k,b:k+5,sz:66});
+  for(let k=0;k<5;k++) e.push({a:5+k,b:5+((k+2)%5),sz:67});
+  return e;
+})();
+
+/* 04 — the tree of ten, and the graph it combs into */
+(function(){
+  let s='';
+  const N={A:[150,34],B:[66,112],E:[150,112],F:[234,112],C:[38,196],G:[94,196],D:[122,196],J:[178,196],H:[206,196],I:[262,196]};
+  const TE=[['A','B'],['A','E'],['A','F'],['B','C'],['B','G'],['E','D'],['E','J'],['F','H'],['F','I']];
+  for(const [a,b] of TE) s+=`<line x1="${N[a][0]}" y1="${N[a][1]}" x2="${N[b][0]}" y2="${N[b][1]}" stroke="${GRAY}" stroke-width="2"/>`;
+  for(const l in N) s+=prisoner(N[l][0],N[l][1],l,0,11.5);
+  s+=T(305,34,'1',SOFT,13); s+=T(305,112,'3',SOFT,13); s+=T(305,196,'6',SOFT,13);
+  s+=T(150,232,'1 + 3 + 6 = 10',SOFT,12,500);
+  const v=petersen(505,124,88,50);
+  for(const e of PEDGES) s+=`<line x1="${v[e.a][0]}" y1="${v[e.a][1]}" x2="${v[e.b][0]}" y2="${v[e.b][1]}" stroke="${GRAY}" stroke-width="2"/>`;
+  v.forEach((p,k)=> s+=prisoner(p[0],p[1],LET[k],0,11.5));
+  SVG('pf4',680,246,s);
+})();
+
+/* 05 — poison two cells, read the feast */
+const P5=(function(){
+  const v=petersen(340,172,120,66);
+  let picks=[];
+  const cellName=e=>LET[PEDGES[e].a]+LET[PEDGES[e].b];
+  function draw(){
+    let dead=0;
+    if(picks.length===2) for(const e of picks) dead|=(1<<PEDGES[e].a)|(1<<PEDGES[e].b);
+    let s='';
+    PEDGES.forEach((e,idx)=>{
+      const on=picks.includes(idx);
+      s+=`<line x1="${v[e.a][0]}" y1="${v[e.a][1]}" x2="${v[e.b][0]}" y2="${v[e.b][1]}" stroke="${on?CORAL:GRAY}" stroke-width="${on?4.6:2.3}"/>`;
+    });
+    PEDGES.forEach((e,idx)=>{
+      s+=`<line class="edgehit" data-e="${idx}" x1="${v[e.a][0]}" y1="${v[e.a][1]}" x2="${v[e.b][0]}" y2="${v[e.b][1]}" stroke="transparent" stroke-width="17"/>`;
+    });
+    v.forEach((p,k)=> s+=prisoner(p[0],p[1],LET[k],(dead>>k)&1,13.5));
+    SVG('pf5',680,344,s);
+    byId('pf5svg').addEventListener('click',ev=>{
+      const h=ev.target.closest('.edgehit');
+      if(h) pick(+h.getAttribute('data-e'));
+    });
+  }
+  function status(){
+    if(picks.length===0) byId('p5S').innerHTML='poison two barrels: click a first cell.';
+    else if(picks.length===1)
+      byId('p5S').innerHTML=`first barrel in cell <b>${cellName(picks[0])}</b>. click a second cell &mdash; the same one is allowed.`;
+    else{
+      const dl=[]; let dead=0;
+      for(const e of picks) dead|=(1<<PEDGES[e].a)|(1<<PEDGES[e].b);
+      for(let k=0;k<10;k++) if((dead>>k)&1) dl.push(LET[k]);
+      const cells=[...new Set(picks)];
+      const thrown=cells.reduce((a,e)=>a+PEDGES[e].sz,0);
+      const what=cells.length===1
+        ? `both barrels in cell ${cellName(cells[0])} &mdash; thrown ${thrown}`
+        : `thrown: cell ${cellName(cells[0])} (${PEDGES[cells[0]].sz}) and cell ${cellName(cells[1])} (${PEDGES[cells[1]].sz})`;
+      byId('p5S').innerHTML=`dead: <b>${dl.join(', ')}</b>. ${what}. <span class="win">served: ${1000-thrown} barrels.</span>`;
+    }
+  }
+  function pick(e){
+    if(picks.length>=2) return;
+    picks.push(e); draw(); status();
+  }
+  function reset(){ picks=[]; draw(); status(); }
+  draw(); status();
+  return {reset};
+})();
+</script>
+</body>
+</html>
