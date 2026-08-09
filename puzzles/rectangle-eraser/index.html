@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Erase rectangles, avoid the last square</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#FBF7EC; --paper2:#F4ECD8; --ink:#1E1B16; --ink-soft:#6c655a; --line:#ddd2b8;
+  --blue:#356a7d; --bluebg:#e9f0f1; --blueline:#c6d7dc;
+  --amber:#a8641f; --coral:#bb3b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Newsreader',Georgia,serif; color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 55%),
+    radial-gradient(120% 90% at 100% 0%, #f6efdc 0%, rgba(246,239,220,0) 50%),
+    var(--paper);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.6;
+}
+.back-link{
+  position:fixed; top:18px; left:20px; z-index:100;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.12em;
+  color:var(--ink-soft); text-decoration:none;
+  padding:6px 10px; border-radius:6px;
+  transition:.15s;
+}
+.back-link:hover{color:var(--ink); background:rgba(255,253,246,.7)}
+
+main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
+.sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+p{margin:9px 0;color:#463f31}
+p b{font-weight:600;color:var(--ink)}
+.box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
+figure{margin:18px 0;padding:16px 16px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6)}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink);font-weight:600}
+svg{display:block;max-width:100%;height:auto}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 10px}
+button{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 14px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--ink)}
+button.prime{border-color:var(--amber);color:var(--amber);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+button:disabled:hover{border-color:var(--line)}
+input.pgIn{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  padding:5px 10px;border:1px solid var(--line);border-radius:7px;
+  background:rgba(255,253,246,.7);color:var(--ink);width:96px;
+}
+input.pgIn:focus{outline:none;border-color:var(--amber);z-index:1}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+.seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
+.stat b{color:var(--ink)}
+.stat .win{color:var(--blue);font-weight:600}
+.stat .loss{color:var(--coral);font-weight:600}
+.hist{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:2}
+.hist b{color:var(--blue)}
+.hist .site{color:var(--coral);font-weight:600}
+.modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
+.ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
+.ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
+.ms-pill button:hover{border-color:transparent;color:var(--ink)}
+.ms-pill button.on{background:var(--ink);color:var(--paper)}
+body.mode-play .proof-only{display:none}
+body.mode-proof .play-only{display:none}
+footer{
+  margin-top:60px;padding-top:18px;border-top:1px dashed var(--line);
+  font-size:14px;line-height:1.6;color:var(--ink-soft);
+}
+@media (max-width:520px){ h1{font-size:30px} }
+
+#reSvg .zone{cursor:pointer}
+</style>
+<script src="../../assets/state.js"></script>
+<script src="../../assets/veil.js"></script>
+</head>
+<body class="mode-play">
+<a class="back-link" href="../../">← all puzzles</a>
+
+<main>
+
+<p class="kicker">erasing game · corner rectangles<span class="proof-cta"> · a visual proof</span></p>
+<h1>Erase rectangles,<br>avoid the last square</h1>
+<p class="sub">Both players erase the same board, one corner-pinned rectangle at a time. What survives is a staircase &mdash; and its last step is a square nobody wants to erase.</p>
+
+<div class="box">
+  <p><b>The game.</b> A board of squares. You and the site take turns erasing; a turn erases <b>one rectangle</b> pinned to the board's <b>top-left corner</b> &mdash; any size, as long as it covers at least one surviving square. <b>Whoever erases the last square loses.</b> That square is always the bottom-right one: a rectangle that reaches it erases the whole board.</p>
+  <p><b>The puzzle.</b> Given the board's shape, who wins &mdash; the opener, or the player answering?</p>
+  <p>Play below &mdash; the site never blunders. Try wide boards, tall boards, perfect squares<span class="proof-cta">, then flip to the proof</span>.</p>
+</div>
+
+<div class="modeswitch"><div class="ms-pill">
+  <button id="msPlay" class="on" onclick="setMode('play')">Play</button>
+  <button id="msProof" onclick="setMode('proof')">Proof</button>
+</div></div>
+
+<section class="play-only">
+<figure>
+<div class="ctl">
+  <span class="lab">board:</span>
+  <span class="seg"><input class="pgIn" id="reRows" value="6" style="width:44px" onkeydown="if(event.key==='Enter')RE.custom()"><input class="pgIn" id="reCols" value="8" style="width:44px" onkeydown="if(event.key==='Enter')RE.custom()"><button onclick="RE.custom()">set</button></span>
+  <span class="seg"><button id="reYou" class="on" onclick="RE.starter(true)">you open</button><button id="reSite" onclick="RE.starter(false)">site opens</button></span>
+  <span style="flex:1"></span>
+  <button onclick="RE.reset()">replay board</button>
+</div>
+<div class="stat" id="reS"></div>
+<div id="fPlay"></div>
+<div class="hist" id="reHist"></div>
+<figcaption>Click a surviving square: it is erased together with every survivor above-left of it &mdash; one rectangle, pinned to the top-left corner. Hover to preview the rectangle. The coral square is the bottom-right one; erased squares turn to dashed outlines, and a dot marks each move's click &mdash; blue yours, gray the site's. Finished boards are recorded under the grid &mdash; hunt for who wins each shape.</figcaption>
+</figure>
+</section>
+
+<footer class="proof-only">The game is Chomp (David Gale, 1974) seen in a mirror: erasing from one corner is eating toward the other. Gale's strategy-stealing argument names the winner without naming a move.</footer>
+</main>
+
+<script>
+"use strict";
+
+/* Play / Proof mode switch */
+function setMode(m){
+  document.body.classList.toggle('mode-play', m==='play');
+  document.body.classList.toggle('mode-proof', m==='proof');
+  document.getElementById('msPlay').classList.toggle('on', m==='play');
+  document.getElementById('msProof').classList.toggle('on', m==='proof');
+}
+
+const RE=(function(){
+  const W=680, MAXDIM=10;
+  let M=6, N=8, youStart=true;
+  let d=[];                  /* d[i] = erased prefix of row i; survivor (i,j) iff j >= d[i] */
+  let turn='you', over=false, winner='', busy=false, recorded=false;
+  let clicks=[];             /* {who,i,j} — the far corner of each erased rectangle */
+  let hov=null;              /* [i,j] under the cursor, null = none */
+  let D=44, x0=20, y0=14, H=300;
+  const hist=[];
+  let siteT=null;
+
+  /* ---------- perfect play: win/lose for the player to move, memoized ---------- */
+  let memo=new Map(), memoDims='';
+  const keyOf=()=>{ let k=0; for(let i=M-1;i>=0;i--) k=k*(N+1)+d[i]; return k; };
+  function moverWins(){
+    const k=keyOf();
+    const c=memo.get(k); if(c!==undefined) return c;
+    let win=false;
+    outer:
+    for(let i=0;i<M;i++){
+      for(let j=d[i];j<N;j++){
+        if(i===M-1&&j===N-1) continue;              /* erasing the last square loses */
+        const saved=[];
+        for(let t=0;t<=i;t++) if(d[t]<j+1){ saved.push(t,d[t]); d[t]=j+1; }
+        const w=moverWins();
+        for(let t=0;t<saved.length;t+=2) d[saved[t]]=saved[t+1];
+        if(!w){ win=true; break outer; }
+      }
+    }
+    memo.set(k,win); return win;
+  }
+  function winsAfter(i,j){                          /* does the mover win the position left by move (i,j)? */
+    const saved=[];
+    for(let t=0;t<=i;t++) if(d[t]<j+1){ saved.push(t,d[t]); d[t]=j+1; }
+    const w=moverWins();
+    for(let t=0;t<saved.length;t+=2) d[saved[t]]=saved[t+1];
+    return w;
+  }
+  function replies(){                               /* [ [i,j], ... ] all legal non-final moves from d */
+    const r=[];
+    for(let i=0;i<M;i++) for(let j=d[i];j<N;j++) if(!(i===M-1&&j===N-1)) r.push([i,j]);
+    return r;
+  }
+  function siteChoose(){
+    const moves=replies();
+    if(!moves.length) return [M-1,N-1];             /* only the last square survives — forced */
+    let best=null, bestT=2, bestA=Infinity, bestB=Infinity;
+    for(const [i,j] of moves){
+      const oppW=winsAfter(i,j);
+      let a=0;
+      const erased=(()=>{let e=0;for(let t=0;t<=i;t++) if(d[t]<j+1) e+=j+1-d[t]; return e;})();
+      if(oppW){                                     /* losing move: count the opponent's winning replies */
+        const saved=[];
+        for(let t=0;t<=i;t++) if(d[t]<j+1){ saved.push(t,d[t]); d[t]=j+1; }
+        for(const [i2,j2] of replies()) if(!winsAfter(i2,j2)) a++;
+        for(let t=0;t<saved.length;t+=2) d[saved[t]]=saved[t+1];
+      }
+      const tier=oppW?1:0;
+      if(tier<bestT || (tier===bestT && (a<bestA || (a===bestA && erased<bestB)))){
+        bestT=tier; bestA=a; bestB=erased; best=[i,j];
+      }
+    }
+    return best;
+  }
+
+  /* ---------- geometry ---------- */
+  function layout(){
+    D=Math.min(44, Math.floor((W-40)/N));
+    x0=Math.round((W-N*D)/2)+2;
+    H=y0+M*D+8;
+  }
+  const rem=()=>{ let r=0; for(let i=0;i<M;i++) r+=N-d[i]; return r; };
+
+  /* ---------- drawing ---------- */
+  function draw(){
+    const showZone=(turn==='you' && !over && !busy);
+    const hs=showZone?hov:null;
+    const pc=(hs && hs[0]===M-1 && hs[1]===N-1)?'#bb3b27':'#d99f3f';
+    let s='';
+    for(let i=0;i<M;i++)for(let j=0;j<N;j++){
+      const x=x0+j*D, y=y0+i*D, sz=D-5;
+      if(j>=d[i]){
+        const picked=hs && i<=hs[0] && j<=hs[1];
+        const poison=(i===M-1&&j===N-1);
+        s+=`<g class="${showZone?'zone':''}" data-i="${i}" data-j="${j}">`;
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="4" fill="${picked?pc:(poison?'#bb3b27':'#5f92a6')}"/>`;
+        s+=`</g>`;
+      }else{
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="4" fill="none" stroke="#c9bd9e" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      }
+    }
+    for(const c of clicks)
+      s+=`<circle cx="${x0+c.j*D+(D-5)/2}" cy="${y0+c.i*D+(D-5)/2}" r="3.4" fill="${c.who==='you'?'#356a7d':'#6c655a'}"/>`;
+    document.getElementById('fPlay').innerHTML=
+      `<svg id="reSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+    const svg=document.getElementById('reSvg');
+    /* rebuilding the svg under a resting cursor refires mouseover, so only
+       redraw when the hovered square actually changes */
+    svg.addEventListener('mouseover',ev=>{
+      const g=ev.target.closest('.zone');
+      const h=g?[+g.getAttribute('data-i'),+g.getAttribute('data-j')]:null;
+      if(!!h!==!!hov || (h&&hov&&(h[0]!==hov[0]||h[1]!==hov[1]))){ hov=h; draw(); }
+    });
+    svg.addEventListener('mouseleave',()=>{ if(hov){ hov=null; draw(); } });
+    svg.addEventListener('click',ev=>{
+      const g=ev.target.closest('.zone');
+      if(g) youErase(+g.getAttribute('data-i'),+g.getAttribute('data-j'));
+    });
+  }
+
+  /* ---------- status ---------- */
+  const say=h=>{document.getElementById('reS').innerHTML=h;};
+  function record(){
+    if(recorded) return;
+    recorded=true;
+    hist.push(`${M}&times;${N}, ${youStart?'you':'site'} opened &rarr; ${winner==='you'?'<b>you</b>':'<span class="site">site</span>'}`);
+    if(hist.length>12) hist.shift();
+    document.getElementById('reHist').innerHTML=hist.join('&ensp;&middot;&ensp;');
+  }
+
+  /* ---------- moves ---------- */
+  function apply(who,i,j){
+    clicks.push({who,i,j});
+    for(let t=0;t<=i;t++) if(d[t]<j+1) d[t]=j+1;
+    turn=who==='you'?'site':'you';
+    if(i===M-1&&j===N-1){ over=true; winner=who==='you'?'site':'you'; }
+  }
+  function youErase(i,j){
+    if(over||busy||turn!=='you') return;
+    if(j<d[i]) return;
+    hov=null;
+    apply('you',i,j);
+    if(over){
+      draw(); say(`you erase the last square &mdash; <span class="loss">site wins the ${M}&times;${N} board.</span>`);
+      record(); return;
+    }
+    busy=true; draw();
+    say(`you erase ${i+1}&times;${j+1} &mdash; ${rem()} squares remain. site&hellip;`);
+    siteT=setTimeout(siteGo, 650);
+  }
+  function siteGo(){
+    siteT=null;
+    const [i,j]=siteChoose();
+    apply('site',i,j);
+    busy=false;
+    if(over){
+      draw(); say(`site erases the last square &mdash; <span class="win">you win the ${M}&times;${N} board.</span>`);
+      record(); return;
+    }
+    draw(); say(`site erases ${i+1}&times;${j+1} &mdash; ${rem()} squares remain. your move.`);
+  }
+
+  /* ---------- setup ---------- */
+  function set(mm,nn,ys){
+    if(siteT){clearTimeout(siteT);siteT=null;}
+    M=mm; N=nn; youStart=ys;
+    if(memoDims!==M+'x'+N){ memo=new Map(); memoDims=M+'x'+N; }
+    d=new Array(M).fill(0);
+    clicks=[]; over=false; busy=false; recorded=false; winner=''; hov=null;
+    turn=ys?'you':'site';
+    document.getElementById('reYou').classList.toggle('on',ys);
+    document.getElementById('reSite').classList.toggle('on',!ys);
+    layout(); draw();
+    if(ys){ say(`a ${M}&times;${N} board, ${M*N} squares. your move.`); }
+    else{ busy=true; say(`a ${M}&times;${N} board. site opens&hellip;`); siteT=setTimeout(siteGo,650); }
+    setTimeout(()=>{ if(memoDims===M+'x'+N) moverWins(); },30);   /* warm the solver */
+  }
+  function starter(ys){ set(M,N,ys); }
+  function custom(){
+    const mm=parseInt(document.getElementById('reRows').value,10);
+    const nn=parseInt(document.getElementById('reCols').value,10);
+    if(!(mm>=1&&nn>=1)){say('a board needs at least 1&times;1.');return;}
+    if(mm>MAXDIM||nn>MAXDIM){say(`${mm}&times;${nn} is a wall, not a board &mdash; keep each side &le; ${MAXDIM}.`);return;}
+    set(mm,nn,youStart);
+  }
+  function reset(){ set(M,N,youStart); }
+
+  set(6,8,true);
+  return {custom,starter,reset,youErase};
+})();
+</script>
+</body>
+</html>

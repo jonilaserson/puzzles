@@ -8,6 +8,7 @@ window.PUZZLE_STATE = {
   "fifteen-balls":  { published: true, proof: false },
   "invisible-frog": { published: true, proof: false },
   "dobble":         { published: true, proof: false },
+  "rectangle-eraser": { published: true, proof: false },
   "josephus":       { published: true, proof: false },
   "last-stone":     { published: true, proof: false },
   "counterfeit-coin": { published: true, proof: false },
