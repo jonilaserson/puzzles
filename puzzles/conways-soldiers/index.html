@@ -57,6 +57,32 @@ button:disabled:hover{border-color:var(--line)}
 .stat{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:20px;margin:4px 0}
 .stat b{color:var(--ink)}
 .stat .up{color:var(--blue);font-weight:600}
+.stat .drop{color:var(--coral);font-weight:600}
+.stat .same{color:var(--blue);font-weight:600}
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.mono sup, figcaption sup{font-size:9px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:50%;display:inline-block}
+.swd{width:13px;height:13px;border-radius:3px;display:inline-block;border:1.5px dashed var(--amber)}
+.seg{display:inline-flex}
+.seg>*{border-radius:0;margin-left:-1px;position:relative}
+.seg>*:first-child{border-radius:7px 0 0 7px;margin-left:0}
+.seg>*:last-child{border-radius:0 7px 7px 0}
+.seg>*:hover{z-index:1}
+button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ctl .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft)}
 .modeswitch{display:flex;justify-content:center;margin:30px 0 6px}
 .ms-pill{display:inline-flex;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fffdf6}
 .ms-pill button{border:0;border-radius:0;background:transparent;padding:9px 26px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft)}
@@ -70,9 +96,9 @@ footer{
 }
 @media (max-width:520px){ h1{font-size:30px} }
 
-#csSvg .peg{cursor:pointer}
-#csSvg .tgt{cursor:pointer}
-#csSvg text{user-select:none;pointer-events:none}
+#csSvg .peg, #scSvg .peg{cursor:pointer}
+#csSvg .tgt, #scSvg .tgt{cursor:pointer}
+#csSvg text, #scSvg text{user-select:none;pointer-events:none}
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
@@ -109,6 +135,80 @@ footer{
 <div id="fPlay"></div>
 <figcaption>Click a soldier, then one of its dashed amber squares: a jump straight over a neighbor, two cells at a time; the neighbor leaves the board. The frame is a window on an endless army &mdash; only soldiers inside it can play.</figcaption>
 </figure>
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> Four climbs</h2>
+<p>Rows 1 to 4 can be reached &mdash; replay the climbs here, each made by a small <b>crew</b> of soldiers below the line.</p>
+<figure>
+<div class="ctl">
+  <span class="lab">climb to:</span>
+  <span class="seg">
+    <button id="clR1" onclick="CL.setRow(1)">row 1</button><button id="clR2" onclick="CL.setRow(2)">row 2</button><button id="clR3" onclick="CL.setRow(3)">row 3</button><button id="clR4" onclick="CL.setRow(4)">row 4</button>
+  </span>
+  <span style="flex:1"></span>
+  <span class="seg"><button id="clBack" onclick="CL.back()">&#8592; back</button><button id="clStep" class="prime" onclick="CL.step()">step &#8594;</button></span>
+  <button id="clAuto" onclick="CL.auto()">auto</button>
+  <button onclick="CL.reset()">reset</button>
+</div>
+<div class="stat" id="clS"></div>
+<div id="fClimb"></div>
+<div class="legend">
+  <span><span class="sw" style="background:#5f92a6"></span>the crew</span>
+  <span><span class="sw" style="background:#5f92a6;opacity:.32"></span>the rest of the army &mdash; never moves</span>
+  <span><span class="swd"></span>target</span>
+</div>
+</figure>
+<div class="fact"><b>Fact 1.</b> Rows 1 to 4 are reachable &mdash; crews of 2, 4, 8, and 20 suffice.</div>
+<p>Row 5 looks like one more push. It never comes.</p>
+
+<h2><span class="n">02</span> The score</h2>
+<p>Fix a target square <b>T</b> on row 5. Score every square: T scores 1, and each step away &mdash; one square along a row or column &mdash; multiplies the score by σ, a number we choose below. A soldier <b>d</b> steps from T scores σ<sup>d</sup>; a group of soldiers scores the sum.</p>
+<figure><div id="fHeat"></div></figure>
+<p>In a jump straight toward T, the jumper starts d+2 steps from T, vaults a neighbor at distance d+1, and lands at distance d. The board loses the first two scores and gains the third. We choose σ to make that trade even:</p>
+<p class="mono">σ<sup>d+2</sup> + σ<sup>d+1</sup> = σ<sup>d</sup></p>
+<p>Divide by σ<sup>d</sup>: every d asks the same condition.</p>
+<p class="mono">σ² + σ = 1,&emsp;hence&ensp;σ = (√5 &minus; 1)/2 ≈ 0.618</p>
+
+<h2><span class="n">03</span> No jump gains</h2>
+<p>A jump runs along three squares: the jumper&rsquo;s, the vaulted neighbor&rsquo;s, and the landing square. Square to square, the distance to T changes by exactly one; it falls until the jump passes T&rsquo;s row or column and rises after &mdash; it never rises and then falls. Hence three patterns:</p>
+<figure><div id="fCases"></div></figure>
+<div class="fact"><b>Fact 2.</b> No jump raises the score: toward T it breaks even, every other jump drops it.</div>
+<p>Try it &mdash; every jump prints its arithmetic.</p>
+<figure>
+<div class="ctl">
+  <button id="scUndo" onclick="SC.undo()">&#8592; undo</button>
+  <button onclick="SC.reset()">reset army</button>
+  <span style="flex:1"></span>
+  <span class="stat" id="scT" style="margin:0"></span>
+</div>
+<div class="stat" id="scS"></div>
+<div id="fScore"></div>
+</figure>
+
+<h2><span class="n">04</span> The army, in full</h2>
+<p>What is the total score of our entire infinite army? Sum it column by column.</p>
+<figure><div id="fSum"></div></figure>
+<p>The soldiers in T&rsquo;s own column stand 5, 6, 7, &hellip; steps from T. Sum the column with the geometric series, then use 1 &minus; σ = σ² (σ² + σ = 1, rearranged):</p>
+<p class="mono">σ⁵ + σ⁶ + σ⁷ + ⋯ = σ⁵/(1&minus;σ) = σ⁵/σ² = σ³</p>
+<p>One column aside, every soldier stands one step farther, so the sum is σ times as much; outward, the column sums run σ³, σ⁴, σ⁵, &hellip; Columns pair off left and right:</p>
+<p class="mono">σ³ + 2(σ⁴ + σ⁵ + σ⁶ + ⋯) = σ³ + 2σ⁴/σ² = σ³ + 2σ²</p>
+<p>And σ² + σ = 1 finishes it:</p>
+<p class="mono">σ³ + 2σ² = σ(σ² + σ) + σ² = σ + σ² = <b>1</b></p>
+<div class="fact"><b>Fact 3.</b> The infinite army scores exactly <b>1</b>, the score of a lone soldier on T.</div>
+
+<h2><span class="n">05</span> The wall</h2>
+<p>A game lasts finitely many jumps, so the soldiers that ever jump or are vaulted form a finite crew. Its score starts <b>below 1</b>: the army scores exactly 1, and every soldier left out keeps a positive share.</p>
+<p>Jumps trade scores only inside the crew, so by Fact 2 its score never rises. But a scout standing on T scores 1 by itself. Hence no play lands a soldier on T &mdash; and T was any square of row 5.</p>
+<div class="fact"><b>Theorem.</b> Row 5 is out of reach &mdash; forever, by any finite play.</div>
+<p>Could a jump from row 4 skip straight to row 6? Aim T at a square on row 6: every soldier stands one step farther, and the army scores only σ, still short of the 1 a scout needs.</p>
+
+<h2><span class="n">06</span> A golden footnote</h2>
+<p>The number σ hides a celebrity:</p>
+<p class="mono">1/σ = 2/(√5 &minus; 1) = (1 + √5)/2 = φ,&ensp;the golden ratio</p>
+<p>And nothing in the score cared where T sat. Aim it at <b>row 4</b>: every soldier stands one step closer, every score divides by σ, and the army scores φ ≈ 1.618, yet a climb must still gather 1. What do the best sixteen squares below the line score, and why could sixteen soldiers never reach row 4?</p>
+
 </section>
 
 <footer class="proof-only">Conway's Soldiers, devised by John Conway (1961). The proof of how high a scout can get &mdash; and no higher &mdash; is his.</footer>
@@ -231,6 +331,274 @@ const CS=(function(){
 
   reset();
   return {undo,reset};
+})();
+
+/* ================================ proof ================================ */
+const SIGMA=(Math.sqrt(5)-1)/2;
+const P={blue:'#5f92a6',amb:'#d99f3f',ambl:'#a8641f',coral:'#bb3b27',
+         soft:'#6c655a',dashB:'#c9bd9e',dashA:'#e7ddc6',ink:'#1E1B16'};
+const SUPD='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=n=>String(n).split('').map(c=>SUPD[+c]).join('');
+const sig=d=>d===0?'1':d===1?'σ':'σ'+sup(d);
+const MONO="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace";
+const ptxt=(x,y,str,fill,size=11,w=600,anchor='middle')=>
+  `<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" dominant-baseline="central" font-family="${MONO}">${str}</text>`;
+
+/* board geometry shared by the proof figures — same look as the play board */
+function geo(XR,YT,YB,C){
+  const W=680,M=24,x0=(W-(2*XR+1)*C)/2;
+  const g={W,M,C,x0,XR,YT,YB,H:2*M+(YT-YB+1)*C};
+  g.PX=x=>x0+(x+XR)*C+C/2;
+  g.PY=y=>M+(YT-y)*C+C/2;
+  g.frame=()=>{
+    let s=`<line x1="${x0-8}" y1="${g.PY(1)+C/2}" x2="${x0+(2*XR+1)*C+8}" y2="${g.PY(1)+C/2}" stroke="${P.ink}" stroke-width="2.5" stroke-linecap="round"/>`;
+    for(let y=1;y<=YT;y++) s+=ptxt(x0-12,g.PY(y),y,P.soft,10,500);
+    return s;
+  };
+  g.empty=(x,y,extra)=>{const cx=g.PX(x),cy=g.PY(y);
+    return `<rect x="${cx-C/2+3.5}" y="${cy-C/2+3.5}" width="${C-7}" height="${C-7}" rx="5" fill="none" stroke="${y>0?P.dashA:P.dashB}" stroke-width="1.1" stroke-dasharray="4 3" ${extra||''}/>`;};
+  g.man=(x,y,fill,extra)=>
+    `<circle cx="${g.PX(x)}" cy="${g.PY(y)}" r="${C/2-3.2}" fill="${fill}" ${extra||''}/>`;
+  g.ring=(x,y,color,wd)=>{const cx=g.PX(x),cy=g.PY(y);
+    return `<rect x="${cx-C/2+2.5}" y="${cy-C/2+2.5}" width="${C-5}" height="${C-5}" rx="6" fill="none" stroke="${color}" stroke-width="${wd||2}" stroke-dasharray="5 4"/>`;};
+  return g;
+}
+const heat=d=>{
+  const f=Math.pow(Math.max(0,(14-d)/14),1.7);
+  const LO=[236,242,244],HI=[38,88,107];
+  return 'rgb('+LO.map((lo,i)=>Math.round(lo+(HI[i]-lo)*f)).join(',')+')';
+};
+const heatTxt=d=>Math.pow(Math.max(0,(14-d)/14),1.7)>0.42?'#eef4f6':'#204653';
+
+/* F1 — the four climbs, replayable. Sequences found and verified by search:
+   each is a smallest crew (2, 4, 8, 20) and every jump is legal from the
+   full army. Entries are [fromX,fromY,toX,toY]; the vaulted soldier is the
+   midpoint. */
+const CL=(function(){
+  const SEQ={
+    1:[[0,-1,0,1]],
+    2:[[0,-1,0,1],[-2,0,0,0],[0,0,0,2]],
+    3:[[0,-1,0,1],[-1,-1,-1,1],[-2,-1,-2,1],[2,0,0,0],[0,0,0,2],[-2,1,0,1],[0,1,0,3]],
+    4:[[0,-1,0,1],[-1,-1,-1,1],[1,-1,1,1],[-2,-1,-2,1],[2,-1,2,1],
+       [-4,0,-2,0],[-2,0,-2,2],[0,-3,0,-1],[-1,-3,-1,-1],[2,-2,0,-2],
+       [0,-2,0,0],[0,0,0,2],[2,1,0,1],[0,1,0,3],[-3,-2,-1,-2],
+       [-1,-2,-1,0],[-1,0,-1,2],[-2,2,0,2],[0,2,0,4]]
+  };
+  const g=geo(5,4,-4,34);
+  const K=(x,y)=>x+','+y;
+  const CREW={};
+  for(const r in SEQ){const s=new Set();
+    SEQ[r].forEach(([x,y,tx,ty])=>{const mx=(x+tx)/2,my=(y+ty)/2;
+      if(y<=0)s.add(K(x,y)); if(my<=0)s.add(K(mx,my));});
+    CREW[r]=s;}
+  let row=1,t=0,timer=null;
+  function state(){
+    const d=new Map(),used=new Set(); let last=null;
+    for(let i=0;i<t;i++){
+      const [x,y,tx,ty]=SEQ[row][i], mx=(x+tx)/2, my=(y+ty)/2;
+      d.set(K(x,y),0); d.set(K(mx,my),0); d.set(K(tx,ty),1);
+      if(y<=0)used.add(K(x,y)); if(my<=0)used.add(K(mx,my));
+      last=K(tx,ty);
+    }
+    return {d,used,last};
+  }
+  function draw(){
+    const {d,used,last}=state(), crew=CREW[row], n=SEQ[row].length;
+    let s=g.frame();
+    s+=g.ring(0,row,P.ambl,2.2);
+    for(let y=g.YT;y>=g.YB;y--)for(let x=-g.XR;x<=g.XR;x++){
+      const k=K(x,y), occ=d.has(k)?d.get(k):(y<=0?1:0);
+      if(occ) s+=g.man(x,y,last===k?P.amb:P.blue,(y>0||crew.has(k))?'':'opacity="0.32"');
+      else if(!(x===0&&y===row)) s+=g.empty(x,y);
+    }
+    document.getElementById('fClimb').innerHTML=
+      `<svg viewBox="0 0 ${g.W} ${g.H}" width="100%" role="img">${s}</svg>`;
+    document.getElementById('clS').innerHTML=
+      t===0?`row ${row}: a crew of <b>${crew.size}</b> stands solid. press step.`
+      :t<n?`jump <b>${t}</b> of ${n} &middot; soldiers used: <b>${used.size}</b>`
+      :`jump <b>${n}</b> of ${n}: <span class="up">a scout stands on row ${row}</span> &middot; soldiers used: <b>${crew.size}</b>`;
+    for(let r=1;r<=4;r++)document.getElementById('clR'+r).classList.toggle('on',r===row);
+    document.getElementById('clBack').disabled=(t===0);
+    document.getElementById('clStep').disabled=(t===n);
+  }
+  function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById('clAuto').textContent='auto';}
+  function step(){const n=SEQ[row].length; if(t>=n){stopAuto();return;} t++; if(t===n)stopAuto(); draw();}
+  function back(){stopAuto(); if(t>0){t--;draw();}}
+  function auto(){if(timer){stopAuto();return;}
+    if(t>=SEQ[row].length){t=0;draw();}
+    document.getElementById('clAuto').textContent='stop'; timer=setInterval(step,620);}
+  function setRow(r){stopAuto(); row=r; t=0; draw();}
+  function reset(){stopAuto(); t=0; draw();}
+  draw();
+  return {setRow,step,back,auto,reset};
+})();
+
+/* F2 — the scored board: T on row 5, every square priced σ^distance */
+(function(){
+  const g=geo(5,5,-3,34);
+  let s=g.frame();
+  for(let y=g.YT;y>=g.YB;y--)for(let x=-g.XR;x<=g.XR;x++){
+    const d=Math.abs(x)+Math.abs(5-y), cx=g.PX(x), cy=g.PY(y);
+    if(y>0){
+      s+=`<rect x="${cx-g.C/2+3}" y="${cy-g.C/2+3}" width="${g.C-6}" height="${g.C-6}" rx="5" fill="${heat(d)}" ${x===0&&y===5?`stroke="${P.ambl}" stroke-width="2.4"`:''}/>`;
+      s+=ptxt(cx,cy,sig(d),heatTxt(d),10);
+    }else{
+      s+=g.man(x,y,heat(d));
+      s+=ptxt(cx,cy,sig(d),heatTxt(d),10);
+    }
+  }
+  const yd=g.PY(g.YB)+g.C/2+10;
+  for(let x=-g.XR;x<=g.XR;x++) s+=ptxt(g.PX(x),yd,'⋮',P.soft,11,500);
+  s+=ptxt(g.PX(0),g.PY(5)-g.C/2-9,'T',P.ambl,12,700);
+  document.getElementById('fHeat').innerHTML=
+    `<svg viewBox="0 0 ${g.W} ${g.H+14}" width="100%" role="img">${s}</svg>`;
+})();
+
+/* F3 — the three jump patterns, with their σ arithmetic */
+(function(){
+  const C=42,GP=6,X0=150;
+  const pw=e=>`σ<tspan font-size="8.5" dy="-4.5">${e}</tspan><tspan font-size="8.5" dy="4.5">&#8202;</tspan>`;
+  const cellX=i=>X0+i*(C+GP);
+  function strip(y0,prices,jumperI,landI){
+    let s='';
+    for(let i=0;i<3;i++){
+      const x=cellX(i);
+      if(i===landI)
+        s+=`<rect x="${x+3}" y="${y0+3}" width="${C-6}" height="${C-6}" rx="5" fill="none" stroke="${P.ambl}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      else{
+        s+=`<rect x="${x+3.5}" y="${y0+3.5}" width="${C-7}" height="${C-7}" rx="5" fill="none" stroke="${P.dashB}" stroke-width="1.1" stroke-dasharray="4 3"/>`;
+        s+=`<circle cx="${x+C/2}" cy="${y0+C/2}" r="${C/2-4.5}" fill="${i===jumperI?P.amb:P.blue}"/>`;
+      }
+      s+=ptxt(x+C/2,y0+C+12,prices[i],P.ink,11,600);
+    }
+    const ax=cellX(jumperI)+C/2, bx=cellX(landI)+C/2;
+    s+=`<path d="M ${ax} ${y0+1} Q ${(ax+bx)/2} ${y0-22} ${bx} ${y0+1}" fill="none" stroke="${P.ambl}" stroke-width="1.5" marker-end="url(#pmA)"/>`;
+    return s;
+  }
+  const Y=[40,130,232], EQX=368, VX=548;
+  let s=`<defs><marker id="pmA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1.5 1L8.5 5L1.5 9" fill="none" stroke="${P.ambl}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+  /* toward T (T to the right) */
+  s+=ptxt(X0-16,Y[0]+C/2,'toward T',P.soft,11,500,'end');
+  s+=strip(Y[0],[pw('d+2'),pw('d+1'),pw('d')],0,2);
+  s+=ptxt(cellX(3)+10,Y[0]+C/2,'⋯',P.soft,12,500);
+  s+=`<rect x="${cellX(3)+26}" y="${Y[0]+C/2-10}" width="20" height="20" rx="4" fill="none" stroke="${P.ambl}" stroke-width="1.6" stroke-dasharray="4 3"/>`+ptxt(cellX(3)+36,Y[0]+C/2,'T',P.ambl,10,700);
+  s+=ptxt(EQX,Y[0]+C/2,`${pw('d+2')} + ${pw('d+1')} → ${pw('d')}`,P.ink,13,600,'start');
+  s+=ptxt(VX,Y[0]+C/2,'breaks even',P.blue,12,600,'start');
+  /* away from T */
+  s+=ptxt(X0-16,Y[1]+C/2,'away from T',P.soft,11,500,'end');
+  s+=strip(Y[1],[pw('d+2'),pw('d+1'),pw('d')],2,0);
+  s+=ptxt(cellX(3)+10,Y[1]+C/2,'⋯',P.soft,12,500);
+  s+=`<rect x="${cellX(3)+26}" y="${Y[1]+C/2-10}" width="20" height="20" rx="4" fill="none" stroke="${P.ambl}" stroke-width="1.6" stroke-dasharray="4 3"/>`+ptxt(cellX(3)+36,Y[1]+C/2,'T',P.ambl,10,700);
+  s+=ptxt(EQX,Y[1]+C/2,`${pw('d')} + ${pw('d+1')} → ${pw('d+2')}`,P.ink,13,600,'start');
+  s+=ptxt(VX,Y[1]+C/2,`drops 2${pw('d+1')}`,P.coral,12,600,'start');
+  s+=ptxt(VX,Y[1]+C/2+19,`using ${pw('d+2')} + ${pw('d+1')} = ${pw('d')}`,P.soft,10,500,'start');
+  /* across T's column */
+  s+=ptxt(X0-16,Y[2]+C/2,"across T's column",P.soft,11,500,'end');
+  s+=`<line x1="${cellX(1)+C/2}" y1="${Y[2]-26}" x2="${cellX(1)+C/2}" y2="${Y[2]+C+20}" stroke="${P.ambl}" stroke-width="1" stroke-dasharray="2 4" opacity="0.8"/>`;
+  s+=ptxt(cellX(1)+C/2,Y[2]-36,"T's column",P.ambl,9.5,600);
+  s+=strip(Y[2],[pw('d+1'),pw('d'),pw('d+1')],0,2);
+  s+=ptxt(EQX,Y[2]+C/2,`${pw('d+1')} + ${pw('d')} → ${pw('d+1')}`,P.ink,13,600,'start');
+  s+=ptxt(VX,Y[2]+C/2,`drops ${pw('d')}`,P.coral,12,600,'start');
+  document.getElementById('fCases').innerHTML=
+    `<svg viewBox="0 0 680 306" width="100%" role="img">${s}</svg>`;
+})();
+
+/* F4 — a live board scored against T: play any jump, read the arithmetic */
+const SC=(function(){
+  const g=geo(4,5,-3,34);
+  const dist=(x,y)=>Math.abs(x)+Math.abs(5-y);
+  const val=(x,y)=>Math.pow(SIGMA,dist(x,y));
+  const occ=new Set(); let hist=[],sel=null,last=null;
+  const key=(x,y)=>x+','+y;
+  function fill(){occ.clear();for(let x=-g.XR;x<=g.XR;x++)for(let y=g.YB;y<=0;y++)occ.add(key(x,y));}
+  function total(){let v=0;for(const k of occ){const p=k.split(',');v+=val(+p[0],+p[1]);}return v;}
+  function targets(x,y){const t=[];
+    for(const dd of [[2,0],[-2,0],[0,2],[0,-2]]){
+      const tx=x+dd[0],ty=y+dd[1];
+      if(tx<-g.XR||tx>g.XR||ty<g.YB||ty>g.YT)continue;
+      if(occ.has(key(x+dd[0]/2,y+dd[1]/2))&&!occ.has(key(tx,ty)))t.push([tx,ty]);}
+    return t;}
+  function draw(){
+    const tg=sel?targets(sel.x,sel.y):[];
+    const isTg=(x,y)=>tg.some(p=>p[0]===x&&p[1]===y);
+    let s=g.frame();
+    for(let y=g.YT;y>=g.YB;y--)for(let x=-g.XR;x<=g.XR;x++){
+      const cx=g.PX(x),cy=g.PY(y);
+      if(occ.has(key(x,y))){
+        const isSel=sel&&sel.x===x&&sel.y===y, isLast=last&&last.x===x&&last.y===y;
+        s+=`<g class="peg" data-x="${x}" data-y="${y}">`+
+           g.man(x,y,isLast?P.amb:P.blue,isSel?`stroke="${P.ambl}" stroke-width="2.6"`:'')+`</g>`;
+      }else if(isTg(x,y)){
+        s+=`<rect class="tgt" data-x="${x}" data-y="${y}" x="${cx-g.C/2+3}" y="${cy-g.C/2+3}" width="${g.C-6}" height="${g.C-6}" rx="5" fill="none" pointer-events="all" stroke="${P.ambl}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      }else if(x===0&&y===5){
+        s+=g.ring(0,5,P.ambl,2.2)+ptxt(cx,cy,'T',P.ambl,13,700);
+      }else{
+        s+=g.empty(x,y,sel?'pointer-events="none"':'');
+      }
+    }
+    document.getElementById('fScore').innerHTML=
+      `<svg id="scSvg" viewBox="0 0 ${g.W} ${g.H}" width="100%" role="img">${s}</svg>`;
+    document.getElementById('scSvg').addEventListener('click',ev=>{
+      const el=ev.target.closest('[data-x]');
+      if(!el){ if(sel){sel=null;draw();} return; }
+      const x=+el.getAttribute('data-x'), y=+el.getAttribute('data-y');
+      if(el.classList.contains('peg')){
+        sel=(sel&&sel.x===x&&sel.y===y)?null:{x,y};
+        draw();
+      }else if(el.classList.contains('tgt')){ jump(sel.x,sel.y,x,y); }
+    });
+  }
+  const say=h=>{document.getElementById('scS').innerHTML=h;};
+  function sync(){
+    document.getElementById('scT').innerHTML=`soldiers in view score <b>${total().toFixed(4)}</b>`;
+    document.getElementById('scUndo').disabled=(hist.length===0);
+  }
+  function jump(x,y,tx,ty){
+    const mx=(x+tx)/2,my=(y+ty)/2;
+    const delta=val(tx,ty)-val(x,y)-val(mx,my);
+    occ.delete(key(x,y));occ.delete(key(mx,my));occ.add(key(tx,ty));
+    hist.push({x,y,mx,my,tx,ty});
+    sel=null;last={x:tx,y:ty};
+    draw();sync();
+    say(`${sig(dist(x,y))} + ${sig(dist(mx,my))} leave &middot; ${sig(dist(tx,ty))} lands &mdash; `+
+      (Math.abs(delta)<1e-12?`<span class="same">score unchanged</span>`
+       :`<span class="drop">score down ${(-delta).toFixed(4)}</span>`));
+  }
+  function undo(){
+    const m=hist.pop(); if(!m)return;
+    occ.delete(key(m.tx,m.ty));occ.add(key(m.mx,m.my));occ.add(key(m.x,m.y));
+    sel=null;last=hist.length?{x:hist[hist.length-1].tx,y:hist[hist.length-1].ty}:null;
+    draw();sync();say(`undone: ${hist.length} jump${hist.length===1?'':'s'} stand.`);
+  }
+  function reset(){fill();hist=[];sel=null;last=null;draw();sync();say('click a soldier, then a dashed amber square.');}
+  reset();
+  return {undo,reset};
+})();
+
+/* F5 — the army summed column by column */
+(function(){
+  const g=geo(5,5,-4,32);
+  let s=g.frame();
+  for(let y=5;y>=1;y--){
+    const d=5-y, cx=g.PX(0), cy=g.PY(y);
+    if(y===5) s+=g.ring(0,5,P.ambl,2.2)+ptxt(cx,cy,'1',P.ambl,11,700);
+    else{ s+=g.empty(0,y); s+=ptxt(cx,cy,sig(d),P.soft,10); }
+  }
+  for(let y=1;y<=g.YT;y++)for(let x=-g.XR;x<=g.XR;x++) if(x!==0) s+=g.empty(x,y);
+  s+=`<text x="${g.PX(-3)}" y="${g.PY(3)}" fill="${P.soft}" font-size="10" font-weight="500" text-anchor="middle" dominant-baseline="central" font-family="${MONO}" stroke="#FBF7EC" stroke-width="7" paint-order="stroke" stroke-linejoin="round">no soldiers above the line</text>`;
+  for(let y=0;y>=g.YB;y--)for(let x=-g.XR;x<=g.XR;x++){
+    if(x===0) s+=g.man(0,y,P.blue)+ptxt(g.PX(0),g.PY(y),sig(5-y),'#edf4f7',10);
+    else s+=g.man(x,y,P.blue,'opacity="0.35"');
+  }
+  const yd=g.PY(g.YB)+g.C/2+10, ys=yd+22;
+  for(let x=-g.XR;x<=g.XR;x++){
+    s+=ptxt(g.PX(x),yd,'⋮',P.soft,11,500);
+    s+=ptxt(g.PX(x),ys,sig(3+Math.abs(x)),x===0?P.ambl:P.ink,11.5,600);
+  }
+  s+=ptxt(g.x0-12,ys,'column sums',P.soft,10,500,'end');
+  s+=ptxt(g.PX(0),g.PY(5)-g.C/2-9,'T',P.ambl,12,700);
+  document.getElementById('fSum').innerHTML=
+    `<svg viewBox="0 0 ${g.W} ${g.H+38}" width="100%" role="img">${s}</svg>`;
 })();
 </script>
 </body>
