@@ -37,6 +37,19 @@ main{max-width:760px;margin:0 auto;padding:64px clamp(20px,5vw,40px) 60px}
 .kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
 h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.02em}
 .sub{font-size:18px;line-height:1.6;color:#4a4335;margin:0 0 30px;max-width:60ch}
+
+h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:22px;line-height:1.3;letter-spacing:-.01em;
+  margin:52px 0 12px;display:flex;align-items:baseline;gap:12px;
+}
+h2 .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);letter-spacing:.1em;flex:none}
+.fact{
+  background:var(--bluebg);border:1px solid var(--blueline);border-radius:10px;
+  padding:12px 18px;margin:16px 0;font-weight:600;color:var(--ink);
+}
+.fact b{color:var(--blue)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
 p{margin:9px 0;color:#463f31}
 p b{font-weight:600;color:var(--ink)}
 .box{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,246,.6);padding:16px 22px;margin:16px 0}
@@ -87,7 +100,7 @@ footer{
 }
 @media (max-width:520px){ h1{font-size:30px} }
 
-#reSvg .zone{cursor:pointer}
+#reSvg .zone,#mrSvg .zone{cursor:pointer}
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
@@ -126,6 +139,40 @@ footer{
 <div class="hist" id="reHist"></div>
 <figcaption>Click a surviving square: it is erased together with every survivor above-left of it &mdash; one rectangle, pinned to the top-left corner. Hover to preview the rectangle. The coral square is the bottom-right one; erased squares turn to dashed outlines, and a dot marks each move's click &mdash; blue yours, gray the site's. Finished boards are recorded under the grid &mdash; hunt for who wins each shape.</figcaption>
 </figure>
+</section>
+
+<section class="proof-only">
+
+<h2><span class="n">01</span> Squares: erase, then mirror</h2>
+<p>The record under the grid reads one way: the opener wins every board but 1&times;1. One row is the plainest win: the opener erases everything but the last square.</p>
+<p>On a square board the opener erases <b>all but the last row and last column</b>. What survives is two equal arms, meeting at the last square. Every other surviving square sits in a single arm, so every later move erases from a single arm, from the end away from the last square. The opener answers with the same move in the other arm, and the arms are equal again. They run out with the answerer to move &mdash; alone with the last square.</p>
+
+<figure>
+<div class="ctl">
+  <span class="lab">board: 5&times;5</span>
+  <span style="flex:1"></span>
+  <button onclick="MR.reset()">replay</button>
+</div>
+<div class="stat" id="mrS"></div>
+<div id="pf1"></div>
+<figcaption>The site opens with 4&times;4, then answers every move of yours with its mirror image. Replay and hunt for an escape.</figcaption>
+</figure>
+
+<div class="fact"><b>Fact 1.</b> On square boards the opener wins: erase all but the last row and column, then mirror.</div>
+
+<h2><span class="n">02</span> Every board: steal the win</h2>
+<p>Boards are finite and every move erases at least one square, so no game loops or draws: every board hands one of the two players a forced win &mdash; but which?</p>
+<p>Suppose the smallest opening &mdash; the corner square alone &mdash; loses. Then some reply beats it: a rectangle that leaves the opener facing a board with no winning move. But every rectangle covers the corner square, so played as the opening instead, the same rectangle builds the same board &mdash; with the answerer now facing it.</p>
+<p>Hence one of two openings wins: the corner square, or the reply that would have beaten it.</p>
+
+<figure><div id="pf2"></div>
+<figcaption>A 4&times;6 board, where the corner opening loses &mdash; to exactly one reply, 3&times;4. Left: the corner opening (move 1), then that reply (move 2). Right: the same rectangle as the opening. The boards match, and whoever must move next is lost: the opener on the left, the answerer on the right.</figcaption></figure>
+
+<div class="fact"><b>Fact 2.</b> On every board bigger than 1&times;1, the opener can force the win.</div>
+
+<p>The argument names no move: it proves a winning opening exists and points at none. One row, two rows, squares &mdash; those are solved. Beyond them no rule is known; each board is settled by search, the way the site settles yours.</p>
+<p>Which single opening wins every two-row board? And three rows &mdash; is there a rule?</p>
+
 </section>
 
 <footer class="proof-only">The game is Chomp (David Gale, 1974) seen in a mirror: erasing from one corner is eating toward the other. Gale's strategy-stealing argument names the winner without naming a move.</footer>
@@ -321,6 +368,110 @@ const RE=(function(){
 
   set(6,8,true);
   return {custom,starter,reset,youErase};
+})();
+
+/* ================= proof figures ================= */
+
+/* PF1 — the mirror strategy, played: site opens 4×4 on a 5×5 board, then mirrors */
+const MR=(function(){
+  const S=5, W=680, D=42, x0=Math.round((W-S*D)/2)+2, y0=14, H=y0+S*D+8;
+  let d, turn, over, busy, clicks, hov, timer;
+  const rem=()=>{ let r=0; for(let i=0;i<S;i++) r+=S-d[i]; return r; };
+  const say=h=>{document.getElementById('mrS').innerHTML=h;};
+  function draw(){
+    const showZone=(turn==='you' && !over && !busy);
+    const hs=showZone?hov:null;
+    const pc=(hs && hs[0]===S-1 && hs[1]===S-1)?'#bb3b27':'#d99f3f';
+    let s='';
+    for(let i=0;i<S;i++)for(let j=0;j<S;j++){
+      const x=x0+j*D, y=y0+i*D, sz=D-5;
+      if(j>=d[i]){
+        const picked=hs && i<=hs[0] && j<=hs[1];
+        const poison=(i===S-1&&j===S-1);
+        s+=`<g class="${showZone?'zone':''}" data-i="${i}" data-j="${j}">`;
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="4" fill="${picked?pc:(poison?'#bb3b27':'#5f92a6')}"/>`;
+        s+=`</g>`;
+      }else{
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="4" fill="none" stroke="#c9bd9e" stroke-width="1.3" stroke-dasharray="4 3"/>`;
+      }
+    }
+    for(const c of clicks)
+      s+=`<circle cx="${x0+c.j*D+(D-5)/2}" cy="${y0+c.i*D+(D-5)/2}" r="3.4" fill="${c.who==='you'?'#356a7d':'#6c655a'}"/>`;
+    document.getElementById('pf1').innerHTML=
+      `<svg id="mrSvg" viewBox="0 0 ${W} ${H}" width="100%" role="img">${s}</svg>`;
+    const svg=document.getElementById('mrSvg');
+    svg.addEventListener('mouseover',ev=>{
+      const g=ev.target.closest('.zone');
+      const h=g?[+g.getAttribute('data-i'),+g.getAttribute('data-j')]:null;
+      if(!!h!==!!hov || (h&&hov&&(h[0]!==hov[0]||h[1]!==hov[1]))){ hov=h; draw(); }
+    });
+    svg.addEventListener('mouseleave',()=>{ if(hov){ hov=null; draw(); } });
+    svg.addEventListener('click',ev=>{
+      const g=ev.target.closest('.zone');
+      if(g) youErase(+g.getAttribute('data-i'),+g.getAttribute('data-j'));
+    });
+  }
+  function apply(who,i,j){
+    clicks.push({who,i,j});
+    for(let t=0;t<=i;t++) if(d[t]<j+1) d[t]=j+1;
+    turn=who==='you'?'site':'you';
+    if(i===S-1&&j===S-1) over=true;
+  }
+  function youErase(i,j){
+    if(over||busy||turn!=='you') return;
+    if(j<d[i]) return;
+    hov=null;
+    apply('you',i,j);
+    if(over){ draw(); say(`you erase the last square &mdash; <span class="loss">site wins.</span>`); return; }
+    busy=true; draw();
+    say(`you erase ${i+1}&times;${j+1} &mdash; site answers&hellip;`);
+    timer=setTimeout(()=>siteMirror(i,j),650);
+  }
+  function siteMirror(i,j){
+    timer=null;
+    apply('site',j,i);
+    busy=false; draw();
+    say(`site mirrors: ${j+1}&times;${i+1}.`+(rem()===1?' only the last square is left &mdash; your move.':' your move.'));
+  }
+  function reset(){
+    if(timer){clearTimeout(timer);timer=null;}
+    d=new Array(S).fill(0); clicks=[]; over=false; hov=null;
+    turn='site'; busy=true;
+    draw(); say(`a 5&times;5 board. site opens&hellip;`);
+    timer=setTimeout(()=>{
+      timer=null;
+      apply('site',S-2,S-2);
+      busy=false; draw();
+      say(`site erases 4&times;4 &mdash; the last row and column survive. your move.`);
+    },650);
+  }
+  reset();
+  return {reset};
+})();
+
+/* PF2 — steal the win: the corner opening plus its reply, against the reply alone */
+(function(){
+  const M=4, N=6, D=22, gap=76, y0=16;
+  const bw=N*D, x1=Math.round((680-2*bw-gap)/2), x2=x1+bw+gap;
+  const erased=(i,j)=>(i<3&&j<4);                 /* the 3×4 reply region */
+  function board(bx,marks){
+    let s='';
+    for(let i=0;i<M;i++)for(let j=0;j<N;j++){
+      const x=bx+j*D, y=y0+i*D, sz=D-4;
+      if(erased(i,j))
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="3" fill="none" stroke="#c9bd9e" stroke-width="1.2" stroke-dasharray="3.5 2.5"/>`;
+      else
+        s+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="3" fill="${i===M-1&&j===N-1?'#bb3b27':'#5f92a6'}"/>`;
+    }
+    for(const m of marks)
+      s+=`<text x="${bx+m.j*D+(D-4)/2}" y="${y0+m.i*D+(D-4)/2}" fill="#6c655a" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${m.t}</text>`;
+    return s;
+  }
+  const ly=y0+M*D+16;
+  let s=board(x1,[{i:0,j:0,t:'1'},{i:2,j:3,t:'2'}])+board(x2,[{i:2,j:3,t:'1'}]);
+  s+=`<text x="${x1+bw/2}" y="${ly}" fill="#6c655a" font-size="11.5" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">the corner, then the reply</text>`;
+  s+=`<text x="${x2+bw/2}" y="${ly}" fill="#6c655a" font-size="11.5" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">the reply, played first</text>`;
+  document.getElementById('pf2').innerHTML=`<svg viewBox="0 0 680 ${ly+14}" width="100%" role="img">${s}</svg>`;
 })();
 </script>
 </body>
