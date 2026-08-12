@@ -357,9 +357,13 @@ const PB=(function(){
       }
       for(let j=s0;j<N;j++){ st.push(j); rec(j+1); st.pop(); }
     })(0);
-    let bp=0,bg=null;
-    for(const [pat,g] of groups)
-      if(!bg || g.susp.size>bg.susp.size || (g.susp.size===bg.susp.size && g.stories.length>bg.stories.length)){bg=g;bp=pat;}
+    let cand=[];
+    for(const [pat,g] of groups){
+      const b=cand.length?cand[0][1]:null;
+      if(!b || g.susp.size>b.susp.size || (g.susp.size===b.susp.size && g.stories.length>b.stories.length)) cand=[[pat,g]];
+      else if(g.susp.size===b.susp.size && g.stories.length===b.stories.length) cand.push([pat,g]);
+    }
+    const [bp,bg]=cand[Math.floor(Math.random()*cand.length)];
     deaths=bp; live=bg.stories; serve.clear(); tale=null; phase='poured';
     draw(); sync(); sayPoured();
   }
@@ -368,7 +372,7 @@ const PB=(function(){
     if(phase!=='poured') return;
     let hit=null,hb=-1;
     outer: for(const sty of live) for(const b of sty) if(serve.has(b)){hit=sty;hb=b;break outer;}
-    tale={story: hit||live[0]};
+    tale={story: hit||live[Math.floor(Math.random()*live.length)]};
     phase='done';
     const names=joinAnd(tale.story.map(b=>b+1));
     if(hb<0){
