@@ -128,7 +128,7 @@ footer{
 
 <div class="box">
   <p><b>The setup.</b> Ten poles stand in a swamp. On one of them sits a frog. It is night: you can hear it, but you can't see it.</p>
-  <p><b>The move.</b> Shoot any pole. If the frog is there, the quacking stops — you win. If not, it silently hops to a pole right next to its own, and you shoot again.</p>
+  <p><b>The move.</b> Shoot any pole. If the frog is there, the croaking stops — you win. If not, it silently hops to a pole right next to its own, and you shoot again.</p>
   <p><b>The puzzle.</b> Find a way of shooting that is <b>certain</b> to get the frog — with as few bullets as possible.</p>
 </div>
 
@@ -462,7 +462,7 @@ const FR=(function(){
         <path d="M 26 ${WATER+8} q 6 -30 2 -44" fill="none" stroke="#35513e" stroke-width="3" stroke-linecap="round"/>
         <path d="M ${W-18} ${WATER+6} q -6 -34 2 -50" fill="none" stroke="#2c4434" stroke-width="3" stroke-linecap="round"/>`;
     /* the quacking, heard from everywhere and nowhere */
-    s+=`<text id="frQkI" class="qpulse" x="26" y="34" fill="#9fb4c4" font-size="13.5" font-style="italic" font-family="'Newsreader',Georgia,serif">quack&#8230;</text>`;
+    s+=`<text id="frQkI" class="qpulse" x="26" y="34" fill="#9fb4c4" font-size="13.5" font-style="italic" font-family="'Newsreader',Georgia,serif">ribbit&#8230;</text>`;
     /* poles */
     for(let i=1;i<=N;i++){
       const x=PX(i), t=TOP(i);
@@ -579,7 +579,7 @@ const FR=(function(){
     over=false; killed=false; shots=[]; path=[]; rp.t=0;
     sets=[new Set(Array.from({length:N},(_,i)=>i+1))];
     scene(); sync();
-    say('somewhere out there, a frog is quacking&hellip;');
+    say('somewhere out there, a frog is croaking&hellip;');
   }
   function poles(d){
     const n=Math.min(MAXN,Math.max(2,N+d));
@@ -603,7 +603,7 @@ const FR=(function(){
       rp.killT=setTimeout(()=>{rp.killT=null;playRp();},900);
     }else{
       fxMiss(p); sync();
-      say(`shot ${shots.length} &mdash; pole ${p}: splash. still quacking&hellip;`);
+      say(`shot ${shots.length} &mdash; pole ${p}: splash. still croaking&hellip;`);
       if(qkT) clearTimeout(qkT);
       qkT=setTimeout(()=>{qkT=null;SND.quack();},300);
     }
@@ -651,7 +651,7 @@ const FR=(function(){
       say(`replay ${t}/${M} &mdash; you shot pole ${shots[t-1]}, `+
           (dead?`<span class="hit">and there it was.</span>`:`the frog sat on pole <b>${path[t-1]}</b>.`));
     }else{
-      say(`replay ${t}/${M} &mdash; and now it sits on pole <b>${path[t-1]}</b>, quacking. the hunt is over.`);
+      say(`replay ${t}/${M} &mdash; and now it sits on pole <b>${path[t-1]}</b>, croaking. the hunt is over.`);
     }
   }
   function setPP(){
