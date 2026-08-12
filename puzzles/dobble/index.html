@@ -119,6 +119,7 @@ text.pk{cursor:pointer}
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -127,11 +128,11 @@ text.pk{cursor:pointer}
 
 <p class="kicker">dobble · finite geometry<span class="proof-cta"> · a visual proof</span></p>
 <h1>Every two cards share<br>exactly one shape</h1>
-<p class="sub">The whole rule of Dobble. With k shapes on every card, how many cards can one deck hold — and how many shapes does it take?</p>
+<p class="sub">The whole rule of Dobble. With \(k\) shapes on every card, how many cards can one deck hold — and how many shapes does it take?</p>
 
 <div class="box">
-  <p><b>The deck.</b> Each card shows k different shapes, and every two cards in the deck share <b>exactly one</b> shape — never none, never two.</p>
-  <p><b>The puzzle.</b> For a given k, find the largest deck that can exist — and count how many shapes it uses. The Dobble sold in shops plays this with k&thinsp;=&thinsp;8.</p>
+  <p><b>The deck.</b> Each card shows \(k\) different shapes, and every two cards in the deck share <b>exactly one</b> shape — never none, never two.</p>
+  <p><b>The puzzle.</b> For a given \(k\), find the largest deck that can exist — and count how many shapes it uses. The Dobble sold in shops plays this with \(k = 8\).</p>
   <p>Spot a few pairs below, then try building a deck of your own<span class="proof-cta"> before flipping to the proof</span>.</p>
 </div>
 
@@ -150,7 +151,7 @@ text.pk{cursor:pointer}
 </div>
 <div class="stat" id="spS"></div>
 <div id="fSpot"></div>
-<figcaption>Two cards of a real k&thinsp;=&thinsp;8 deck: exactly one shape appears on both. Click the shape they share.</figcaption>
+<figcaption>Two cards of a real \(k = 8\) deck: exactly one shape appears on both. Click the shape they share.</figcaption>
 </figure>
 
 <figure>
@@ -164,7 +165,7 @@ text.pk{cursor:pointer}
 <div class="palette" id="bdPal"></div>
 <div class="stat" id="bdS"></div>
 <div class="bdeck" id="bdDeck"></div>
-<figcaption>Now build your own deck: pick k shapes and press add. A card joins only if it shares exactly one shape with <b>each</b> card already placed; click a placed card to take it back. With k&thinsp;=&thinsp;3, how many cards can you place — and how many shapes does your deck end up using?</figcaption>
+<figcaption>Now build your own deck: pick \(k\) shapes and press add. A card joins only if it shares exactly one shape with <b>each</b> card already placed; click a placed card to take it back. With \(k = 3\), how many cards can you place — and how many shapes does your deck end up using?</figcaption>
 </figure>
 
 </section>
@@ -182,7 +183,7 @@ text.pk{cursor:pointer}
   <span class="stat" id="chS" style="margin:0"></span>
 </div>
 <div id="f1"></div>
-<figcaption>k&thinsp;=&thinsp;3. The star does all the sharing, and nothing ever stops the machine.</figcaption>
+<figcaption>\(k = 3\). The star does all the sharing, and nothing ever stops the machine.</figcaption>
 </figure>
 
 <p>It is also a dead game — the answer is always the star. One rule bans it, and it is the only rule the proof will need:</p>
@@ -202,10 +203,10 @@ text.pk{cursor:pointer}
 <figcaption>Every such drawing is a legal deck, because two lines cross exactly once. No proofreading required.</figcaption>
 </figure>
 
-<p>Free decks, straight off the page — but stingy ones: n lines make n cards of n&thinsp;&minus;&thinsp;1 shapes each, so for a fixed card size k the drawing stops at k&thinsp;+&thinsp;1 cards. You may well have beaten that in the builder. Packing more cards means putting one shape on three, four, many cards — <em>concurrent</em> lines, the one thing the drawing avoided. How far can concurrency go?</p>
+<p>Free decks, straight off the page — but stingy ones: \(n\) lines make \(n\) cards of \(n - 1\) shapes each, so for a fixed card size \(k\) the drawing stops at \(k + 1\) cards. You may well have beaten that in the builder. Packing more cards means putting one shape on three, four, many cards — <em>concurrent</em> lines, the one thing the drawing avoided. How far can concurrency go?</p>
 
 <h2><span class="n">03</span> The fan</h2>
-<p>Run r cards through one shared shape 🐸 — as lines, a fan of r blades through one point. On paper r is unlimited. But a fan is the banned cheat in a costume: if 🐸 sat on <em>every</em> card, that is the star again. So some card misses 🐸. Draw it — card D, one more line. D crosses every blade, and no two blades at the same point: two blades meeting on D would share that shape <em>and</em> 🐸. So the blades hand D one shape each, all different — and D only carries k.</p>
+<p>Run \(r\) cards through one shared shape 🐸 — as lines, a fan of \(r\) blades through one point. On paper \(r\) is unlimited. But a fan is the banned cheat in a costume: if 🐸 sat on <em>every</em> card, that is the star again. So some card misses 🐸. Draw it — card \(D\), one more line. \(D\) crosses every blade, and no two blades at the same point: two blades meeting on \(D\) would share that shape <em>and</em> 🐸. So the blades hand \(D\) one shape each, all different — and \(D\) only carries \(k\).</p>
 
 <figure>
 <div class="ctl">
@@ -215,28 +216,28 @@ text.pk{cursor:pointer}
   <span class="stat" id="fnS" style="margin:0"></span>
 </div>
 <div id="f3"></div>
-<figcaption>k&thinsp;=&thinsp;4. Each card through 🐸 crosses D at a fresh shape of D — and D has only four to give.</figcaption>
+<figcaption>\(k = 4\). Each card through 🐸 crosses \(D\) at a fresh shape of \(D\) — and \(D\) has only four to give.</figcaption>
 </figure>
 
-<div class="fact"><b>No shape sits on more than k cards.</b></div>
+<div class="fact"><b>No shape sits on more than \(\boldsymbol{k}\) cards.</b></div>
 
 <h2><span class="n">04</span> Count from one card</h2>
-<p>Take any card C in any legal deck. Every other card shares exactly one shape with C, so every other card hangs from exactly one of C's k shapes. And each shape of C carries at most k cards — C itself and k&thinsp;&minus;&thinsp;1 others. Hence:</p>
+<p>Take any card \(C\) in any legal deck. Every other card shares exactly one shape with \(C\), so every other card hangs from exactly one of \(C\)'s \(k\) shapes. And each shape of \(C\) carries at most \(k\) cards — \(C\) itself and \(k - 1\) others. Hence:</p>
 
-<div class="fact"><b>A deck holds at most 1 + k(k&minus;1) = k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 cards.</b></div>
-<p class="mono">k = 3 &#8594; 7 &nbsp;&nbsp; k = 4 &#8594; 13 &nbsp;&nbsp; k = 8 &#8594; 57</p>
+<div class="fact"><b>A deck holds at most \(\boldsymbol{1 + k(k-1) = k^2 - k + 1}\) cards.</b></div>
+<p>\[ k = 3 \to 7 \qquad k = 4 \to 13 \qquad k = 8 \to 57 \]</p>
 
 <figure><div id="f4"></div>
-<figcaption>k&thinsp;=&thinsp;4: one card laid flat, and every possible other card hanging from one of its shapes — at most 1&thinsp;+&thinsp;4&middot;3&thinsp;=&thinsp;13 in all.</figcaption>
+<figcaption>\(k = 4\): one card laid flat, and every possible other card hanging from one of its shapes — at most \(1 + 4 \cdot 3 = 13\) in all.</figcaption>
 </figure>
 
 <h2><span class="n">05</span> Where parallels meet</h2>
-<p>Can a deck reach the bound? Only if nothing sags — every shape of every card sitting on exactly k cards. The page itself is what resists: infinitely many points to waste, and parallels everywhere. Two repairs.</p>
-<p><b>Make the plane finite.</b> Keep one q&times;q window of shapes, with q a prime, and tile the page with copies of it. A straight line on the tiled page meets the same q window shapes over and over; collapsed into the window, it wraps.</p>
-<p><b>Give parallels a meeting point.</b> Lines of equal slope still never touch — but painters have always known where parallels meet: the horizon. Hand each slope one new shape, sitting on all q of its lines. The verticals get one too, and the q&thinsp;+&thinsp;1 horizon shapes together form one last card: the horizon itself.</p>
-<p>Every card now carries q&thinsp;+&thinsp;1&thinsp;=&thinsp;k shapes. Different slopes cross in exactly one window shape (a prime q keeps the wrap-around division honest), equal slopes share only their horizon shape, and every line meets the horizon card at its slope. Count: q slopes &times; q shifts, plus q verticals, plus the horizon —</p>
+<p>Can a deck reach the bound? Only if nothing sags — every shape of every card sitting on exactly \(k\) cards. The page itself is what resists: infinitely many points to waste, and parallels everywhere. Two repairs.</p>
+<p><b>Make the plane finite.</b> Keep one \(q \times q\) window of shapes, with \(q\) a prime, and tile the page with copies of it. A straight line on the tiled page meets the same \(q\) window shapes over and over; collapsed into the window, it wraps.</p>
+<p><b>Give parallels a meeting point.</b> Lines of equal slope still never touch — but painters have always known where parallels meet: the horizon. Hand each slope one new shape, sitting on all \(q\) of its lines. The verticals get one too, and the \(q + 1\) horizon shapes together form one last card: the horizon itself.</p>
+<p>Every card now carries \(q + 1 = k\) shapes. Different slopes cross in exactly one window shape (a prime \(q\) keeps the wrap-around division honest), equal slopes share only their horizon shape, and every line meets the horizon card at its slope. Count: \(q\) slopes \(\times\) \(q\) shifts, plus \(q\) verticals, plus the horizon —</p>
 
-<div class="fact"><b>q² + q + 1 = k² &minus; k + 1 cards, on k² &minus; k + 1 shapes. The bound is reached.</b></div>
+<div class="fact"><b>\(\boldsymbol{q^2 + q + 1 = k^2 - k + 1}\) cards, on \(\boldsymbol{k^2 - k + 1}\) shapes. The bound is reached.</b></div>
 
 <figure>
 <div class="ctl">
@@ -252,10 +253,12 @@ text.pk{cursor:pointer}
 </figure>
 
 <h2><span class="n">06</span> All fifty-seven</h2>
-<p>q&thinsp;=&thinsp;7 gives k&thinsp;=&thinsp;8: 57 cards on 57 shapes. The pairs you spotted in Play were dealt from this very deck. (The Dobble in shops prints 55 of the 57.)</p>
-<p>Cards and shapes coming out equal is no accident. In a full deck every shape sits on exactly k cards, so count card&ndash;shape pairs twice: 57 cards &times; 8 shapes each = (number of shapes) &times; 8 cards each. Swap the words <em>card</em> and <em>shape</em> and every statement on this page stays true — geometry calls it duality.</p>
+<p>\(q = 7\) gives \(k = 8\): 57 cards on 57 shapes. The pairs you spotted in Play were dealt from this very deck. (The Dobble in shops prints 55 of the 57.)</p>
+<p>Cards and shapes coming out equal is no accident. In a full deck every shape sits on exactly \(k\) cards, so count card&ndash;shape pairs twice:</p>
+<p>\[ 57 \text{ cards} \times 8 \text{ shapes each} = (\text{number of shapes}) \times 8 \text{ cards each} \]</p>
+<p>Swap the words <em>card</em> and <em>shape</em> and every statement on this page stays true — geometry calls it duality.</p>
 
-<div class="fact">With k shapes per card: <b>at most k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 cards</b>, and a largest deck uses <b>exactly k²&thinsp;&minus;&thinsp;k&thinsp;+&thinsp;1 shapes</b>. For k&thinsp;=&thinsp;8: 57 and 57.</div>
+<div class="fact">With \(k\) shapes per card: <b>at most \(\boldsymbol{k^2 - k + 1}\) cards</b>, and a largest deck uses <b>exactly \(\boldsymbol{k^2 - k + 1}\) shapes</b>. For \(k = 8\): 57 and 57.</div>
 
 <figure>
 <div class="ctl">
@@ -268,12 +271,12 @@ text.pk{cursor:pointer}
 </figure>
 
 <h2><span class="n">07</span> The missing k's</h2>
-<p>One loose end: the recipe wants q&thinsp;=&thinsp;k&minus;1 prime. Powers of primes work too, with a fancier wrap-around arithmetic (k&thinsp;=&thinsp;5 runs on q&thinsp;=&thinsp;4). But nothing covers every k — and for k&thinsp;=&thinsp;7 nothing can: no full deck of q&thinsp;=&thinsp;6 exists, so 43 cards is unreachable. q&thinsp;=&thinsp;10 fell too, to one of the heaviest computer searches ever run. Whether the bound is reachable for <em>any</em> k&minus;1 that is not a prime power remains an open problem.</p>
-<p>Meanwhile the builder is still open. The bound says k&thinsp;=&thinsp;3 ends at 7 cards: find the seven. Then look at what you built — can you point at its grid, and at its horizon?</p>
+<p>One loose end: the recipe wants \(q = k - 1\) prime. Powers of primes work too, with a fancier wrap-around arithmetic (\(k = 5\) runs on \(q = 4\)). But nothing covers every \(k\) — and for \(k = 7\) nothing can: no full deck of \(q = 6\) exists, so 43 cards is unreachable. \(q = 10\) fell too, to one of the heaviest computer searches ever run. Whether the bound is reachable for <em>any</em> \(k - 1\) that is not a prime power remains an open problem.</p>
+<p>Meanwhile the builder is still open. The bound says \(k = 3\) ends at 7 cards: find the seven. Then look at what you built — can you point at its grid, and at its horizon?</p>
 
 </section>
 
-<footer class="proof-only">Dobble (Spot&thinsp;It!) ships k&thinsp;=&thinsp;8 with 55 of the possible 57 cards. Decks meeting the bound are the projective planes of finite geometry; q&thinsp;=&thinsp;6 was ruled out by Tarry (1900) and Bruck&ndash;Ryser (1949), q&thinsp;=&thinsp;10 by Lam, Thiel &amp; Swiercz's computer search (1989). q&thinsp;=&thinsp;12 — k&thinsp;=&thinsp;13 — is anyone's guess.</footer>
+<footer class="proof-only">Dobble (Spot&thinsp;It!) ships \(k = 8\) with 55 of the possible 57 cards. Decks meeting the bound are the projective planes of finite geometry; \(q = 6\) was ruled out by Tarry (1900) and Bruck&ndash;Ryser (1949), \(q = 10\) by Lam, Thiel &amp; Swiercz's computer search (1989). \(q = 12\) — \(k = 13\) — is anyone's guess.</footer>
 </main>
 
 <script>

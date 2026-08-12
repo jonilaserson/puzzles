@@ -102,6 +102,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -173,7 +174,7 @@ footer{
 
 <p>No cleverer drink lists escape this. Count what ten prisoners can say against what they must say:</p>
 
-<p class="mline">death patterns &le; 2<sup>10</sup> = <b>1024</b> &nbsp;&nbsp;&middot;&nbsp;&nbsp; guilty pairs = 1000&middot;999/2 = <b>499,500</b></p>
+<p>\[ \text{death patterns} \le 2^{10} = \mathbf{1024} \quad\cdot\quad \text{guilty pairs} = 1000 \cdot 999 / 2 = \mathbf{499{,}500} \]</p>
 
 <p>Patterns are outnumbered 488 to one; hence some pattern fits hundreds of guilty pairs, and no lists can say which is true.</p>
 
@@ -197,12 +198,12 @@ footer{
 <h2><span class="n">04</span> Ten dots, fifteen edges</h2>
 <p>How many edges can ten dots carry with no triangle and no square? Call two edges meeting at a dot a <b>cherry</b>. A cherry's outer ends are never themselves an edge &mdash; that closes a triangle &mdash; and no two cherries share the same outer ends &mdash; that closes a square. Hence the non-edge dot-pairs carry all the cherries, one each at most:</p>
 
-<p class="mline">cherries &le; 45 &minus; edges</p>
+<p>\[ \text{cherries} \le 45 - \text{edges} \]</p>
 
-<p>A dot with d edges holds d(d&minus;1)/2 cherries. Suppose 16 edges: the degrees sum to 32, and even their evenest split &mdash; eight dots of degree 3, two of degree 4 &mdash; holds 8&middot;3 + 2&middot;6 = 36 cherries (an uneven split holds more). But 45 &minus; 16 = 29. Sixteen edges are impossible; fifteen are not:</p>
+<p>A dot with \(d\) edges holds \(d(d-1)/2\) cherries. Suppose 16 edges: the degrees sum to 32, and even their evenest split &mdash; eight dots of degree 3, two of degree 4 &mdash; holds \(8 \cdot 3 + 2 \cdot 6 = 36\) cherries (an uneven split holds more). But \(45 - 16 = 29\). Sixteen edges are impossible; fifteen are not:</p>
 
 <figure><div id="pf4"></div>
-<figcaption>Left: grow from any dot &mdash; itself, 3 neighbors, 2 new dots per neighbor: 1 + 3 + 6 = 10, nothing repeated, since a repeat would close a triangle or a square. Six more edges among the outer six complete the fifteen. Right: the same ten letters, combed &mdash; the <b>Petersen graph</b>.</figcaption></figure>
+<figcaption>Left: grow from any dot &mdash; itself, 3 neighbors, 2 new dots per neighbor: \(1 + 3 + 6 = 10\), nothing repeated, since a repeat would close a triangle or a square. Six more edges among the outer six complete the fifteen. Right: the same ten letters, combed &mdash; the <b>Petersen graph</b>.</figcaption></figure>
 
 <div class="fact"><b>Fact 4.</b> Ten dots, no triangle, no square: at most 15 edges. The Petersen graph has 15.</div>
 
@@ -210,7 +211,7 @@ footer{
 <p>Assign the thousand barrels to the Petersen graph's fifteen edges: 67 barrels in every cell of the outer ring and the inner star, 66 in every spoke's. Each prisoner drinks his three cells &mdash; about 200 barrels.</p>
 <p>The deaths name the guilty cells (Fact 3), and the king throws at most two of them:</p>
 
-<p class="mline">thrown &le; 67 + 67 = 134 &nbsp;&rarr;&nbsp; served &ge; 1000 &minus; 134 = <b>866</b></p>
+<p>\[ \text{thrown} \le 67 + 67 = 134 \quad\rightarrow\quad \text{served} \ge 1000 - 134 = \mathbf{866} \]</p>
 
 <figure>
 <div class="ctl">
@@ -225,9 +226,9 @@ footer{
 <div class="fact"><b>Fact 5.</b> Two poisoned barrels, ten prisoners: the king serves 866 barrels, certain of every glass.</div>
 
 <p>A kindness, too: at most four prisoners die. The binary lists of the warm-up, handed the guilty pair 511 and 512, kill all ten.</p>
-<p>Could different lists beat 866? All 499,500 guilty pairs split among at most 1024 patterns, and a pattern with t suspects fits at most t(t&minus;1)/2 of them:</p>
+<p>Could different lists beat 866? All 499,500 guilty pairs split among at most 1024 patterns, and a pattern with \(t\) suspects fits at most \(t(t-1)/2\) of them:</p>
 
-<p class="mline">1024 &middot; t(t&minus;1)/2 &ge; 499,500 &nbsp;&rarr;&nbsp; some pattern leaves t &ge; 32 suspects &nbsp;&rarr;&nbsp; served &le; <b>968</b></p>
+<p>\[ 1024 \cdot t(t-1)/2 \ge 499{,}500 \quad\rightarrow\quad \text{some pattern leaves } t \ge 32 \text{ suspects} \quad\rightarrow\quad \text{served} \le \mathbf{968} \]</p>
 
 <p>Between 866 and 968 the answer is unknown &mdash; not just to this page; to everyone.</p>
 <p>Two questions to take away. With more prisoners, cells could shrink to single barrels: a graph with no triangle, no square, and a thousand edges names the guilty pair exactly. How few dots can carry it? And if the assassin poisons <em>three</em> barrels &mdash; which shapes must the drawing avoid then?</p>

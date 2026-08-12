@@ -110,6 +110,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -162,7 +163,7 @@ footer{
 <figcaption>The three answers: L (left sinks), B (balance), R (right sinks).</figcaption></figure>
 
 <p>A <b>plan</b> says what to load on the pans at each weighing &mdash; each choice may depend on the answers so far &mdash; and at the end should provide enough information to decide which story is true.</p>
-<p>A plan of two weighings can end in at most 3 &times; 3 = 9 different ways. Since 9 &lt; 24, two weighings are not enough. A plan of three weighings can end in 3&sup3; = 27 ways, and 27 &ge; 24 &mdash; so three weighings might be enough.</p>
+<p>A plan of two weighings can end in at most \(3 \times 3 = 9\) different ways. Since \(9 < 24\), two weighings are not enough. A plan of three weighings can end in \(3^3 = 27\) ways, and \(27 \ge 24\) &mdash; so three weighings might be enough.</p>
 
 <div class="fact"><b>Fact 1.</b> <b>At least three weighings are necessary.</b></div>
 
@@ -241,7 +242,7 @@ footer{
 
 <h2><span class="n">05</span> Fourteen, and beyond</h2>
 <p>Fourteen coins make 28 stories &mdash; more than the 27 ways three weighings can end. Two stories must spell the same answer, so no plan learns fake and direction both. Even the name is out of reach: a tipped bin holds one story per pan coin and must stay within 9, so each pan holds at most four coins. Then at least six coins sit on the bench, and the balance bin holds their twelve stories: six pairs. A pair can share only the answer BB, and only one pair can have it. The other five pairs need ten different answers, and only eight remain. Hence fourteen coins need a fourth weighing.</p>
-<p>The same counts run for any number of weighings and close at a formula: <b>w weighings name the fake and its direction among (3<sup>w</sup>&thinsp;&minus;&thinsp;3)/2 coins</b>, and one coin more when the direction may stay unknown. The sequence runs 3, 12, 39, 120, &hellip; The play bench tops out at 30 coins, well within four weighings.</p>
+<p>The same counts run for any number of weighings and close at a formula: <b>\(w\) weighings name the fake and its direction among \((3^w - 3)/2\) coins</b>, and one coin more when the direction may stay unknown. The sequence runs \(3, 12, 39, 120, \ldots\) The play bench tops out at 30 coins, well within four weighings.</p>
 <p>A last question. Borrow one extra coin that is known genuine. Three weighings can now name the fake among thirteen coins, direction included. Which count does the borrowed coin loosen?</p>
 
 </section>

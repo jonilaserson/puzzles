@@ -104,6 +104,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -115,7 +116,7 @@ footer{
 <p class="sub">One pile, alternating takes, and a single rule that makes every take cap the next. Most piles fall to careful play. Some sizes cannot be beaten.</p>
 
 <div class="box">
-  <p><b>The game.</b> A pile of n stones. You and the site take turns removing stones; <b>whoever takes the last stone wins</b>. The opening take can be any number of stones &mdash; just not the whole pile. Every later take is at least 1 and <b>at most twice the take before it</b>.</p>
+  <p><b>The game.</b> A pile of \(n\) stones. You and the site take turns removing stones; <b>whoever takes the last stone wins</b>. The opening take can be any number of stones &mdash; just not the whole pile. Every later take is at least 1 and <b>at most twice the take before it</b>.</p>
   <p><b>The puzzle.</b> Which pile sizes can the opener always win, and how? Which piles are lost the moment the game starts?</p>
   <p>Play below &mdash; the site never blunders. Win a few piles as opener, and note the sizes where you can't<span class="proof-cta">, before flipping to the proof</span>.</p>
 </div>
@@ -144,7 +145,7 @@ footer{
 <section class="proof-only">
 
 <h2><span class="n">01</span> The record</h2>
-<p>The piles where the site cannot be beaten &mdash; even when you open &mdash; are 2, 3, 5, 8, 13, 21, 34, &hellip; Set a 1 in front of the list, and each number is the sum of the two before it: the <b>Fibonacci numbers</b>.</p>
+<p>The piles where the site cannot be beaten &mdash; even when you open &mdash; are \(2, 3, 5, 8, 13, 21, 34, \ldots\) Set a 1 in front of the list, and each number is the sum of the two before it: the <b>Fibonacci numbers</b>.</p>
 
 <figure><div id="pf1"></div>
 <figcaption>The lost piles, stacked. Each row is the two rows above it, laid end to end: the darker stones copy the row above, the lighter stones the row before that.</figcaption></figure>
@@ -162,18 +163,18 @@ footer{
 <figcaption>Type a pile and see its split. Try the piles around a Fibonacci number: 33, 34, 35.</figcaption>
 </figure>
 
-<p>A remainder never reaches the Fibonacci number just below the block it left. Watch the 13 broken from 20: a remainder of 8 or more would mean the pile holds 13 + 8 = 21, so 21 would have been broken off instead. The remainder is 7, so the next block is at most 5. And 13 is more than twice 5:</p>
-<p class="mono">13 = 8 + 5 &gt; 5 + 5</p>
+<p>A remainder never reaches the Fibonacci number just below the block it left. Watch the 13 broken from 20: a remainder of 8 or more would mean the pile holds \(13 + 8 = 21\), so 21 would have been broken off instead. The remainder is 7, so the next block is at most 5. And 13 is more than twice 5:</p>
+<p>\[ 13 = 8 + 5 > 5 + 5 \]</p>
 
 <div class="fact"><b>Fact 1.</b> In a split, each block is more than twice the block after it &mdash; the blocks are <b>spaced</b>.</div>
 
 <p>Could a pile split into spaced blocks in a second way? Spaced blocks kept below some Fibonacci number can never reach it. Below 13, the top block is at most 8; the next must stay under half of 8 (Fact 1), so it is at most 3; the block after that stays under half of 3, so it is at most 1; and nothing fits under half of 1. The total:</p>
-<p class="mono">8 + 3 + 1 = 12</p>
+<p>\[ 8 + 3 + 1 = 12 \]</p>
 
 <figure><div id="pf2b"></div>
 <figcaption>The tightest spaced packing below 13: one stone short.</figcaption></figure>
 
-<p>The shortfall nests: 3 + 1 falls one short of 5, so 8 + 3 + 1 falls one short of 8 + 5 = 13. Below every Fibonacci number, the tightest packing lands one stone short.</p>
+<p>The shortfall nests: \(3 + 1\) falls one short of \(5\), so \(8 + 3 + 1\) falls one short of \(8 + 5 = 13\). Below every Fibonacci number, the tightest packing lands one stone short.</p>
 <p>So a spaced arrangement cannot keep all its blocks below the largest Fibonacci number that fits &mdash; it would total less than the pile. The top block is forced; then, remainder by remainder, every block is forced.</p>
 
 <div class="fact"><b>Fact 2.</b> Spaced blocks that add up to a pile are that pile's split &mdash; <b>Zeckendorf's theorem</b>.</div>

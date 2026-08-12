@@ -102,6 +102,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -164,17 +165,17 @@ footer{
 <p>Row 5 looks like one more push. It never comes.</p>
 
 <h2><span class="n">02</span> The score</h2>
-<p>Fix a target square <b>T</b> on row 5. Score every square: T scores 1, and each step away &mdash; one square along a row or column &mdash; multiplies the score by σ, a number we choose below. A soldier <b>d</b> steps from T scores σ<sup>d</sup>; a group of soldiers scores the sum.</p>
+<p>Fix a target square <b>\(T\)</b> on row 5. Score every square: \(T\) scores 1, and each step away &mdash; one square along a row or column &mdash; multiplies the score by \(\sigma\), a number we choose below. A soldier <b>\(d\)</b> steps from \(T\) scores \(\sigma^d\); a group of soldiers scores the sum.</p>
 <figure><div id="fHeat"></div></figure>
-<p>In a jump straight toward T, the jumper starts d+2 steps from T, vaults a neighbor at distance d+1, and lands at distance d. The board loses the first two scores and gains the third. We choose σ to make that trade even:</p>
-<p class="mono">σ<sup>d+2</sup> + σ<sup>d+1</sup> = σ<sup>d</sup></p>
-<p>Divide by σ<sup>d</sup>: every d asks the same condition.</p>
-<p class="mono">σ² + σ = 1,&emsp;hence&ensp;σ = (√5 &minus; 1)/2 ≈ 0.618</p>
+<p>In a jump straight toward \(T\), the jumper starts \(d+2\) steps from \(T\), vaults a neighbor at distance \(d+1\), and lands at distance \(d\). The board loses the first two scores and gains the third. We choose \(\sigma\) to make that trade even:</p>
+<p>\[ \sigma^{d+2} + \sigma^{d+1} = \sigma^{d} \]</p>
+<p>Divide by \(\sigma^d\): every \(d\) asks the same condition.</p>
+<p>\[ \sigma^2 + \sigma = 1, \qquad \text{hence} \quad \sigma = \frac{\sqrt{5} - 1}{2} \approx 0.618 \]</p>
 
 <h2><span class="n">03</span> No jump gains</h2>
-<p>A jump runs along three squares: the jumper&rsquo;s, the vaulted neighbor&rsquo;s, and the landing square. Square to square, the distance to T changes by exactly one; it falls until the jump passes T&rsquo;s row or column and rises after &mdash; it never rises and then falls. Hence three patterns:</p>
+<p>A jump runs along three squares: the jumper&rsquo;s, the vaulted neighbor&rsquo;s, and the landing square. Square to square, the distance to \(T\) changes by exactly one; it falls until the jump passes \(T\)&rsquo;s row or column and rises after &mdash; it never rises and then falls. Hence three patterns:</p>
 <figure><div id="fCases"></div></figure>
-<div class="fact"><b>Fact 2.</b> No jump raises the score: toward T it breaks even, every other jump drops it.</div>
+<div class="fact"><b>Fact 2.</b> No jump raises the score: toward \(T\) it breaks even, every other jump drops it.</div>
 <p>Try it &mdash; every jump prints its arithmetic.</p>
 <figure>
 <div class="ctl">
@@ -190,24 +191,24 @@ footer{
 <h2><span class="n">04</span> The army, in full</h2>
 <p>What is the total score of our entire infinite army? Sum it column by column.</p>
 <figure><div id="fSum"></div></figure>
-<p>The soldiers in T&rsquo;s own column stand 5, 6, 7, &hellip; steps from T. Sum the column with the geometric series, then use 1 &minus; σ = σ² (σ² + σ = 1, rearranged):</p>
-<p class="mono">σ⁵ + σ⁶ + σ⁷ + ⋯ = σ⁵/(1&minus;σ) = σ⁵/σ² = σ³</p>
-<p>One column aside, every soldier stands one step farther, so the sum is σ times as much; outward, the column sums run σ³, σ⁴, σ⁵, &hellip; Columns pair off left and right:</p>
-<p class="mono">σ³ + 2(σ⁴ + σ⁵ + σ⁶ + ⋯) = σ³ + 2σ⁴/σ² = σ³ + 2σ²</p>
-<p>And σ² + σ = 1 finishes it:</p>
-<p class="mono">σ³ + 2σ² = σ(σ² + σ) + σ² = σ + σ² = <b>1</b></p>
-<div class="fact"><b>Fact 3.</b> The infinite army scores exactly <b>1</b>, the score of a lone soldier on T.</div>
+<p>The soldiers in \(T\)&rsquo;s own column stand \(5, 6, 7, \ldots\) steps from \(T\). Sum the column with the geometric series, then use \(1 - \sigma = \sigma^2\) (\(\sigma^2 + \sigma = 1\), rearranged):</p>
+<p>\[ \sigma^5 + \sigma^6 + \sigma^7 + \cdots = \frac{\sigma^5}{1 - \sigma} = \frac{\sigma^5}{\sigma^2} = \sigma^3 \]</p>
+<p>One column aside, every soldier stands one step farther, so the sum is \(\sigma\) times as much; outward, the column sums run \(\sigma^3, \sigma^4, \sigma^5, \ldots\) Columns pair off left and right:</p>
+<p>\[ \sigma^3 + 2(\sigma^4 + \sigma^5 + \sigma^6 + \cdots) = \sigma^3 + \frac{2\sigma^4}{\sigma^2} = \sigma^3 + 2\sigma^2 \]</p>
+<p>And \(\sigma^2 + \sigma = 1\) finishes it:</p>
+<p>\[ \sigma^3 + 2\sigma^2 = \sigma(\sigma^2 + \sigma) + \sigma^2 = \sigma + \sigma^2 = \mathbf{1} \]</p>
+<div class="fact"><b>Fact 3.</b> The infinite army scores exactly <b>1</b>, the score of a lone soldier on \(T\).</div>
 
 <h2><span class="n">05</span> The wall</h2>
 <p>A game lasts finitely many jumps, so the soldiers that ever jump or are vaulted form a finite crew. Its score starts <b>below 1</b>: the army scores exactly 1, and every soldier left out keeps a positive share.</p>
-<p>Jumps trade scores only inside the crew, so by Fact 2 its score never rises. But a scout standing on T scores 1 by itself. Hence no play lands a soldier on T &mdash; and T was any square of row 5.</p>
+<p>Jumps trade scores only inside the crew, so by Fact 2 its score never rises. But a scout standing on \(T\) scores 1 by itself. Hence no play lands a soldier on \(T\) &mdash; and \(T\) was any square of row 5.</p>
 <div class="fact"><b>Theorem.</b> Row 5 is out of reach &mdash; forever, by any finite play.</div>
-<p>Could a jump from row 4 skip straight to row 6? Aim T at a square on row 6: every soldier stands one step farther, and the army scores only σ, still short of the 1 a scout needs.</p>
+<p>Could a jump from row 4 skip straight to row 6? Aim \(T\) at a square on row 6: every soldier stands one step farther, and the army scores only \(\sigma\), still short of the 1 a scout needs.</p>
 
 <h2><span class="n">06</span> A golden footnote</h2>
-<p>The number σ hides a celebrity:</p>
-<p class="mono">1/σ = 2/(√5 &minus; 1) = (1 + √5)/2 = φ,&ensp;the golden ratio</p>
-<p>And nothing in the score cared where T sat. Aim it at <b>row 4</b>: every soldier stands one step closer, every score divides by σ, and the army scores φ ≈ 1.618, yet a climb must still gather 1. What do the best sixteen squares below the line score, and why could sixteen soldiers never reach row 4?</p>
+<p>The number \(\sigma\) hides a celebrity:</p>
+<p>\[ \frac{1}{\sigma} = \frac{2}{\sqrt{5} - 1} = \frac{1 + \sqrt{5}}{2} = \varphi, \quad \text{the golden ratio} \]</p>
+<p>And nothing in the score cared where \(T\) sat. Aim it at <b>row 4</b>: every soldier stands one step closer, every score divides by \(\sigma\), and the army scores \(\varphi \approx 1.618\), yet a climb must still gather 1. What do the best sixteen squares below the line score, and why could sixteen soldiers never reach row 4?</p>
 
 </section>
 

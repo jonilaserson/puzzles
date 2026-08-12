@@ -104,6 +104,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -126,8 +127,8 @@ footer{
 <p class="sub">Split fifteen balls into groups — any way you like — and repeat one simple move. Wherever you start, you are pulled to the same five groups, and trapped.</p>
 
 <div class="box">
-  <p><b>The game.</b> Take 15 balls and split them into groups, any way you please: (5,&thinsp;3,&thinsp;7), one big group of 15, fifteen groups of one — all fair starts. Then repeat a single move, forever: <b>take one ball from every group, and pile the collected balls together as a new group.</b> A group that runs out of balls simply disappears.</p>
-  <p><b>The puzzle.</b> Play from any start and you will always arrive at the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5) — where the move recreates exactly the same five groups, so the game freezes for good. <b>Prove that this happens from every possible start.</b></p>
+  <p><b>The game.</b> Take 15 balls and split them into groups, any way you please: \((5, 3, 7)\), one big group of 15, fifteen groups of one — all fair starts. Then repeat a single move, forever: <b>take one ball from every group, and pile the collected balls together as a new group.</b> A group that runs out of balls simply disappears.</p>
+  <p><b>The puzzle.</b> Play from any start and you will always arrive at the groups \((1, 2, 3, 4, 5)\) — where the move recreates exactly the same five groups, so the game freezes for good. <b>Prove that this happens from every possible start.</b></p>
   <p>Really: play a few rounds below (or grab 15 coins)<span class="proof-cta"> before flipping to the proof</span>. The puzzle is more fun once you've felt the pull.</p>
 </div>
 
@@ -148,7 +149,7 @@ footer{
 </div>
 <div class="stat" id="plS"></div>
 <div id="fPlay"></div>
-<figcaption>Piles of balls on a table. Each move collects the top ball of every pile (amber) and stacks the loot as a new pile on the right; a pile whose last ball is taken is gone. Two things to try: find a start of 15 balls that escapes (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5) &mdash; and see what 14 balls do instead.</figcaption>
+<figcaption>Piles of balls on a table. Each move collects the top ball of every pile (amber) and stacks the loot as a new pile on the right; a pile whose last ball is taken is gone. Two things to try: find a start of 15 balls that escapes \((1, 2, 3, 4, 5)\) &mdash; and see what 14 balls do instead.</figcaption>
 </figure>
 </section>
 
@@ -156,7 +157,7 @@ footer{
 
 <h2><span class="n">01</span> The board</h2>
 <p>Tip each pile onto its side, so every group becomes a row of balls, and stack the rows: a board.</p>
-<p>Give each ball a <b>depth</b>: its row + column &minus; 1. Balls of equal depth form one diagonal of the board &mdash; <b>diagonal d</b>, with exactly d places on it.</p>
+<p>Give each ball a <b>depth</b>: its \(\text{row} + \text{column} - 1\). Balls of equal depth form one diagonal of the board &mdash; <b>diagonal \(\boldsymbol{d}\)</b>, with exactly \(d\) places on it.</p>
 
 <figure><div id="f1"></div>
 <div class="legend">
@@ -168,13 +169,13 @@ footer{
   <span><span class="sw" style="background:#c4ad82"></span>6+</span>
   <span><span class="swd"></span>place of diagonal 5 with no ball</span>
 </div>
-<figcaption>The groups (3,&thinsp;6,&thinsp;4,&thinsp;2), tipped onto their sides and stacked into a board. Each ball shows its depth. Diagonal 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
+<figcaption>The groups \((3, 6, 4, 2)\), tipped onto their sides and stacked into a board. Each ball shows its depth. Diagonal 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
 
 <h2><span class="n">02</span> The move, drawn</h2>
-<p>Now make a move on the board. The balls it collects are exactly the first column &mdash; one from every group &mdash; and the new group lines up as a new top row: the ball from row r lands at column r. No other ball moves.</p>
+<p>Now make a move on the board. The balls it collects are exactly the first column &mdash; one from every group &mdash; and the new group lines up as a new top row: the ball from row \(r\) lands at column \(r\). No other ball moves.</p>
 
 <figure><div id="f2"></div>
-<figcaption>The collected column (amber) becomes the new top row (dashed). Each collected ball flies along its own diagonal: from a place of depth r to a place of depth r.</figcaption></figure>
+<figcaption>The collected column (amber) becomes the new top row (dashed). Each collected ball flies along its own diagonal: from a place of depth \(r\) to a place of depth \(r\).</figcaption></figure>
 
 <p>Standing balls keep their depth too: the board gained a row on top and lost its first column, so a standing ball's row number grew by one and its column number shrank by one.</p>
 
@@ -184,7 +185,7 @@ footer{
 <p>There is one wrinkle. When a group loses its last ball, its row becomes empty. If the empty row is not the last one, the next move leaves a <b>gap</b> in the new top row. We close the gap by sliding the balls after it to the left &mdash; and each slide costs a ball one depth.</p>
 
 <figure><div id="f3"></div>
-<figcaption>Rows (5,&thinsp;4,&thinsp;2,&thinsp;&mdash;,&thinsp;3,&thinsp;1): the fourth row is empty, so the collected column lands with a gap at position 4. Closing it slides two balls left; each loses one depth.</figcaption></figure>
+<figcaption>Rows \((5, 4, 2, \text{—}, 3, 1)\): the fourth row is empty, so the collected column lands with a gap at position 4. Closing it slides two balls left; each loses one depth.</figcaption></figure>
 
 <p>Now add up the depths of all 15 balls and call the sum the <b>total depth</b>.</p>
 
@@ -195,7 +196,7 @@ footer{
 
 <h2><span class="n">04</span> Ball meets hole</h2>
 <p>With no more gaps to close, every move cycles each diagonal one step: each ball slides one place leftward along its diagonal, and the left-most ball &mdash; the collected one &mdash; wraps around to the top row. Holes (empty places) cycle along with the balls.</p>
-<p>Now suppose diagonal d is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, d+1. The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every d+1 moves; between surfacings, the hole makes a full lap of its d places, plus one step. Hence each surfacing finds the hole one place closer, and within d surfacings they surface together: a ball at column d+1, a hole at column d &mdash; a top row that has a gap. Impossible. Therefore the hole never existed.</p>
+<p>Now suppose diagonal \(d\) is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, \(d+1\). The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every \(d+1\) moves; between surfacings, the hole makes a full lap of its \(d\) places, plus one step. Hence each surfacing finds the hole one place closer, and within \(d\) surfacings they surface together: a ball at column \(d+1\), a hole at column \(d\) &mdash; a top row that has a gap. Impossible. Therefore the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
@@ -204,17 +205,19 @@ footer{
 <div class="stat" id="cs"></div>
 <div id="f6"></div>
 <div class="note" id="cnote"></div>
-<figcaption>The case d = 4. Jump from surfacing to surfacing &mdash; the hole slips one place closer each time.</figcaption></figure>
+<figcaption>The case \(d = 4\). Jump from surfacing to surfacing &mdash; the hole slips one place closer each time.</figcaption></figure>
 
-<div class="fact"><b>Fact 3.</b> A ball on diagonal d+1 forces diagonal d to be completely full.</div>
+<div class="fact"><b>Fact 3.</b> A ball on diagonal \(d+1\) forces diagonal \(d\) to be completely full.</div>
 
 <h2><span class="n">05</span> The count</h2>
-<p>Let D be the deepest diagonal holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: diagonals 1 through D&minus;1 are all full. Full diagonals hold 1+2+&#8943;+(D&minus;1) balls, and diagonal D holds between 1 and D more. Now count:</p>
-<p class="mono">D &le; 4: at most 1+2+3&thinsp;+&thinsp;4 = 10. Too few.</p>
-<p class="mono">D &ge; 6: at least 1+2+3+4+5&thinsp;+&thinsp;1 = 16. Too many.</p>
-<p class="mono">D = 5: diagonal 5 holds 15 &minus; 10 = 5. Full.</p>
+<p>Let \(D\) be the deepest diagonal holding a ball. Fact 3, applied to that ball and chained downward, fills the entire board beneath it: diagonals 1 through \(D-1\) are all full. Full diagonals hold \(1+2+\cdots+(D-1)\) balls, and diagonal \(D\) holds between 1 and \(D\) more. Now count:</p>
+<p>\[ \begin{aligned}
+D &\le 4: \quad \text{at most } 1+2+3+4 = 10. \ \text{Too few.} \\
+D &\ge 6: \quad \text{at least } 1+2+3+4+5+1 = 16. \ \text{Too many.} \\
+D &= 5: \quad \text{diagonal 5 holds } 15 - 10 = 5. \ \text{Full.}
+\end{aligned} \]</p>
 
-<p>Hence all five diagonals are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups (1,&thinsp;2,&thinsp;3,&thinsp;4,&thinsp;5). A full diagonal cycled one step looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
+<p>Hence all five diagonals are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups \((1, 2, 3, 4, 5)\). A full diagonal cycled one step looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
 
 <figure><div id="f7"></div>
 <figcaption>The staircase: every diagonal full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
@@ -243,7 +246,7 @@ footer{
 <figcaption>Depth is a property of the spot, so a ball never changes color. The status line tracks total depth: watch it fall exactly when a gap closes, and settle for good once the drops are over.</figcaption></figure>
 
 <h2><span class="n">07</span> Why 15?</h2>
-<p>The number 15 entered the proof exactly once: the count works because 15 = 1+2+3+4+5. Numbers that can be written as 1+2+3+&#8943;+k are called <b>triangular numbers</b>. Can you predict what happens when the total number of balls is <em>not</em> triangular? Make a prediction, then test it in the playground above.</p>
+<p>The number 15 entered the proof exactly once: the count works because \(15 = 1+2+3+4+5\). Numbers that can be written as \(1+2+3+\cdots+k\) are called <b>triangular numbers</b>. Can you predict what happens when the total number of balls is <em>not</em> triangular? Make a prediction, then test it in the playground above.</p>
 
 </section>
 

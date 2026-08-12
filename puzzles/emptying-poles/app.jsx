@@ -87,6 +87,22 @@ function App() {
     if (el) el.style.display = mode === "auto" ? "" : "none";
   }, [mode]);
 
+  // typeset the \( \) math in the React-rendered prose (assets/math.js / KaTeX).
+  // The auto-render pass runs at DOMContentLoaded, before React mounts, so the
+  // app's own prose must be typeset here — again whenever mode changes, because
+  // the proof aside (the math-bearing prose) mounts with raw delimiters each
+  // time it appears. KaTeX may still be loading from the CDN, hence the retry.
+  useEffect(() => {
+    let cancelled = false;
+    const typeset = () => {
+      if (cancelled) return;
+      if (window.renderMath) window.renderMath(document.getElementById("app"));
+      else setTimeout(typeset, 150);
+    };
+    typeset();
+    return () => { cancelled = true; };
+  }, [mode]);
+
   // slower, readable pacing
   const gap = { 1: 1700, 2: 1150, 3: 700, 4: 380 }[speed];
   const FLIGHT = Math.min(gap + 150, 1050);
@@ -311,28 +327,28 @@ function App() {
       <aside className="dd-proof">
         <div className="dd-proof-head">The proof</div>
         <p>
-          Order the piles <span className="m">a ≤ b ≤ c</span>. We empty a pole by driving the
+          Order the piles \(a \le b \le c\). We empty a pole by driving the
           smallest pile down — and the engine is one round repeated.
         </p>
         <p>
-          <b>One round.</b> Let <span className="m">q = ⌊b/a⌋</span> and <span className="m">r = b − a·q</span>,
-          so <span className="m">r &lt; a</span>. Write <span className="m">q</span> in binary and double the
-          smallest pile bit by bit, least-significant first: at step <span className="m">i</span> it holds
-          <span className="m"> 2ⁱ·a</span>, and we pour that amount from <span className="m">b</span> when bit
-          <span className="m"> i</span> is a 1, from <span className="m">c</span> when it is a 0. Throughout, the
-          donor obeys <span className="m">b = a·q + r</span>: each doubling <em>doubles</em> <span className="m">a</span>
-          and <em>shifts</em> <span className="m">q</span> one place right, while <span className="m">r</span> never moves.
-          When the bits run out, <span className="m">b</span> has given away exactly <span className="m">a·q</span> and
-          settles at <span className="m">r</span>.
+          <b>One round.</b> Let \(q = \lfloor b/a \rfloor\) and \(r = b - a \cdot q\),
+          so \(r &lt; a\). Write \(q\) in binary and double the
+          smallest pile bit by bit, least-significant first: at step \(i\) it holds
+          {' '}\(2^i \cdot a\), and we pour that amount from \(b\) when bit
+          {' '}\(i\) is a 1, from \(c\) when it is a 0. Throughout, the
+          donor obeys \(b = a \cdot q + r\): each doubling <em>doubles</em> \(a\)
+          and <em>shifts</em> \(q\) one place right, while \(r\) never moves.
+          When the bits run out, \(b\) has given away exactly \(a \cdot q\) and
+          settles at \(r\).
         </p>
         <p>
-          <b>Why it ends.</b> The smallest pile fell from <span className="m">a</span> to <span className="m">r &lt; a</span> —
+          <b>Why it ends.</b> The smallest pile fell from \(a\) to \(r &lt; a\) —
           a strictly smaller minimum. A non-negative integer cannot decrease forever, so the minimum must reach
-          <span className="m"> 0</span>: an empty pole. <span className="qed">∎</span>
+          {' '}\(0\): an empty pole. <span className="qed">∎</span>
         </p>
         <p className="dd-proof-foot">
-          Every move is legal: on a 1-bit, <span className="m">b</span> still holds enough because its higher bits are
-          untouched; on a 0-bit, <span className="m">c ≥ b</span> is large enough since only smaller powers have been spent.
+          Every move is legal: on a 1-bit, \(b\) still holds enough because its higher bits are
+          untouched; on a 0-bit, \(c \ge b\) is large enough since only smaller powers have been spent.
         </p>
       </aside>
       )}

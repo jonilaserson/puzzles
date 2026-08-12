@@ -104,6 +104,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -144,7 +145,7 @@ footer{
 <section class="proof-only">
 
 <h2><span class="n">01</span> Squares: erase, then mirror</h2>
-<p>The record under the grid reads one way: the opener wins every board but 1&times;1. One row is the plainest win: the opener erases everything but the last square.</p>
+<p>The record under the grid reads one way: the opener wins every board but \(1 \times 1\). One row is the plainest win: the opener erases everything but the last square.</p>
 <p>On a square board the opener erases <b>all but the last row and last column</b>. What survives is two equal arms, meeting at the last square. Every other surviving square sits in a single arm, so every later move erases from a single arm, from the end away from the last square. The opener answers with the same move in the other arm, and the arms are equal again. They run out with the answerer to move &mdash; alone with the last square.</p>
 
 <figure>
@@ -155,7 +156,7 @@ footer{
 </div>
 <div class="stat" id="mrS"></div>
 <div id="pf1"></div>
-<figcaption>The site opens with 4&times;4, then answers every move of yours with its mirror image. Replay and hunt for an escape.</figcaption>
+<figcaption>The site opens with \(4 \times 4\), then answers every move of yours with its mirror image. Replay and hunt for an escape.</figcaption>
 </figure>
 
 <div class="fact"><b>Fact 1.</b> On square boards the opener wins: erase all but the last row and column, then mirror.</div>
@@ -164,15 +165,15 @@ footer{
 <p>Boards are finite and every move erases at least one square, so no game loops or draws: one of the two players can force the win &mdash; but which?</p>
 <p>Assume it is the answerer.</p>
 <p>Let the opener open with the smallest move: the corner square alone.</p>
-<p>Let <span class="mono">m</span> be the answerer's reply on the way to their win.</p>
-<p>Every rectangle covers the corner square, so <span class="mono">m</span>, played as the opening instead, leaves the very same board.</p>
+<p>Let \(m\) be the answerer's reply on the way to their win.</p>
+<p>Every rectangle covers the corner square, so \(m\), played as the opening instead, leaves the very same board.</p>
 <p>Hence the opener could have forced that same win &mdash; contradiction.</p>
-<p>Therefore the opener can force the win, on every board bigger than 1&times;1.</p>
+<p>Therefore the opener can force the win, on every board bigger than \(1 \times 1\).</p>
 
 <figure><div id="pf2"></div>
-<figcaption>A 4&times;6 board, where the corner opening loses; the only winning reply <b>m</b> is 3&times;4. Left: the corner opening (1), then <b>m</b> (2). Right: <b>m</b> as the opening. The boards match, and whoever must move next is lost: the opener on the left, the answerer on the right.</figcaption></figure>
+<figcaption>A \(4 \times 6\) board, where the corner opening loses; the only winning reply \(\boldsymbol{m}\) is \(3 \times 4\). Left: the corner opening (1), then \(\boldsymbol{m}\) (2). Right: \(\boldsymbol{m}\) as the opening. The boards match, and whoever must move next is lost: the opener on the left, the answerer on the right.</figcaption></figure>
 
-<div class="fact"><b>Fact 2.</b> On every board bigger than 1&times;1, the opener can force the win.</div>
+<div class="fact"><b>Fact 2.</b> On every board bigger than \(1 \times 1\), the opener can force the win.</div>
 
 <p>The argument names no move: it proves a winning opening exists and points at none. One row, two rows, squares &mdash; those are solved. Beyond them no rule is known; each board is settled by search, the way the site settles yours.</p>
 <p>Which single opening wins every two-row board? And three rows &mdash; is there a rule?</p>
