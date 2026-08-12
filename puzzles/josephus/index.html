@@ -230,37 +230,39 @@ footer{
 
 <p>Set the count to 2 and the recurrence retells the record: each added person pushes the seat up by two, and every wrap drops it back to seat 1 &mdash; the resets at the powers of two. Why does a wrap land exactly on seat 1?</p>
 
-<h2><span class="n">06</span> Naming the climbs</h2>
+<h2><span class="n">06</span> The base of a climb</h2>
 
 <p>Go back to the graph, and this time watch its shape. Each dot is one circle: the dot over circle size m is drawn at height s(m), the survivor's seat in a circle of m people. One step to the right &mdash; one more person in the circle &mdash; and the recurrence adds k to the seat. So the dots line up along straight stretches, each rising by k per step. Call such a stretch a <b>climb</b>.</p>
 
 <p>No climb can last forever, because a seat number can never be bigger than the circle that holds it: every dot must stay on or under the dashed line, seat = circle size. Whenever adding k would carry the seat past the circle size, the mod in the recurrence takes the circle size back off, and the dot lands near the bottom instead. This fall is the <b>wrap</b>. (While the circle is still smaller than the count &mdash; possible only among the first few dots &mdash; one step may take the circle size off twice or more; count each subtraction as a wrap of its own.)</p>
 
-<p>So the whole graph is a few climbs, each cut short by a wrap &mdash; and only the last climb matters, the one standing over circle size n. A climb rises by k per step, so a single number pins it down. Here is a good choice for that number. Along a climb, each step adds k to the seat; the same step also adds k to k&thinsp;&middot;&thinsp;(circle size); so the difference between those two never moves. That difference, plus one, is the climb's <b>name</b>:</p>
-<p class="mono">D = k &middot; (circle size) + 1 &minus; seat</p>
-<p>Every dot of one climb gives the same D, and a lower climb gives a bigger D. The name hands back every dot of its climb: seat = k&thinsp;&middot;&thinsp;(circle size) + 1 &minus; D. (The lone +1 is a choice; it keeps the formulas below short.)</p>
+<p>So the whole graph is a few climbs, each cut short by a wrap &mdash; and only the last climb matters, the one standing over circle size n. The plan: pin each climb down by a single number, and follow that number from climb to climb.</p>
 
-<p>Now the graph turns into arithmetic on names, three small questions at a time.</p>
+<p>Before the arithmetic, one change of numbering. For this section, count the seats from 0 instead of 1: write S = seat &minus; 1, so a circle of m people has seats 0 to m&minus;1. The graph keeps its shape &mdash; every dot just carries a label one lower &mdash; and the recurrence of section 05 sheds its &minus;1 and +1:</p>
+<p class="mono">S(m) = (S(m&minus;1) + k) mod m</p>
 
-<p><b>What is the first name?</b> The graph opens with the circle of one: size 1, seat 1. So the first climb is named D = k&middot;1 + 1 &minus; 1 = k.</p>
+<p>Now the climbs. A climb rises by k per step, so its dots lie on a straight line, and the line is fixed by one number: how far it hangs below the steepest line of all, S = km. Call that number the climb's <b>base</b>, D. All along one climb,</p>
+<p class="mono">S(m) = km &minus; D</p>
+<p>and the recurrence keeps the base still: if the dot at size m&minus;1 sits at k(m&minus;1) &minus; D, adding k puts the dot at size m on km &minus; D &mdash; the same D. A lower climb has a bigger base, and the base hands back every dot of its climb.</p>
 
-<p><b>Where does a climb wrap?</b> On the climb named D, the seat at circle size m would be km + 1 &minus; D. The wrap fires as soon as this passes m, that is, as soon as (k&minus;1)&thinsp;m &ge; D. So the climb ends at the first size big enough:</p>
+<p><b>The first base.</b> The graph opens with the circle of one: size 1, seat 0. So the first climb has base D = k&middot;1 &minus; 0 = k.</p>
+
+<p><b>Where a climb breaks.</b> The formula S = km &minus; D names a real seat only while it stays below m. It breaks &mdash; the wrap fires &mdash; as soon as km &minus; D &ge; m, that is, as soon as (k&minus;1)&thinsp;m &ge; D. So the climb with base D ends at the first size big enough:</p>
 <p class="mono">m = &lceil;D/(k&minus;1)&rceil;</p>
 <p>&mdash; where the bars &lceil;&thinsp;&rceil; mean: divide, then round up to a whole number.</p>
 
-<p><b>What is the next name?</b> The wrap lowers the seat by m, and D = km + 1 &minus; seat, so a seat lower by m means a name bigger by m:</p>
-<p class="mono">D&prime; = D + m = D + &lceil;D/(k&minus;1)&rceil; = &lceil;kD/(k&minus;1)&rceil;</p>
-<p>(the whole number D slides inside the rounding bars untouched).</p>
+<p><b>The next base.</b> The wrap drops the seat by m; in S = km &minus; D, a seat lower by m is a base higher by m:</p>
+<p class="mono">D&prime; = D + m = D + &lceil;D/(k&minus;1)&rceil; = &lceil;((k&minus;1)D + D)/(k&minus;1)&rceil; = &lceil;kD/(k&minus;1)&rceil;</p>
 
-<p>The same arithmetic tells where the wrap lands: on seat km + 1 &minus; D&prime; = (k&minus;1)m + 1 &minus; D. Since m is the <i>first</i> size with (k&minus;1)m &ge; D, the excess (k&minus;1)m &minus; D is somewhere between 0 and k&minus;2, so <b>every wrap lands on a seat between 1 and k&minus;1</b>. For k = 2 that leaves only seat 1 &mdash; the question that closed the last section. For k = 3 it leaves seats 1 and 2: every wrap in the graph above lands on one of those two.</p>
+<p>The same line tells where the wrap lands: on seat km &minus; D&prime; = (k&minus;1)m &minus; D. Since m is the <i>first</i> size with (k&minus;1)m &ge; D, this lands somewhere between 0 and k&minus;2: <b>every wrap lands on one of the k&minus;1 lowest seats</b>. For k = 2 that leaves only S = 0 &mdash; the page's seat 1, the question that closed the last section. For k = 3 it leaves S = 0 and S = 1, the old seats 1 and 2: every wrap in the graph above lands on one of those two.</p>
 
-<div class="fact"><b>Fact 3.</b> Start with D = k, the circle of one. While D &le; (k&minus;1)n, replace D by &lceil;kD/(k&minus;1)&rceil;. The survivor is seat <b>kn + 1 &minus; D</b>.</div>
+<div class="fact"><b>Fact 3.</b> Start with D = k, the circle of one. While D &le; (k&minus;1)n, replace D by &lceil;kD/(k&minus;1)&rceil;. The survivor sits at S = kn &minus; D &mdash; back in the page's numbers, seat <b>kn &minus; D + 1</b>.</div>
 
-<p>The test D &le; (k&minus;1)n asks: does this climb still wrap at some size m &le; n, inside the graph? While the answer is yes, the wrap renames the climb. The first name past (k&minus;1)n belongs to a climb that carries over circle size n without wrapping, and its dot there is the survivor: seat = kn + 1 &minus; D.</p>
+<p>The test D &le; (k&minus;1)n asks: does this climb still break at some size m &le; n, inside the graph? While the answer is yes, the wrap raises the base. The first base past (k&minus;1)n belongs to a climb that carries over circle size n without breaking, and its dot there is the survivor.</p>
 
-<p>For k = 3 the renaming rule &lceil;3D/2&rceil; says: <b>add half, round up</b>. That much Josephus could do standing in the cave &mdash; no circle, no counting, one number in his head:</p>
-<p class="mono">3, 5, 8, 12, 18, 27, 41, 62, 93 &mdash; past 2&middot;41 = 82, stop: &ensp; seat = 3&middot;41 + 1 &minus; 93 = <b>31</b></p>
-<p>Nine numbers for forty-one men. Each renaming grows D by a fixed fraction of itself, so D passes (k&minus;1)n after about log n renamings &mdash; one per wrap, while the recurrence walks all n circles.</p>
+<p>For k = 3 the growing rule &lceil;3D/2&rceil; says: <b>add half, round up</b>. That much Josephus could do standing in the cave &mdash; no circle, no counting, one number in his head:</p>
+<p class="mono">3, 5, 8, 12, 18, 27, 41, 62, 93 &mdash; past 2&middot;41 = 82, stop: &ensp; seat = 3&middot;41 &minus; 93 + 1 = <b>31</b></p>
+<p>Nine numbers for forty-one men. Each wrap grows the base by a fixed fraction of itself, so D passes (k&minus;1)n after about log n wraps, while the recurrence walks all n circles.</p>
 
 <figure>
 <div class="ctl">
@@ -274,7 +276,7 @@ footer{
 <figcaption>Josephus' own case. Try k = 2: the chant runs the powers of two, and n = 41 lands on seat 19 &mdash; the rotation of section 04.</figcaption>
 </figure>
 
-<p>Only the rounding keeps this a chant instead of a formula. At k = 2 nothing is ever rounded: D doubles exactly &mdash; 2, 4, 8, 16, the boxed powers of the record &mdash; and the whole chant collapses into one stroke, the formula of section 01. From k = 3 on, each renaming either rounds or doesn't, depending on the number it meets, and nobody has found a way to know all the roundings without performing them one by one. The chant, one wrap at a time, is the best there is.</p>
+<p>Only the rounding keeps this a chant instead of a formula. At k = 2 nothing is ever rounded: D doubles exactly &mdash; 2, 4, 8, 16, the boxed powers of the record &mdash; and the whole chant collapses into one stroke, the formula of section 01. From k = 3 on, each step either rounds or doesn't, depending on the number it meets, and nobody has found a way to know all the roundings without performing them one by one. The chant, one wrap at a time, is the best there is.</p>
 
 </section>
 
@@ -612,7 +614,7 @@ const CH=(function(){
     let D=k; const chant=[D];
     while(D<=(k-1)*n){D+=Math.ceil(D/(k-1));chant.push(D);}
     if(chant.length>60){S.innerHTML=`that chant runs ${chant.length-1} wraps &mdash; a smaller count or crowd, please.`;P.innerHTML='';return;}
-    S.innerHTML=`${chant.length-1} wraps; &ensp;seat = ${k}&middot;${n} + 1 &minus; ${D} = <b>${k*n+1-D}</b>`;
+    S.innerHTML=`${chant.length-1} wraps; &ensp;seat = ${k}&middot;${n} &minus; ${D} + 1 = <b>${k*n+1-D}</b>`;
     P.innerHTML=chant.join(' &rarr; ');
   }
   go();
