@@ -98,6 +98,7 @@ footer{
 </style>
 <script src="../../assets/state.js"></script>
 <script src="../../assets/veil.js"></script>
+<script src="../../assets/math.js"></script>
 </head>
 <body class="mode-play">
 <a class="back-link" href="../../">← all puzzles</a>
@@ -116,9 +117,9 @@ footer{
 <p class="sub">People in a circle, a count that never stops, an empty seat each round. One person remains &mdash; and you can know who before the counting starts.</p>
 
 <div class="box">
-  <p><b>The game.</b> n people stand in a circle, numbered 1 to n. Count around, starting at person 1: the person who says <b>k</b> steps out, the count restarts at 1 on the next person, and the circle tightens &mdash; around and around, skipping empty seats.</p>
-  <p><b>The puzzle.</b> One person is left at the end. <b>Predict who, from n and k alone.</b></p>
-  <p>Run a few circles below<span class="proof-cta"> before flipping to the proof</span>: keep k at 2 and grow n one step at a time &mdash; the survivors, written in a row, give the game away.</p>
+  <p><b>The game.</b> \(n\) people stand in a circle, numbered 1 to \(n\). Count around, starting at person 1: the person who says <b>\(k\)</b> steps out, the count restarts at 1 on the next person, and the circle tightens &mdash; around and around, skipping empty seats.</p>
+  <p><b>The puzzle.</b> One person is left at the end. <b>Predict who, from \(n\) and \(k\) alone.</b></p>
+  <p>Run a few circles below<span class="proof-cta"> before flipping to the proof</span>: keep \(k\) at 2 and grow \(n\) one step at a time &mdash; the survivors, written in a row, give the game away.</p>
 </div>
 
 <div class="modeswitch"><div class="ms-pill">
@@ -150,26 +151,26 @@ footer{
 <h2><span class="n">01</span> The record</h2>
 
 <figure><div id="pf1"></div>
-<figcaption>The record for k = 2, n = 1&hellip;16; the powers of two boxed.</figcaption></figure>
+<figcaption>The record for \(k = 2\), \(n = 1, \ldots, 16\); the powers of two boxed.</figcaption></figure>
 
-<p>Each added person raises the survivor's number by two; at every power of two it drops back to 1. So write n as the last power of two plus l more people:</p>
-<p class="mono">n = 2<sup>m</sup> + l, &ensp; 0 &le; l &lt; 2<sup>m</sup></p>
-<p>Those l people raise the survivor's number from 1 by two each:</p>
-<p class="mono"><b>survivor = 2l + 1</b></p>
-<p class="mono">13 = 8 + 5: &ensp; survivor = 2&middot;5 + 1 = 11</p>
+<p>Each added person raises the survivor's number by two; at every power of two it drops back to 1. So write \(n\) as the last power of two plus \(l\) more people:</p>
+<p>\[ n = 2^m + l, \qquad 0 \le l < 2^m \]</p>
+<p>Those \(l\) people raise the survivor's number from 1 by two each:</p>
+<p>\[ \textbf{survivor} = 2l + 1 \]</p>
+<p>\[ 13 = 8 + 5: \quad \text{survivor} = 2 \cdot 5 + 1 = 11 \]</p>
 
 <h2><span class="n">02</span> The evens step out</h2>
-<p>The first l people to step out are the even ones: persons 2, 4, &hellip;, 2l. They all fall inside the first lap, because 2l &lt; 2<sup>m</sup>&thinsp;+&thinsp;l = n. Hence 2<sup>m</sup> people remain, and the count starts at person 2l&thinsp;+&thinsp;1.</p>
+<p>The first \(l\) people to step out are the even ones: persons \(2, 4, \ldots, 2l\). They all fall inside the first lap, because \(2l < 2^m + l = n\). Hence \(2^m\) people remain, and the count starts at person \(2l + 1\).</p>
 
 <figure><div id="pf2"></div>
-<figcaption>n = 13 = 8&thinsp;+&thinsp;5, after five people step out.</figcaption></figure>
+<figcaption>\(n = 13 = 8 + 5\), after five people step out.</figcaption></figure>
 
 <h2><span class="n">03</span> The starter survives</h2>
-<p>In a circle of 2<sup>m</sup> people, call the person the count starts on the starter. In one lap, every second person steps out; since 2<sup>m</sup> is even, the last of them is the person just before the starter. So the next count starts at the starter again, in a circle of 2<sup>m&minus;1</sup> people. That circle is even too, and so on, down to a circle of one.</p>
+<p>In a circle of \(2^m\) people, call the person the count starts on the starter. In one lap, every second person steps out; since \(2^m\) is even, the last of them is the person just before the starter. So the next count starts at the starter again, in a circle of \(2^{m-1}\) people. That circle is even too, and so on, down to a circle of one.</p>
 
-<div class="fact"><b>Fact 1.</b> In a circle of 2<sup>m</sup> people, whoever starts the count survives.</div>
+<div class="fact"><b>Fact 1.</b> In a circle of \(2^m\) people, whoever starts the count survives.</div>
 
-<p>The eight who remain in n = 13 are such a circle:</p>
+<p>The eight who remain in \(n = 13\) are such a circle:</p>
 
 <figure>
 <div class="ctl">
@@ -181,15 +182,15 @@ footer{
 <figcaption>The circle shrinks lap by lap: 8, 4, 2, 1. The count keeps coming back to person 11.</figcaption>
 </figure>
 
-<p>Person 2l&thinsp;+&thinsp;1 starts the count in the circle of 2<sup>m</sup> that remains. Hence:</p>
-<div class="fact"><b>Fact 2.</b> For k = 2, write n = 2<sup>m</sup>&thinsp;+&thinsp;l with 0 &le; l &lt; 2<sup>m</sup>: the survivor is person <b>2l&thinsp;+&thinsp;1</b>.</div>
+<p>Person \(2l + 1\) starts the count in the circle of \(2^m\) that remains. Hence:</p>
+<div class="fact"><b>Fact 2.</b> For \(k = 2\), write \(n = 2^m + l\) with \(0 \le l < 2^m\): the survivor is person \(\boldsymbol{2l + 1}\).</div>
 
 <h2><span class="n">04</span> One rotation</h2>
-<p>Write n in binary: the leading 1 is the 2<sup>m</sup>, and the m digits after it spell l. Call that block of m digits &#8467;:</p>
-<p class="mono">n = 1&thinsp;&#8467;</p>
+<p>Write \(n\) in binary: the leading 1 is the \(2^m\), and the \(m\) digits after it spell \(l\). Call that block of \(m\) digits \(\ell\):</p>
+<p>\[ n = 1\,\ell \]</p>
 <p>Doubling a binary number shifts its digits one place left; adding 1 then fills the freed last place:</p>
-<p class="mono">2l + 1 = &#8467;&thinsp;1</p>
-<p>n and the survivor share the same digits &mdash; hence: <b>rotate n one digit left</b>.</p>
+<p>\[ 2l + 1 = \ell\,1 \]</p>
+<p>\(n\) and the survivor share the same digits &mdash; hence: <b>rotate \(n\) one digit left</b>.</p>
 
 <figure>
 <div class="ctl">
@@ -198,19 +199,18 @@ footer{
 </div>
 <div class="stat" id="rtS"></div>
 <div id="pf4"></div>
-<figcaption>Check it in play: n = 41, k = 2 &rarr; person 19.</figcaption>
+<figcaption>Check it in play: \(n = 41\), \(k = 2\) &rarr; person 19.</figcaption>
 </figure>
 
 <h2><span class="n">05</span> Any count</h2>
-<p>No formula like this is known for any other count. But when person k steps out, the n&minus;1 people who remain are playing the same game; only their numbers are wrong: the count restarts at person k&thinsp;+&thinsp;1, not at person 1. So renumber: the person the count restarts on becomes 1, the next person 2, and so on around. In the new numbers this is a fresh circle of n&minus;1 people, same game, same count.</p>
+<p>No formula like this is known for any other count. But when person \(k\) steps out, the \(n-1\) people who remain are playing the same game; only their numbers are wrong: the count restarts at person \(k+1\), not at person 1. So renumber: the person the count restarts on becomes 1, the next person 2, and so on around. In the new numbers this is a fresh circle of \(n-1\) people, same game, same count.</p>
 
 <figure><div id="pf5"></div>
-<figcaption>n = 8, k = 3: the seven who remain, renumbered in amber.</figcaption></figure>
+<figcaption>\(n = 8\), \(k = 3\): the seven who remain, renumbered in amber.</figcaption></figure>
 
-<p>The fresh circle's survivor is also the survivor of the full circle, and his old seat is his fresh seat plus k, wrapped around the circle of n. So, writing s(n) for the survivor's seat in a circle of n people:</p>
-<p class="mono">s(1) = 1</p>
-<p class="mono">s(n) = ((s(n&minus;1) + k &minus; 1) mod n) + 1</p>
-<p>The &minus;1 and +1 convert seat numbers 1&hellip;n to remainders 0&hellip;n&minus;1 and back, so the mod can wrap.</p>
+<p>The fresh circle's survivor is also the survivor of the full circle, and his old seat is his fresh seat plus \(k\), wrapped around the circle of \(n\). So, writing \(s(n)\) for the survivor's seat in a circle of \(n\) people:</p>
+<p>\[ \begin{aligned} s(1) &= 1 \\ s(n) &= \bigl( (s(n-1) + k - 1) \bmod n \bigr) + 1 \end{aligned} \]</p>
+<p>The \(-1\) and \(+1\) convert seat numbers \(1, \ldots, n\) to remainders \(0, \ldots, n-1\) and back, so the mod can wrap.</p>
 
 <figure>
 <div class="ctl">
@@ -225,30 +225,31 @@ footer{
 </div>
 <div class="stat" id="ldS"></div>
 <div id="pf6"></div>
-<figcaption>One dot per circle. Josephus' own case, n = 41 and k = 3, ends at seat <b>31</b>.</figcaption>
+<figcaption>One dot per circle. Josephus' own case, \(n = 41\) and \(k = 3\), ends at seat <b>31</b>.</figcaption>
 </figure>
 
 <p>Set the count to 2 and the recurrence retells the record: each added person pushes the seat up by two, and every wrap drops it back to seat 1 &mdash; the resets at the powers of two. Why does a wrap land exactly on seat 1?</p>
 
 <h2><span class="n">06</span> The base of a climb</h2>
 
-<p>The graph is made of long straight <b>climbs</b>, in which the seat rises by k at every step, separated by sudden falls &mdash; the <b>wraps</b>. In this section, count the seats from 0 instead of 1: write S = seat &minus; 1. Then the recurrence loses its &minus;1 and +1 and becomes S(m) = (S(m&minus;1) + k) mod m.</p>
+<p>The graph is made of long straight <b>climbs</b>, in which the seat rises by \(k\) at every step, separated by sudden falls &mdash; the <b>wraps</b>. In this section, count the seats from 0 instead of 1: write \(S = \text{seat} - 1\). Then the recurrence loses its \(-1\) and \(+1\) and becomes</p>
+<p>\[ S(m) = (S(m-1) + k) \bmod m \]</p>
 
-<p>During a climb, every step adds exactly k to the seat. So the difference between km and S(m) stays the same for the whole climb, and the climb obeys a single formula:</p>
-<p class="mono">S(m) = km &minus; D</p>
-<p>The constant D is the <b>base</b> of the climb.</p>
+<p>During a climb, every step adds exactly \(k\) to the seat. So the difference between \(km\) and \(S(m)\) stays the same for the whole climb, and the climb obeys a single formula:</p>
+<p>\[ S(m) = km - D \]</p>
+<p>The constant \(D\) is the <b>base</b> of the climb.</p>
 
 <p>When does this formula break? A seat must stay below the circle size, so the formula fails as soon as</p>
-<p class="mono">km &minus; D &ge; m, &ensp; that is, &ensp; (k&minus;1)m &ge; D</p>
-<p>The first such size is m = &lceil;D/(k&minus;1)&rceil;, where the bars &lceil;&thinsp;&rceil; mean rounding up to a whole number. There the climb wraps. What happens then? The seat drops by m, so the base rises by m:</p>
-<p class="mono">D&prime; = D + &lceil;D/(k&minus;1)&rceil; = &lceil;((k&minus;1)D + D)/(k&minus;1)&rceil; = &lceil;kD/(k&minus;1)&rceil;</p>
-<p>The wrap lands on seat km &minus; D&prime; = (k&minus;1)m &minus; D. Because m is the <i>first</i> size with (k&minus;1)m &ge; D, this landing seat lies between 0 and k&minus;2. For k = 2 the only possibility is seat 0, which is seat 1 in the old numbering &mdash; the answer to the question above.</p>
+<p>\[ km - D \ge m, \quad \text{that is,} \quad (k-1)\,m \ge D \]</p>
+<p>The first such size is \(m = \lceil D/(k-1) \rceil\), where the bars \(\lceil\ \rceil\) mean rounding up to a whole number. There the climb wraps. What happens then? The seat drops by \(m\), so the base rises by \(m\):</p>
+<p>\[ D' = D + \left\lceil \frac{D}{k-1} \right\rceil = \left\lceil \frac{(k-1)D + D}{k-1} \right\rceil = \left\lceil \frac{kD}{k-1} \right\rceil \]</p>
+<p>The wrap lands on seat \(km - D' = (k-1)m - D\). Because \(m\) is the <i>first</i> size with \((k-1)m \ge D\), this landing seat lies between 0 and \(k-2\). For \(k = 2\) the only possibility is seat 0, which is seat 1 in the old numbering &mdash; the answer to the question above.</p>
 
-<div class="fact"><b>Fact 3.</b> Start with D = k, the base that puts the circle of one at S(1) = 0. While D &le; (k&minus;1)n, replace D by &lceil;kD/(k&minus;1)&rceil;. The survivor sits at S = kn &minus; D, which is seat <b>kn &minus; D + 1</b> in the old numbering.</div>
+<div class="fact"><b>Fact 3.</b> Start with \(D = k\), the base that puts the circle of one at \(S(1) = 0\). While \(D \le (k-1)n\), replace \(D\) by \(\lceil kD/(k-1) \rceil\). The survivor sits at \(S = kn - D\), which is seat \(\boldsymbol{kn - D + 1}\) in the old numbering.</div>
 
-<p>For k = 3 the rule is: <b>add half of D, rounded up</b>. That much Josephus could do standing in the cave, with no circle and no counting &mdash; one number in his head:</p>
-<p class="mono">3, 5, 8, 12, 18, 27, 41, 62, 93 &mdash; past 2&middot;41 = 82, stop: &ensp; seat = 3&middot;41 &minus; 93 + 1 = <b>31</b></p>
-<p>Nine numbers for forty-one men: the chant needs about log n wraps, while the recurrence walks all n circles.</p>
+<p>For \(k = 3\) the rule is: <b>add half of \(D\), rounded up</b>. That much Josephus could do standing in the cave, with no circle and no counting &mdash; one number in his head:</p>
+<p>\[ 3,\ 5,\ 8,\ 12,\ 18,\ 27,\ 41,\ 62,\ 93 \ \text{&mdash; past } 2 \cdot 41 = 82 \text{, stop:} \quad \text{seat} = 3 \cdot 41 - 93 + 1 = \mathbf{31} \]</p>
+<p>Nine numbers for forty-one men: the chant needs about \(\log n\) wraps, while the recurrence walks all \(n\) circles.</p>
 
 <figure>
 <div class="ctl">
@@ -259,10 +260,10 @@ footer{
 </div>
 <div class="stat" id="chS"></div>
 <p class="mono" id="pf7"></p>
-<figcaption>Josephus' own case. Try k = 2: the chant runs the powers of two, and n = 41 lands on seat 19 &mdash; the rotation of section 04.</figcaption>
+<figcaption>Josephus' own case. Try \(k = 2\): the chant runs the powers of two, and \(n = 41\) lands on seat 19 &mdash; the rotation of section 04.</figcaption>
 </figure>
 
-<p>Only the rounding keeps this a chant instead of a formula. When k = 2 nothing is ever rounded: D simply doubles, running 2, 4, 8, 16 &mdash; the boxed powers of the record &mdash; and the chant collapses back into the formula of section 01. For any larger count, nobody knows how to predict the roundings without performing them, one wrap at a time.</p>
+<p>Only the rounding keeps this a chant instead of a formula. When \(k = 2\) nothing is ever rounded: \(D\) simply doubles, running \(2, 4, 8, 16\) &mdash; the boxed powers of the record &mdash; and the chant collapses back into the formula of section 01. For any larger count, nobody knows how to predict the roundings without performing them, one wrap at a time.</p>
 
 </section>
 
