@@ -4,14 +4,14 @@
    A puzzle missing from this list is fully live (both true).
    Flip a flag, push to main: that is the whole release mechanism. */
 window.PUZZLE_STATE = {
-  "emptying-poles": { published: true, proof: false },
-  "fifteen-balls":  { published: true, proof: false },
-  "invisible-frog": { published: true, proof: false },
-  "dobble":         { published: true, proof: false },
-  "rectangle-eraser": { published: true, proof: false },
-  "josephus":       { published: true, proof: false },
-  "last-stone":     { published: true, proof: false },
-  "counterfeit-coin": { published: true, proof: false },
-  "conways-soldiers": { published: true, proof: false },
-  "poisoned-barrels": { published: true, proof: false },
+  "emptying-poles": { published: true, proof: true  },
+  "fifteen-balls":  { published: true, proof: true  },
+  "invisible-frog": { published: true, proof: true  },
+  "dobble":         { published: true, proof: true  },
+  "rectangle-eraser": { published: true, proof: true  },
+  "josephus":       { published: true, proof: true  },
+  "last-stone":     { published: true, proof: true  },
+  "counterfeit-coin": { published: true, proof: true  },
+  "conways-soldiers": { published: true, proof: true  },
+  "poisoned-barrels": { published: true, proof: true  },
 };
