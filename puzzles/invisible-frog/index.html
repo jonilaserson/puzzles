@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The frog you can hear but cannot see</title>
+<meta name="puzzle:tags" content="pursuit · parity">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -123,15 +124,29 @@ footer{
 <a class="back-link" href="../../">← all puzzles</a>
 
 <main>
+<template class="tile-emblem">
+<svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+<path d="M8 50V38M18 50V36M28 50V34M38 50V36M48 50V38"/>
+<path d="M3 51q4-3 8 0t8 0t8 0t8 0t8 0t8 0" stroke-width="1.2" opacity=".55"/>
+<g stroke-dasharray="2.4 2.6">
+<ellipse cx="28" cy="28" rx="7.5" ry="5.5"/>
+<circle cx="24" cy="21" r="3"/>
+<circle cx="32" cy="21" r="3"/>
+</g>
+<circle cx="24" cy="21" r="1.1" fill="currentColor" stroke="none"/>
+<circle cx="32" cy="21" r="1.1" fill="currentColor" stroke="none"/>
+<path d="M42 16q3.5 4 0 8M46.5 12.5q5.5 6.5 0 14" stroke-width="1.3"/>
+</svg>
+</template>
 
 <p class="kicker">pursuit · parity<span class="proof-cta"> · a visual proof</span></p>
 <h1>The frog you can hear<br>but cannot see</h1>
 <p class="rule">state the whole game in one line &mdash; put the pivotal word in <em>bold</em></p>
 
 <div class="box">
-  <p><b>The setup.</b> Ten poles stand in a swamp. On one of them sits a frog. It is night: you can hear it, but you can't see it.</p>
-  <p><b>The move.</b> Shoot any pole. If the frog is there, the croaking stops — you win. If not, it silently hops to a pole right next to its own, and you shoot again.</p>
-  <p><b>The puzzle.</b> Find a way of shooting that is <b>certain</b> to get the frog — with as few bullets as possible.</p>
+  <p><b>The setup.</b> Ten poles stand in a swamp on a dark night. A frog sits on one of them: you can hear it, but you can't see it.</p>
+  <p><b>The move.</b> Shoot any pole. If the frog is there — you win. If not, it silently hops to an adjacent pole.</p>
+  <p><b>The puzzle.</b> How can you be <b>certain</b> you'd eventually get the frog, and with as few bullets as possible?</p>
 </div>
 
 <div class="modeswitch"><div class="ms-pill">

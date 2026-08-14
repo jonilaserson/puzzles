@@ -1,0 +1,12 @@
+# Tile order on the index page. One slug per line; scripts/build_index.py
+# turns each puzzles/<slug>/index.html into a tile. New puzzle? Add it here.
+emptying-poles
+fifteen-balls
+invisible-frog
+dobble
+josephus
+last-stone
+counterfeit-coin
+conways-soldiers
+rectangle-eraser
+poisoned-barrels

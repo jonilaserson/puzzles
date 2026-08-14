@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Count around the circle: who is left standing?</title>
+<meta name="puzzle:tags" content="josephus · recursion">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -113,15 +114,29 @@ footer{
 </svg>
 
 <main>
+<template class="tile-emblem">
+<svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+<circle cx="28" cy="10" r="4" fill="currentColor" stroke="none"/>
+<circle cx="41.4" cy="15.6" r="4"/>
+<circle cx="47" cy="29" r="4" stroke-dasharray="2.5 2.5"/>
+<circle cx="41.4" cy="42.4" r="4"/>
+<circle cx="28" cy="48" r="4" stroke-dasharray="2.5 2.5"/>
+<circle cx="14.6" cy="42.4" r="4"/>
+<circle cx="9" cy="29" r="4" stroke-dasharray="2.5 2.5"/>
+<circle cx="14.6" cy="15.6" r="4"/>
+<path d="M17 37 A 12.5 12.5 0 0 1 20.5 17.5" stroke-dasharray="3 3"/>
+<path d="M18 16.2l4.6-.6-1.5 4.4"/>
+</svg>
+</template>
 
 <p class="kicker">josephus · counting circle<span class="proof-cta"> · a visual proof</span></p>
-<h1>Count around the circle:<br>who is left standing?</h1>
+<h1>How to win Eeny, meeny, miny, moe on the circle</h1>
 <p class="rule">state the whole game in one line &mdash; put the pivotal word in <em>bold</em></p>
+<p class="sub">Go around the circle, take out every third person. <br>Who would be the last one standing?</p>
 
 <div class="box">
-  <p><b>The game.</b> \(n\) people stand in a circle, numbered 1 to \(n\). Count around, starting at person 1: the person who says <b>\(k\)</b> steps out, the count restarts at 1 on the next person, and the circle tightens &mdash; around and around, skipping empty seats.</p>
-  <p><b>The puzzle.</b> One person is left at the end. <b>Predict who, from \(n\) and \(k\) alone.</b></p>
-  <p>Run a few circles below<span class="proof-cta"> before flipping to the proof</span>: keep \(k\) at 2 and grow \(n\) one step at a time &mdash; the survivors, written in a row, give the game away.</p>
+  <p><b>The game.</b> \(n\) people stand in a circle, numbered 1 to \(n\). Going around, take out every k-th person, until only one person is left standing.</p>
+  <p><b>The puzzle.</b> Where should you stand on the original circle to be the one left at the end?</p>
 </div>
 
 <div class="modeswitch"><div class="ms-pill">

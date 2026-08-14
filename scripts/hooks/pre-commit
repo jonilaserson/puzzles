@@ -1,0 +1,6 @@
+#!/bin/sh
+# Rebuild the static index from the puzzle pages before every commit, so the
+# tiles always reflect each puzzle's own h1 / rule / tags / emblem.
+# Installed as a symlink: .git/hooks/pre-commit -> ../../scripts/hooks/pre-commit
+python3 scripts/build_index.py || exit 1
+git add index.html

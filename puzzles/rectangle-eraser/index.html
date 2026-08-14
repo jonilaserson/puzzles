@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Erase rectangles, avoid the last square</title>
+<meta name="puzzle:tags" content="erasing game · strategy">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -112,6 +113,22 @@ footer{
 <a class="back-link" href="../../">← all puzzles</a>
 
 <main>
+<template class="tile-emblem">
+<svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+<g stroke-dasharray="2.4 2.4" opacity=".6">
+<rect x="7" y="7" width="7" height="7" rx="1.5"/><rect x="16" y="7" width="7" height="7" rx="1.5"/><rect x="25" y="7" width="7" height="7" rx="1.5"/><rect x="34" y="7" width="7" height="7" rx="1.5"/>
+<rect x="7" y="16" width="7" height="7" rx="1.5"/><rect x="16" y="16" width="7" height="7" rx="1.5"/>
+<rect x="7" y="25" width="7" height="7" rx="1.5"/><rect x="16" y="25" width="7" height="7" rx="1.5"/>
+<rect x="7" y="34" width="7" height="7" rx="1.5"/>
+</g>
+<rect x="43" y="7" width="7" height="7" rx="1.5"/>
+<rect x="25" y="16" width="7" height="7" rx="1.5"/><rect x="34" y="16" width="7" height="7" rx="1.5"/><rect x="43" y="16" width="7" height="7" rx="1.5"/>
+<rect x="25" y="25" width="7" height="7" rx="1.5"/><rect x="34" y="25" width="7" height="7" rx="1.5"/><rect x="43" y="25" width="7" height="7" rx="1.5"/>
+<rect x="16" y="34" width="7" height="7" rx="1.5"/><rect x="25" y="34" width="7" height="7" rx="1.5"/><rect x="34" y="34" width="7" height="7" rx="1.5"/><rect x="43" y="34" width="7" height="7" rx="1.5"/>
+<rect x="7" y="43" width="7" height="7" rx="1.5"/><rect x="16" y="43" width="7" height="7" rx="1.5"/><rect x="25" y="43" width="7" height="7" rx="1.5"/><rect x="34" y="43" width="7" height="7" rx="1.5"/>
+<rect x="43" y="43" width="7" height="7" rx="1.5" fill="currentColor"/>
+</svg>
+</template>
 
 <p class="kicker">erasing game · corner rectangles<span class="proof-cta"> · a visual proof</span></p>
 <h1>Erase rectangles,<br>avoid the last square</h1>
