@@ -4,8 +4,12 @@
 Each puzzle page (puzzles/<slug>/index.html) is the single source of truth
 for its tile on the index:
 
-  title   <h1> (falls back to <title> for JS-rendered pages)
-  desc    <p class="rule"> (falls back to <meta name="puzzle:rule">)
+  title   <h1> (fallbacks: <meta name="puzzle:title">, then <title>)
+  desc    <p class="rule"> (fallback: <meta name="puzzle:rule">)
+
+JS-rendered pages (emptying-poles) keep title/rule in those metas and render
+them from there, so the metas stay the single source. Meta content may hold
+entity-escaped markup (&lt;em&gt;...) — it is unescaped here.
   tags    <meta name="puzzle:tags" content="a · b">
   emblem  <template class="tile-emblem"> holding the tile SVG
 
@@ -16,6 +20,7 @@ index.html. Run from anywhere; paths are repo-relative to this file.
 A git pre-commit hook runs this automatically; run by hand after editing
 a puzzle's title/rule/tags/emblem to see the index update locally.
 """
+import html
 import re
 import sys
 from pathlib import Path
@@ -39,9 +44,12 @@ def extract(pattern, text, flags=re.S):
 def tile_title(page, slug):
     h1 = extract(r"<h1[^>]*>(.*?)</h1>", page)
     if h1 is None:
+        meta = extract(r'<meta name="puzzle:title" content="([^"]*)"', page)
+        h1 = html.unescape(meta) if meta is not None else None
+    if h1 is None:
         h1 = extract(r"<title>(.*?)</title>", page)
     if h1 is None:
-        fail(f"{slug}: no <h1> and no <title>")
+        fail(f"{slug}: no <h1>, no <meta name=\"puzzle:title\">, no <title>")
     h1 = re.sub(r"<br\s*/?>", " ", h1)
     h1 = re.sub(r"<[^>]+>", "", h1)  # keep text and entities only
     return re.sub(r"\s+", " ", h1).strip()
@@ -50,7 +58,8 @@ def tile_title(page, slug):
 def tile_rule(page, slug):
     rule = extract(r'<p class="rule"[^>]*>(.*?)</p>', page)
     if rule is None:
-        rule = extract(r'<meta name="puzzle:rule" content="([^"]*)"', page)
+        meta = extract(r'<meta name="puzzle:rule" content="([^"]*)"', page)
+        rule = html.unescape(meta) if meta is not None else None
     if rule is None:
         fail(f"{slug}: no <p class=\"rule\"> and no <meta name=\"puzzle:rule\">")
     return re.sub(r"\s+", " ", rule).strip()

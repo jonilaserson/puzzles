@@ -11,8 +11,12 @@ for its own tile:
 
 | tile piece | comes from |
 |---|---|
-| title      | the page's `<h1>` (fallback: `<title>`) |
+| title      | the page's `<h1>` (fallbacks: `<meta name="puzzle:title">`, then `<title>`) |
 | subheading | `<p class="rule">` (fallback: `<meta name="puzzle:rule">`) |
+
+JS-rendered pages (emptying-poles) keep title/rule in those metas and render
+the header *from* them, so the metas stay the single source. Meta content may
+carry entity-escaped markup (`&lt;em&gt;…`); the build script unescapes it.
 | tags       | `<meta name="puzzle:tags" content="a · b">` |
 | emblem     | `<template class="tile-emblem">` holding the tile SVG |
 

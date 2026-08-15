@@ -173,8 +173,10 @@ function App() {
       <style>{CSS}</style>
 
       <header className="dd-head">
-        <h1 className="dd-title">Emptying a Pole</h1>
-        <p className="dd-rule">move discs onto a pole only if it <em>doubles</em></p>
+        {/* title + rule come from the head metas (puzzle:title / puzzle:rule),
+            the single source shared with the index tile — see CLAUDE.md */}
+        <h1 className="dd-title">{document.querySelector('meta[name="puzzle:title"]').content}</h1>
+        <p className="dd-rule" dangerouslySetInnerHTML={{__html: document.querySelector('meta[name="puzzle:rule"]').content}} />
         <p className="dd-sub">
           Three poles hold discs — say 3, 14 and 16. You may move discs from one pole to
           another, but only in the exact amount that <b>doubles the receiving pole</b>: a pole
