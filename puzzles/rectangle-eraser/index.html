@@ -135,9 +135,9 @@ footer{
 <p class="rule">Who would be <em>forced</em> to clear the last square?</p>
 
 <div class="box">
-  <p><b>The game.</b> A board of squares. You and the site take turns erasing; a turn erases <b>one rectangle</b> pinned to the board's <b>top-left corner</b> &mdash; any size, as long as it covers at least one surviving square. <b>Whoever erases the last square loses.</b> That square is always the bottom-right one: a rectangle that reaches it erases the whole board.</p>
-  <p><b>The puzzle.</b> Given the board's shape, who wins &mdash; the opener, or the player answering?</p>
-  <p>Play below &mdash; the site never blunders. Try wide boards, tall boards, perfect squares<span class="proof-cta">, then flip to the proof</span>.</p>
+  <p>Bert and Arnie are taking turns erasing squares from a board of M by N squares. Each player, on their turn, draws a rectangle starting from the <b>top-left corner</b>, and erases all the squares it covers. 
+    Each rectangle must cover at least one more surviving square. <b>Whoever erases the last square loses.</b></p>
+  <p>Given the board's shape, who wins &mdash; Bert, the starting player, or Arnie?</p>
 </div>
 
 <div class="modeswitch"><div class="ms-pill">
@@ -157,15 +157,18 @@ footer{
 <div class="stat" id="reS"></div>
 <div id="fPlay"></div>
 <div class="hist" id="reHist"></div>
-<figcaption>Click a surviving square: it is erased together with every survivor above-left of it &mdash; one rectangle, pinned to the top-left corner. Hover to preview the rectangle. The coral square is the bottom-right one; erased squares turn to dashed outlines, and a dot marks each move's click &mdash; blue yours, gray the site's. Finished boards are recorded under the grid &mdash; hunt for who wins each shape.</figcaption>
+<figcaption>Click a surviving square: it is erased together with every survivor above-left of it.</figcaption>
 </figure>
 </section>
 
 <section class="proof-only">
 
 <h2><span class="n">01</span> Squares: erase, then mirror</h2>
-<p>The record under the grid reads one way: the opener wins every board but \(1 \times 1\). One row is the plainest win: the opener erases everything but the last square.</p>
-<p>On a square board the opener erases <b>all but the last row and last column</b>. What survives is two equal arms, meeting at the last square. Every other surviving square sits in a single arm, so every later move erases from a single arm, from the end away from the last square. The opener answers with the same move in the other arm, and the arms are equal again. They run out with the answerer to move &mdash; alone with the last square.</p>
+<p>On a square board, let Bert erase <b>all but the last row and last column</b>.</p>
+<p>What survives is two equal arms, meeting at the last square.</p>
+<p>Unless Arnie marks the last square (and loses), he will only erase squares from one arm.</p>
+<p>Let Bert answer with the same move in the other arm: the arms are equal again.</p>
+<p>Hence eventually Arnie would have to mark the last square.</p>
 
 <figure>
 <div class="ctl">
