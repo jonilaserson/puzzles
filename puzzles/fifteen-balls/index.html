@@ -139,7 +139,7 @@ footer{
 <p class="rule">Take one ball from each pile and make a new one. Repeat.</p>
 
 <div class="box">
-  <p class="sub"> Split <b>15 balls</b> arbitrarily into <b>piles</b>. You are allowed to make the following <b>move</b>: Collect <b>one ball</b> from each pile and put them in <b>a new pile</b> at the end. 
+  <p class="sub"> Split <b>15 balls</b> arbitrarily into <b>piles</b>. You are allowed to make the following <b>move</b>: Collect <b>one ball</b> from each pile and put them in <b>a new pile</b> on the right. 
     Discard any piles that become empty. <b>Prove</b> that no matter how you start, by applying this move you would always end up in the same state.</p>
 </div>
 
@@ -160,15 +160,15 @@ footer{
 </div>
 <div class="stat" id="plS"></div>
 <div id="fPlay"></div>
-<figcaption>Piles of balls on a table. Each move collects the top ball of every pile (amber) and stacks the loot as a new pile on the right; a pile whose last ball is taken is gone. Two things to try: find a start of 15 balls that escapes \((1, 2, 3, 4, 5)\) &mdash; and see what 14 balls do instead.</figcaption>
+<figcaption>Piles of balls on a table. Each move collects the bottom ball of every pile (amber) and stacks the loot as a new pile on the right; a pile whose last ball is taken is gone. Two things to try: find a start of 15 balls that escapes \((1, 2, 3, 4, 5)\) &mdash; and see what 14 balls do instead.</figcaption>
 </figure>
 </section>
 
 <section class="proof-only">
 
 <h2><span class="n">01</span> The board</h2>
-<p>Tip each pile onto its side, so every group becomes a row of balls, and stack the rows: a board.</p>
-<p>Give each ball a <b>depth</b>: its \(\text{row} + \text{column} - 1\). Balls of equal depth form one diagonal of the board &mdash; <b>diagonal \(\boldsymbol{d}\)</b>, with exactly \(d\) places on it.</p>
+<p>The piles, standing side by side, are already a board. Count piles <b>from the right</b> &mdash; where new piles land &mdash; and heights <b>from the table</b>.</p>
+<p>Give each ball a <b>depth</b>: its \(\text{pile} + \text{height} - 1\). Balls of equal depth form one diagonal of the board &mdash; <b>diagonal \(\boldsymbol{d}\)</b>, with exactly \(d\) places on it.</p>
 
 <figure><div id="f1"></div>
 <div class="legend">
@@ -180,23 +180,23 @@ footer{
   <span><span class="sw" style="background:#c4ad82"></span>6+</span>
   <span><span class="swd"></span>place of diagonal 5 with no ball</span>
 </div>
-<figcaption>The groups \((3, 6, 4, 2)\), tipped onto their sides and stacked into a board. Each ball shows its depth. Diagonal 5 is outlined: five places, from the top row down to the first column.</figcaption></figure>
+<figcaption>The piles \((3, 6, 4, 2)\). Each ball shows its depth. Diagonal 5 is outlined: five places, from the table up to the rightmost pile.</figcaption></figure>
 
 <h2><span class="n">02</span> The move, drawn</h2>
-<p>Now make a move on the board. The balls it collects are exactly the first column &mdash; one from every group &mdash; and the new group lines up as a new top row: the ball from row \(r\) lands at column \(r\). No other ball moves.</p>
+<p>Now make a move on the board. The balls it collects are exactly the bottom row &mdash; one from every pile &mdash; and the loot stacks as the new rightmost pile: the ball from pile \(k\) lands at height \(k\). No other ball moves.</p>
 
 <figure><div id="f2"></div>
-<figcaption>The collected column (amber) becomes the new top row (dashed). Each collected ball flies along its own diagonal: from a place of depth \(r\) to a place of depth \(r\).</figcaption></figure>
+<figcaption>The collected row (amber) becomes the new pile (dashed). Each collected ball flies along its own diagonal: from a place of depth \(k\) to a place of depth \(k\).</figcaption></figure>
 
-<p>Standing balls keep their depth too: the board gained a row on top and lost its first column, so a standing ball's row number grew by one and its column number shrank by one.</p>
+<p>Standing balls keep their depth too: the board gained a pile on the right and lost its bottom row, so a standing ball's pile number grew by one and its height shrank by one.</p>
 
-<div class="fact"><b>Fact 1.</b> As long as every group is alive, a move changes no ball's depth.</div>
+<div class="fact"><b>Fact 1.</b> As long as every pile is alive, a move changes no ball's depth.</div>
 
 <h2><span class="n">03</span> Gaps cost depth</h2>
-<p>There is one wrinkle. When a group loses its last ball, its row becomes empty. If the empty row is not the last one, the next move leaves a <b>gap</b> in the new top row. We close the gap by sliding the balls after it to the left &mdash; and each slide costs a ball one depth.</p>
+<p>There is one wrinkle. When a pile loses its last ball, its place becomes empty. If the empty place is not the leftmost, the next move leaves a <b>gap</b> in the new pile. The balls above the gap fall to close it &mdash; and each fall costs a ball one depth.</p>
 
 <figure><div id="f3"></div>
-<figcaption>Rows \((5, 4, 2, \text{—}, 3, 1)\): the fourth row is empty, so the collected column lands with a gap at position 4. Closing it slides two balls left; each loses one depth.</figcaption></figure>
+<figcaption>Piles \((1, 3, \text{—}, 2, 4, 5)\): the fourth pile from the right is empty, so the loot stacks with a gap at height 4. Closing it drops two balls; each loses one depth.</figcaption></figure>
 
 <p>Now add up the depths of all 15 balls and call the sum the <b>total depth</b>.</p>
 
@@ -206,17 +206,17 @@ footer{
 <div class="fact">Hence, after some move, <b>no gap ever closes again</b>, and every ball keeps its depth from that point on.</div>
 
 <h2><span class="n">04</span> Ball meets hole</h2>
-<p>With no more gaps to close, every move cycles each diagonal one step: each ball slides one place leftward along its diagonal, and the left-most ball &mdash; the collected one &mdash; wraps around to the top row. Holes (empty places) cycle along with the balls.</p>
-<p>Now suppose diagonal \(d\) is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, \(d+1\). The ball <b>surfaces</b> &mdash; reaches the top row &mdash; once every \(d+1\) moves; between surfacings, the hole makes a full lap of its \(d\) places, plus one step. Hence each surfacing finds the hole one place closer, and within \(d\) surfacings they surface together: a ball at column \(d+1\), a hole at column \(d\) &mdash; a top row that has a gap. Impossible. Therefore the hole never existed.</p>
+<p>With no more gaps to close, every move cycles each diagonal one step: each ball slides one place down its diagonal, and the bottom ball &mdash; the collected one &mdash; wraps around to the newest pile. Holes (empty places) cycle along with the balls.</p>
+<p>Now suppose diagonal \(d\) is not full &mdash; it has a hole &mdash; while a ball cycles the next diagonal, \(d+1\). The ball is <b>collected</b> &mdash; lands in the newest pile &mdash; once every \(d+1\) moves; between collections, the hole makes a full lap of its \(d\) places, plus one step. Hence each collection finds the hole one place closer, and within \(d\) collections they land together: a ball at height \(d+1\), a hole at height \(d\) &mdash; a ball resting on a gap. Impossible. Therefore the hole never existed.</p>
 
 <figure>
 <div class="ctl"><button class="prime" onclick="C.step()">one move</button>
-<button onclick="C.jump()">jump to next surfacing</button>
+<button onclick="C.jump()">jump to next collection</button>
 <button onclick="C.reset()">reset</button></div>
 <div class="stat" id="cs"></div>
 <div id="f6"></div>
 <div class="note" id="cnote"></div>
-<figcaption>The case \(d = 4\). Jump from surfacing to surfacing &mdash; the hole slips one place closer each time.</figcaption></figure>
+<figcaption>The case \(d = 4\). Jump from collection to collection &mdash; the hole slips one place closer each time.</figcaption></figure>
 
 <div class="fact"><b>Fact 3.</b> A ball on diagonal \(d+1\) forces diagonal \(d\) to be completely full.</div>
 
@@ -228,13 +228,13 @@ D &\ge 6: \quad \text{at least } 1+2+3+4+5+1 = 16. \ \text{Too many.} \\
 D &= 5: \quad \text{diagonal 5 holds } 15 - 10 = 5. \ \text{Full.}
 \end{aligned} \]</p>
 
-<p>Hence all five diagonals are full: the board is the exact staircase &mdash; rows of 5, 4, 3, 2, 1, which is the groups \((1, 2, 3, 4, 5)\). A full diagonal cycled one step looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
+<p>Hence all five diagonals are full: the board is the exact staircase &mdash; the piles \((1, 2, 3, 4, 5)\). A full diagonal cycled one step looks exactly the same, so every move from here on reproduces the board unchanged. Frozen.</p>
 
 <figure><div id="f7"></div>
-<figcaption>The staircase: every diagonal full. Collecting the first column (five balls) and laying it on top rebuilds the same shape.</figcaption></figure>
+<figcaption>The staircase: every diagonal full. Collecting the bottom row (five balls) and stacking it on the right rebuilds the same shape.</figcaption></figure>
 
 <h2><span class="n">06</span> Playground</h2>
-<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new row lands on top and the board's left edge steps one column right, collecting the balls it passes along their diagonals.</p>
+<p>Watch whole games play out on the board &mdash; any start, or type your own, with any number of balls. To keep the picture calm, the drawing holds every ball in place and moves the frame instead: each move, a new pile lands on the right and the floor rises one row, collecting the balls it passes along their diagonals.</p>
 <figure>
 <div class="ctl">
   <span class="lab">start:</span>
@@ -249,9 +249,9 @@ D &= 5: \quad \text{diagonal 5 holds } 15 - 10 = 5. \ \text{Full.}
 <div class="legend">
   <span><span class="sw" style="background:#93bac8"></span>inside the target staircase</span>
   <span><span class="sw" style="background:#c4ad82"></span>beyond it</span>
-  <span><span class="swg"></span>empty row</span>
-  <span><span style="width:3px;height:14px;background:#a89c82;display:inline-block"></span>the left edge</span>
-  <span><span style="width:9px;height:9px;border-radius:50%;background:#356a7d;display:inline-block"></span>the board's top-left</span>
+  <span><span class="swg"></span>empty pile</span>
+  <span><span style="width:14px;height:3px;background:#a89c82;display:inline-block"></span>the floor</span>
+  <span><span style="width:9px;height:9px;border-radius:50%;background:#356a7d;display:inline-block"></span>the board's bottom-right</span>
   <span><span class="swd" style="border-color:#c9bd9e"></span>target staircase</span>
 </div>
 <figcaption>Depth is a property of the spot, so a ball never changes color. The status line tracks total depth: watch it fall exactly when a gap closes, and settle for good once the drops are over.</figcaption></figure>
@@ -278,135 +278,137 @@ const T=(x,y,str,fill,size=13,w=600)=>`<text x="${x}" y="${y}" fill="${fill}" fo
 const L=(x1,y1,x2,y2,stroke,mk,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="1.4" ${mk?`marker-end="url(#${mk})"`:''} ${extra}/>`;
 const SVG=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`;
 
-function diagram(rows,o){
+function diagram(piles,o){
   o=o||{};
-  const c=o.cell??32, g=o.gap??5, p=c+g, x0=o.x??20, y0=o.y??20;
-  const X=col=>x0+(col-1)*p, Y=row=>y0+(row-1)*p;
+  const c=o.cell??32, g=o.gap??5, P=c+g, x0=o.x??20, y0=o.y??20;
+  const k=piles.length, rows=o.rows??Math.max(...piles);
+  const X=i=>x0+(i-1)*P;            /* pile i, left to right */
+  const Y=h=>y0+(rows-h)*P;         /* height h, from the table */
   let s='';
-  rows.forEach((len,i)=>{const r=i+1;
-    for(let j=1;j<=len;j++){
-      const d=r+j-1;
-      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER);
-      if(o.depthNums) s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d));
+  piles.forEach((len,i)=>{
+    const p=k-i;                    /* pile number, from the right */
+    for(let h=1;h<=len;h++){
+      const d=p+h-1;
+      s+=B(X(i+1),Y(h),c,d<=5?RAMP[d]:OVER);
+      if(o.depthNums) s+=T(X(i+1)+c/2,Y(h)+c/2,d,TXTC(d));
     }});
   if(o.ringD){
     const d=o.ringD;
-    for(let k=1;k<=d;k++){
-      const r=k, col=d+1-k, full=(r<=rows.length&&rows[r-1]>=col);
-      if(full) s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="2.5"`);
-      else     s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+    for(let h=1;h<=d;h++){
+      const p=d+1-h, full=(p<=k&&piles[k-p]>=h);
+      if(full) s+=R(X(k-p+1),Y(h),c,'none',`stroke="${AMBL}" stroke-width="2.5"`);
+      else     s+=R(X(k-p+1),Y(h),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
     }
   }
   return s;
 }
 
-/* F1 — the piles as played, tipped onto their sides into a board */
+/* F1 — the piles as played are already the board */
 (function(){
-  const groups=[3,6,4,2];
-  const d=17, pw=22, bx=26, base=190;
-  let s='';
-  s+=`<line x1="${bx-10}" y1="${base+3}" x2="${bx+groups.length*pw+4}" y2="${base+3}" stroke="${GHOST}" stroke-width="1.5" stroke-linecap="round"/>`;
-  groups.forEach((len,i)=>{
-    const cx=bx+i*pw+pw/2;
-    for(let j=1;j<=len;j++)
-      s+=`<circle cx="${cx}" cy="${base-(j-0.5)*d}" r="${d/2-1.3}" fill="#5f92a6"/>`;
-  });
-  s+=L(bx+groups.length*pw+14,108,168,108,ARROW,'mG');
-  s+=T(bx+groups.length*pw+34,90,'tip over',SOFT,11.5,500);
-  s+=diagram(groups,{cell:36,gap:5,x:186,y:22,depthNums:true,ringD:5});
-  document.getElementById('f1').innerHTML=SVG(680,250,s);
+  const piles=[3,6,4,2];
+  const c=36,g=5,P=c+g,x0=278,y0=20;
+  const yb=y0+5*P+c+3;
+  let s=`<line x1="${x0-P-12}" y1="${yb}" x2="${x0+4*P-g+12}" y2="${yb}" stroke="${GHOST}" stroke-width="1.5" stroke-linecap="round"/>`;
+  s+=diagram(piles,{cell:c,gap:g,x:x0,y:y0,rows:6,depthNums:true,ringD:5});
+  document.getElementById('f1').innerHTML=SVG(680,282,s);
 })();
 
-/* F2 — the move on (3,6,4,2): collected column flies along 45° lines,
+/* F2 — the move on piles (3,6,4,2): the bottom row flies along 45° lines,
    depth numbers make the preservation visible */
 (function(){
-  const rows=[3,6,4,2], c=32,g=5,p=c+g, x0=210, y0=56;
-  const X=col=>x0+(col-1)*p, Y=r=>y0+r*p;
+  const piles=[3,6,4,2], k=4, c=32,g=5,P=c+g, x0=240, y0=20;
+  const X=i=>x0+(i-1)*P;            /* pile i, left to right; i=5 is the new pile */
+  const Y=h=>y0+(6-h)*P;            /* screen heights up to 6: the floor has risen one */
   let s='';
-  for(let col=2;col<=5;col++){
-    s+=R(X(col),y0,c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
-    s+=T(X(col)+c/2,y0+c/2,col-1,AMBL,12,500);
+  for(let p=1;p<=4;p++){
+    s+=R(X(5),Y(p+1),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+    s+=T(X(5)+c/2,Y(p+1)+c/2,p,AMBL,12,500);
   }
-  rows.forEach((len,i)=>{const r=i+1;
-    for(let j=1;j<=len;j++){
-      const d=r+j-1;
-      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER, j===1?`stroke="${AMB}" stroke-width="3"`:'');
-      s+=T(X(j)+c/2,Y(r)+c/2,d,TXTC(d),12);
+  piles.forEach((len,i)=>{
+    const p=k-i;
+    for(let h=1;h<=len;h++){
+      const d=p+h-1;
+      s+=B(X(i+1),Y(h),c,d<=5?RAMP[d]:OVER, h===1?`stroke="${AMB}" stroke-width="3"`:'');
+      s+=T(X(i+1)+c/2,Y(h)+c/2,d,TXTC(d),12);
     }
   });
-  for(let r=1;r<=4;r++){
-    const ax=X(1)+c/2, ay=Y(r)+c/2, bx=X(r+1)+c/2, by=y0+c/2;
+  for(let p=1;p<=4;p++){
+    const ax=X(5-p)+c/2, ay=Y(1)+c/2, bx=X(5)+c/2, by=Y(p+1)+c/2;
     const len=Math.hypot(bx-ax,by-ay), ux=(bx-ax)/len, uy=(by-ay)/len, off=c*0.62;
     s+=L(ax+ux*off,ay+uy*off,bx-ux*off,by-uy*off,AMBL,'mA','opacity="0.9"');
   }
   document.getElementById('f2').innerHTML=SVG(680,260,s);
 })();
 
-/* F3 — a gap in the pasted row, and its closure */
+/* F3 — a gap in the new pile, and its closure */
 (function(){
-  const rows=[5,4,2,0,3,1], c=30,g=5,p=c+g, x0=190, y0=52;
-  const X=col=>x0+(col-1)*p, Y=r=>y0+r*p;
+  const piles=[1,3,0,2,4,5], k=6, c=30,g=5,P=c+g, x0=200, y0=20;
+  const X=i=>x0+(i-1)*P;            /* slot i, left to right; i=7 is the new pile */
+  const Y=h=>y0+(7-h)*P;            /* screen heights up to 7: the floor has risen one */
   let s='';
-  for(const pos of [1,2,3,5,6])
-    s+=R(X(pos+1),y0,c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
-  s+=R(X(5),y0,c,'none',`stroke="${COR}" stroke-width="1.8" stroke-dasharray="4 3"`);
-  s+=T(X(5)+c/2,y0+c/2,'gap',COR,11,700);
-  rows.forEach((len,i)=>{const r=i+1;
-    if(len===0){s+=`<rect x="${X(1)}" y="${Y(r)+c/2-2}" width="${c*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
-    for(let j=1;j<=len;j++){
-      const d=r+j-1;
-      s+=B(X(j),Y(r),c,d<=5?RAMP[d]:OVER, j===1?`stroke="${AMB}" stroke-width="3"`:'');
+  for(const p of [1,2,3,5,6])
+    s+=R(X(7),Y(p+1),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
+  s+=R(X(7),Y(5),c,'none',`stroke="${COR}" stroke-width="1.8" stroke-dasharray="4 3"`);
+  s+=T(X(7)+c/2,Y(5)+c/2,'gap',COR,11,700);
+  piles.forEach((len,i)=>{
+    if(len===0){s+=`<rect x="${X(i+1)}" y="${Y(1)+c/2-2}" width="${c*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
+    const p=k-i;
+    for(let h=1;h<=len;h++){
+      const d=p+h-1;
+      s+=B(X(i+1),Y(h),c,d<=5?RAMP[d]:OVER, h===1?`stroke="${AMB}" stroke-width="3"`:'');
     }
   });
-  for(const r of [1,2,3,5,6]){
-    const ax=X(1)+c/2, ay=Y(r)+c/2, bx=X(r+1)+c/2, by=y0+c/2;
+  for(const p of [1,2,3,5,6]){
+    const ax=X(7-p)+c/2, ay=Y(1)+c/2, bx=X(7)+c/2, by=Y(p+1)+c/2;
     const len=Math.hypot(bx-ax,by-ay), ux=(bx-ax)/len, uy=(by-ay)/len, off=c*0.62;
     s+=L(ax+ux*off,ay+uy*off,bx-ux*off,by-uy*off,AMBL,'mA','opacity="0.85"');
   }
-  s+=L(X(6)+c/2-3,y0-9,X(5)+c/2+6,y0-9,COR,'mC');
-  s+=L(X(7)+c/2-3,y0-9,X(6)+c/2+6,y0-9,COR,'mC');
-  s+=T(X(8)+18,y0-9,'close: slide left',COR,12,500);
-  document.getElementById('f3').innerHTML=SVG(680,300,s);
+  const dx=X(7)+c+11;
+  s+=L(dx,Y(6)+c/2+3,dx,Y(5)+c/2-6,COR,'mC');
+  s+=L(dx,Y(7)+c/2+3,dx,Y(6)+c/2-6,COR,'mC');
+  s+=T(dx+62,Y(6)+c/2,'close: drop',COR,12,500);
+  document.getElementById('f3').innerHTML=SVG(680,290,s);
 })();
 
 /* F6 — ball meets hole, on the board.
-   Start: ball at (5,1) (about to wrap), hole at (2,3) — always different
-   rows until they surface together at t=11, the third surfacing. */
+   Start: ball at the bottom of diagonal 5 (about to wrap), hole at slot 2 of
+   diagonal 4 — always different piles until they land together at t=11, the
+   third collection. */
 const C=(function(){
   const b0=5, h0=2, END=11;
   let t=0;
-  const c=36,g=5,p=c+g,x0=150,y0=40;
-  const X=col=>x0+(col-1)*p, Y=row=>y0+(row-1)*p;
+  const c=36,g=5,P=c+g,x0=170,y0=40;
+  const X=p=>x0+(5-p)*P, Y=h=>y0+(5-h)*P;   /* pile p from the right, height h */
   const bslot=()=>((b0-1+t)%5)+1, hslot=()=>((h0-1+t)%4)+1;
-  const surfN=()=> t<1?0:Math.floor((t-1)/5)+1;
+  const colN=()=> t<1?0:Math.floor((t-1)/5)+1;
   function draw(){
-    const b=bslot(), h=hslot(), surf=(b===1), boom=(t===END);
+    const b=bslot(), h=hslot(), coll=(b===1), boom=(t===END);
     let s='';
-    for(let r=1;r<=5;r++)for(let j=1;j<=6-r;j++)
-      if(r+j-1<=3) s+=R(X(j),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"`);
-    for(let k=1;k<=4;k++){const r=k,col=5-k;
-      if(k!==h) s+=R(X(col),Y(r),c,'none',`stroke="${GHOST}" stroke-width="1.4" stroke-dasharray="4 3"`);}
-    for(let k=1;k<=5;k++){const r=k,col=6-k;
-      if(k!==b) s+=R(X(col),Y(r),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);}
+    for(let p=1;p<=3;p++)for(let hh=1;hh<=4-p;hh++)
+      s+=R(X(p),Y(hh),c,'none',`stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"`);
+    for(let k=1;k<=4;k++)
+      if(k!==h) s+=R(X(k),Y(5-k),c,'none',`stroke="${GHOST}" stroke-width="1.4" stroke-dasharray="4 3"`);
+    for(let k=1;k<=5;k++)
+      if(k!==b) s+=R(X(k),Y(6-k),c,'none',`stroke="${AMBL}" stroke-width="1.5" stroke-dasharray="5 4"`);
     if(boom){
-      for(let j=1;j<=3;j++) s+=B(X(j),Y(1),c,GRAY);
-      s+=T(X(3)+c/2,Y(1)-18,'the top row reaches column 5 — but column 4 is a hole',COR,12.5,600);
+      for(let hh=1;hh<=3;hh++) s+=B(X(1),Y(hh),c,GRAY);
+      s+=T(X(3)+c/2,y0-18,'the new pile stacks to height 5 — but height 4 is a hole',COR,12.5,600);
     }
-    s+=R(X(5-h),Y(h),c,'none',`stroke="${COR}" stroke-width="${boom?2.6:1.8}" stroke-dasharray="4 3"`);
-    s+=T(X(5-h)+c/2,Y(h)+c/2,'hole',COR,10.5,700);
-    s+=B(X(6-b),Y(b),c,AMB);
-    s+=T(X(6-b)+c/2,Y(b)+c/2,'ball','#ffffff',10.5,700);
-    s+=T(X(1)-52,Y(4)+c/2,'diagonal 4',SOFT,11.5,500);
-    s+=T(X(1)-52,Y(5)+c/2,'diagonal 5',AMBL,11.5,500);
-    s+=`<path d="M ${X(1)+c/2} ${Y(5)+c+8} C ${X(1)+c/2+70} ${Y(5)+c+52}, ${X(5)+c+120} ${Y(1)+c+90}, ${X(5)+c+12} ${Y(1)+c/2+8}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
-    s+=T(480,268,'the first column wraps to the top row',SOFT,11.5,500);
+    s+=R(X(h),Y(5-h),c,'none',`stroke="${COR}" stroke-width="${boom?2.6:1.8}" stroke-dasharray="4 3"`);
+    s+=T(X(h)+c/2,Y(5-h)+c/2,'hole',COR,10.5,700);
+    s+=B(X(b),Y(6-b),c,AMB);
+    s+=T(X(b)+c/2,Y(6-b)+c/2,'ball','#ffffff',10.5,700);
+    s+=T(X(1)+c+56,Y(4)+c/2,'diagonal 4',SOFT,11.5,500);
+    s+=T(X(1)+c+56,Y(5)+c/2,'diagonal 5',AMBL,11.5,500);
+    s+=`<path d="M ${X(5)+c/2} ${Y(1)+c+8} C ${X(5)+c/2+90} ${Y(1)+c+44}, ${X(1)+c+130} ${Y(5)+c+80}, ${X(1)+c+14} ${Y(5)+c/2+12}" fill="none" stroke="${AMBL}" stroke-width="1.4" marker-end="url(#mA)" opacity="0.75"/>`;
+    s+=T(430,292,'the bottom row wraps to the newest pile',SOFT,11.5,500);
     document.getElementById('f6').innerHTML=SVG(680,320,s);
     document.getElementById('cs').innerHTML=
-      `move <b>${t}</b> — surfacings <b>${surfN()}</b>`+
+      `move <b>${t}</b> — collections <b>${colN()}</b>`+
       (boom?' — <span class="drop">collision</span>':'');
     document.getElementById('cnote').innerHTML=
-      boom?'<span style="color:var(--coral)">Surfacing 3: they surface together — the top row reaches column 5 but has a gap at column 4. Impossible. &#8718;</span> — reset to replay'
-      :surf&&t>0?`Surfacing ${surfN()}: the hole is one place closer to the top row.`
+      boom?'<span style="color:var(--coral)">Collection 3: they land together — a ball at height 5 on a hole at height 4. Impossible. &#8718;</span> — reset to replay'
+      :coll&&t>0?`Collection ${colN()}: the hole is one place closer to the newest pile.`
       :t===0?'A hole on diagonal 4, a ball on diagonal 5. Press one move.':'';
   }
   return {step(){if(t>=END)return;t++;draw();},
@@ -417,20 +419,22 @@ C.draw();
 
 /* F7 — the staircase */
 (function(){
-  const s=diagram([5,4,3,2,1],{cell:36,gap:5,x:238,y:22,depthNums:true});
+  const s=diagram([1,2,3,4,5],{cell:36,gap:5,x:238,y:22,depthNums:true});
   document.getElementById('f7').innerHTML=SVG(680,240,s);
 })();
 
-/* F8 — playground: boxes fixed in place, wall and top move.
+/* F8 — playground: balls fixed in place, floor and right edge move.
+   Internally piles are kept newest-first (= counted from the right); the
+   display string and the input are left-to-right, so both are reversed.
    The whole run is precomputed into a timeline; step/back/replay just move an index. */
 const PG=(function(){
-  let start=[5,3,7], states=[[5,3,7]], gp=[0], t=0, tmax=0, T=-1, fixedAt=-1;
+  let start=[7,3,5], states=[[7,3,5]], gp=[0], t=0, tmax=0, T=-1, fixedAt=-1;
   let C=20, Rn=12, px=20, timer=null;
   let K=5, n=15, cyc=0;
   const M=14;
   const LO=[228,237,241], HI=[53,106,125];
   const depth=s=>s.reduce((a,len,i)=>a+len*i+len*(len+1)/2,0);
-  const show=s=>s.map(v=>v||'&middot;').join(', ');
+  const show=s=>s.slice().reverse().map(v=>v||'&middot;').join(', ');
   const shade=d=>{
     if(K===5) return RAMP[d];
     const f=K===1?1:(d-1)/(K-1);
@@ -460,24 +464,25 @@ const PG=(function(){
     for(let i=0;i<per;i++){const r=advance(s);s=r.nx;sts.push(s.slice());g.push(r.gaps);}
     return {sts,g,fx,rep,per};
   }
-  const xA=c=>M+(c-1)*px, yA=r=>M+(r+tmax-1)*px;
+  const xA=c=>M+(c-1)*px;
   function draw(){
-    const st=states[t], cs=px-3;
+    const st=states[t], cs=px-3, k0=start.length;
+    const col=i=>k0+t-i;               /* slot i (newest first) -> screen column */
+    const yH=h=>M+(C-(h+t))*px;        /* h+t is fixed per standing ball */
     let s='';
-    for(let rr=1;rr<=K;rr++)for(let cc=1;cc<=K+1-rr;cc++)
-      s+=`<rect x="${xA(cc+t)}" y="${yA(rr-t)}" width="${cs}" height="${cs}" rx="4" fill="none" stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"/>`;
-    const bot=st.length-t;
-    s+=`<line x1="${xA(t+1)-2.5}" y1="${yA(1-t)-4}" x2="${xA(t+1)-2.5}" y2="${yA(bot)+cs+4}" stroke="${WALL}" stroke-width="2"/>`;
-    s+=`<circle cx="${xA(t+1)-2.5}" cy="${yA(1-t)-2.5}" r="3.5" fill="${CORNER}"/>`;
+    for(let p=1;p<=K;p++)for(let h=1;h<=K+1-p;h++)
+      s+=`<rect x="${xA(col(p-1))}" y="${yH(h)}" width="${cs}" height="${cs}" rx="4" fill="none" stroke="${GHOST}" stroke-width="1" stroke-dasharray="4 3"/>`;
+    const yF=yH(1)+cs+4;
+    s+=`<line x1="${xA(col(st.length-1))-4}" y1="${yF}" x2="${xA(col(0))+cs+4}" y2="${yF}" stroke="${WALL}" stroke-width="2"/>`;
+    s+=`<circle cx="${xA(col(0))+cs+2.5}" cy="${yF}" r="3.5" fill="${CORNER}"/>`;
     st.forEach((len,i)=>{
-      const r=i+1, rA=r-t;
-      if(len===0){s+=`<rect x="${xA(t+1)}" y="${yA(rA)+cs/2-2}" width="${cs*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
-      for(let c=1;c<=len;c++){
-        const d=r+c-1;
-        s+=`<circle cx="${xA(c+t)+cs/2}" cy="${yA(rA)+cs/2}" r="${cs/2-1}" fill="${d<=K?shade(d):OVER}"/>`;
+      if(len===0){s+=`<rect x="${xA(col(i))}" y="${yH(1)+cs/2-2}" width="${cs*0.65}" height="4" rx="2" fill="${GHOST}"/>`;return;}
+      for(let h=1;h<=len;h++){
+        const d=i+h;
+        s+=`<circle cx="${xA(col(i))+cs/2}" cy="${yH(h)+cs/2}" r="${cs/2-1}" fill="${d<=K?shade(d):OVER}"/>`;
       }});
     document.getElementById('f8').innerHTML=
-      `<svg viewBox="0 0 680 ${2*M+Rn*px}" width="100%" role="img">${s}</svg>`;
+      `<svg viewBox="0 0 680 ${2*M+C*px}" width="100%" role="img">${s}</svg>`;
   }
   function status(html){document.getElementById('pgS').innerHTML=html;}
   function statusLine(){
@@ -511,22 +516,22 @@ const PG=(function(){
     tmax=states.length-1;
     C=states.reduce((m,s,i)=>Math.max(m,i+Math.max(...s,1)),1);
     Rn=start.length+tmax;
-    px=Math.max(8, Math.min(24, Math.floor((680-2*M)/C), Math.floor((540-2*M)/Rn)));
+    px=Math.max(8, Math.min(24, Math.floor((680-2*M)/Rn), Math.floor((540-2*M)/C)));
     t=0; refresh();
   }
   function custom(){
     const el=document.getElementById('pgIn');
     const a=(el.value.match(/\d+/g)||[]).map(Number).filter(v=>v>0);
-    if(!a.length){status('type group sizes — e.g. 4, 4, 6 — or a single number like 14');return;}
+    if(!a.length){status('type pile sizes — e.g. 4, 4, 6 — or a single number like 14');return;}
     const s=a.reduce((x,y)=>x+y,0);
     if(s>60){status(`${s} balls is a lot — keep it &le; 60.`);return;}
-    set(a);
+    set(a.slice().reverse());
   }
   function auto(){if(timer){stopAuto();return;}
     if(t>=tmax){t=0;refresh();}
     document.getElementById('autoB').textContent='stop';timer=setInterval(step,550);}
   function reset(){stopAuto(); t=0; refresh();}
-  set([5,3,7]);
+  set([7,3,5]);
   return {set,step,back,auto,reset,custom};
 })();
 
@@ -573,15 +578,15 @@ const PL=(function(){
   function draw(){
     const st=states[t];
     /* piles are left-anchored at fixed slots, not centered: a pile keeps its
-       x-position between moves, so the vanishing top balls are easy to track.
+       x-position between moves, so the vanishing bottom balls are easy to track.
        Slots re-pack (everything slides left) only when a pile dies. */
     const pw=ballD*1.45, x0=X0, base=M+maxH*ballD;
     let s=`<line x1="${M}" y1="${base+3}" x2="${W-M}" y2="${base+3}" stroke="#c9bd9e" stroke-width="1.6" stroke-linecap="round"/>`;
     st.forEach((len,i)=>{
       const cx=x0+i*pw+pw/2;
       for(let j=1;j<=len;j++){
-        const top=(j===len);
-        s+=`<circle cx="${cx}" cy="${base-(j-0.5)*ballD}" r="${ballD/2-1.2}" fill="${top?'#d99f3f':'#5f92a6'}"/>`;
+        const bottom=(j===1);
+        s+=`<circle cx="${cx}" cy="${base-(j-0.5)*ballD}" r="${ballD/2-1.2}" fill="${bottom?'#d99f3f':'#5f92a6'}"/>`;
       }
       s+=`<text x="${cx}" y="${base+20}" fill="#6c655a" font-size="12" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace">${len}</text>`;
     });
