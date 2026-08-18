@@ -141,10 +141,10 @@ footer{
 
 <p class="kicker">2-player game<span class="proof-cta"> · a visual proof</span></p>
 <h1>The Frog Is Out There</h1>
-<p class="rule">Shoot a pole. If the frog isn't there, it <em>jumps</em> to an adjacent pole</p>
+<p class="rule">Aim at a pole. If the frog isn't there, it <em>jumps</em> to an adjacent pole</p>
 
 <div class="box">
-  <p><b>The setup.</b> Ten poles stand in a swamp on a dark night. A frog sits on one of them: you can hear it, but you can't see it.</p>
+  <p><b>The setup.</b> A line of ten poles stand out in the misty swamp. A frog sits on one of them: you can hear it, but you can't see it.</p>
   <p><b>The move.</b> Shoot any pole. If the frog is there — you win. If not, it silently hops to an adjacent pole.</p>
   <p><b>The puzzle.</b> How can you be <b>certain</b> you'd eventually get the frog, and with as few bullets as possible?</p>
 </div>
@@ -232,7 +232,7 @@ footer{
 <div class="fact">So there are only <b>two</b> frogs to catch — one on the dark squares, one on the light. And a square you shoot sits on one colour, so it can only ever catch <b>one</b> of them.</div>
 
 <h2><span class="n">04</span> A wall the dark frog cannot pass</h2>
-<p>Shoot pole 2, then 3, then 4, up to 9: a wall, every square of it dark. A wall can only be passed from the <b>doorway</b> beside it — and try standing in one.</p>
+<p>Shoot pole 2, then 3, then 4, up to 9: a wall, every square of it dark. It traps the dark frog on its right side — try to slip past.</p>
 
 <figure>
 <div class="ctl">
@@ -247,15 +247,14 @@ footer{
   <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
   <span><span class="sw" style="background:#2f2a22"></span>a shot</span>
   <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>the frog</span>
-  <span><span class="sw" style="background:none;border:1.8px dashed #a8641f"></span>a doorway</span>
 </div>
-<figcaption>The dashed squares are the doorways — the only way past the wall. Every one of them is light.</figcaption>
+<figcaption>The wall climbs one pole per turn, squeezing the dark frog into the corner.</figcaption>
 </figure>
 
-<div class="fact"><b>The square beside a dark square is light.</b> The dark frog can never stand in a doorway; the light one strolls through.</div>
+<div class="fact"><b>A dark frog can't cross a dark wall.</b> It is forever trapped in the right side of it — until it runs out of poles. The light frog strolls past untouched.</div>
 
 <h2><span class="n">05</span> Now the same wall, backwards</h2>
-<p>So aim the other eight bullets at the light frog: shoot 9 down to 2. A second wall — every square light, every doorway dark.</p>
+<p>So aim the other eight bullets at the light frog: shoot 9 down to 2. A second wall, every square of it light.</p>
 
 <figure>
 <div class="ctl">
@@ -269,10 +268,9 @@ footer{
   <span><span class="sw" style="background:#f0e6cd"></span>light square</span>
   <span><span class="sw" style="background:#2f2a22"></span>a shot</span>
   <span><span class="sw" style="background:#3f7a2a;border-radius:50%"></span>the frog</span>
-  <span><span class="sw" style="background:none;border:1.8px dashed #a8641f"></span>a doorway</span>
   <span><span class="sw" style="background:none;border:0;color:#e8503a;font-weight:700;width:auto">&times;</span>where it was shot</span>
 </div>
-<figcaption>It walks through the first wall's doorway; the second wall's doorways are all dark.</figcaption>
+<figcaption>It slips past the first wall — a light frog can — and the second one traps it.</figcaption>
 </figure>
 
 <h2><span class="n">06</span> Sixteen bullets</h2>
@@ -1045,32 +1043,27 @@ const W3=(function(){
   return {hop,again};
 })();
 
-/* 04 — the rising wall and its doorways. A wall can only be crossed from the
-   square right beside it, one turn before the wall gets there — those squares
-   are drawn dashed. Every doorway of this wall is light, so the reader
-   steering the dark frog can never reach one: the wall herds it into the
-   corner and shoots it there. Steering the light frog, the same doorways
-   simply open. */
+/* 04 — the rising wall. Wall and dark frog share a colour, so every path to
+   the wall's far side lands on the wall itself: the reader steering the dark
+   frog can only retreat until the corner, where the wall shoots it. Steering
+   the light frog, the wall never touches you and you slip past at will. */
 const W4=(function(){
   const N=10, T=8, b=PB.BD(N,T,30,190,44);
-  const wall=k=>k+1, door=k=>k+2;
+  const wall=k=>k+1;
   let dark=true, cells=[], deadAt=0, out=0;
   const t=()=>cells.length;
   function draw(){
     let s=PB.squares(b,true)+PB.labels(b,{words:true});
     for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,wall(k));
-    for(let k=1;k<T;k++)
-      s+=`<rect x="${b.x(door(k))+2.5}" y="${b.y(k)+2.5}" width="${b.cell-5}" height="${b.cell-5}" rx="4" `+
-         `fill="none" stroke="#a8641f" stroke-width="1.8" stroke-dasharray="4 3" opacity="${out===k+1?1:0.85}"/>`;
     s+=PB.line(b,cells,{beads:true,r:3.4});
     if(deadAt) s+=PB.cross(b,deadAt,cells[deadAt-1]);
     document.getElementById('f4').innerHTML=PB.SVG(680,44+T*30+18,s);
     const st=document.getElementById('s4');
     st.innerHTML =
-      deadAt ? `<span class="hit">shot on turn ${deadAt}</span> &mdash; you never stood in a doorway. you never can.`
-      : out ? `<b>through the doorway</b> &mdash; the wall is behind you`
+      deadAt ? `<span class="hit">shot on turn ${deadAt}</span> &mdash; you never got past the wall. you never can.`
+      : out ? `<b>past the wall</b> &mdash; it is behind you`
       : t()>=T ? `eight turns and the wall never touched you &mdash; it cannot: its squares are all dark`
-      : `turn ${t()}/${T} &mdash; ${dark?'try to reach a doorway':'the doorways are yours'}`;
+      : `turn ${t()}/${T} &mdash; ${dark?'try to slip past the wall':'slip past whenever you like'}`;
     const p=cells[t()-1], stop=deadAt||out||t()>=T;
     document.getElementById('b4l').disabled=stop||p<=1;
     document.getElementById('b4r').disabled=stop||p>=N;
@@ -1097,16 +1090,16 @@ const W4=(function(){
   return {hop,again,colour};
 })();
 
-/* 05 — the falling wall. Doorways are drawn for both walls: the first wall's
-   are light (the light frog walks through one), the second wall's are dark
-   (no light frog ever stands there). */
+/* 05 — the falling wall. The first wall is dark, so a light frog can slip
+   past it; the second wall is light, and now the light frog is the one
+   trapped. */
 const W5=(function(){
   const N=10, T=16, b=PB.BD(N,T,24,230,40);
   const plan=PB.chevron(N);          /* 2..9 then 9..2 */
   const shotAt={}; plan.forEach((p,i)=>shotAt[i+1]=p);
   let frog;
   function slipTurn(f){
-    /* the turn it stood in the first wall's doorway and hopped left */
+    /* the turn it slipped past the first wall, hopping left just ahead of it */
     for(let k=1;k<f.cells.length&&k<=7;k++)
       if(f.cells[k-1]===k+2&&f.cells[k]===k+1) return k;
     return 0;
@@ -1115,18 +1108,14 @@ const W5=(function(){
     let s=PB.squares(b,true)+PB.labels(b,{words:true});
     for(let k=1;k<=T;k++) s+=PB.shotSq(b,k,shotAt[k]);
     const sl=slipTurn(frog);
-    const dash=(p,k,hot)=>`<rect x="${b.x(p)+2}" y="${b.y(k)+2}" width="${b.cell-4}" height="${b.cell-4}" rx="3" `+
-      `fill="none" stroke="#a8641f" stroke-width="${hot?2.2:1.5}" stroke-dasharray="4 3" opacity="${hot?1:0.6}"/>`;
-    for(let k=1;k<8;k++) s+=dash(k+2,k,k===sl);       /* rising doorways: all light */
-    for(let k=9;k<16;k++) s+=dash(17-k,k,false);      /* falling doorways: all dark */
     s+=PB.line(b,frog.cells,{beads:true,r:2.8});
     if(frog.dead) s+=PB.cross(b,frog.killT,frog.cells[frog.killT-1]);
     document.getElementById('f5').innerHTML=PB.SVG(680,40+T*24+18,s);
     document.getElementById('s5').innerHTML=
-      (sl?`through a light doorway on turn ${sl}`:'never even neared the first wall')+
+      (sl?`past the first wall on turn ${sl}`:'never even neared the first wall')+
       ` &mdash; <span class="hit">shot on turn ${frog.killT}</span>`;
   }
-  /* prefer a frog that really does walk through the first wall — that is the
+  /* prefer a frog that really does slip past the first wall — that is the
      thing this figure is here to show */
   function again(){
     const starts=PB.startsOfClass(N,false);
