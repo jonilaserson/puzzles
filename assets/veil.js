@@ -33,4 +33,15 @@
     style.textContent = css;
     document.head.appendChild(style);
   }
+
+  /* The kicker's leading text renders from the puzzle:tags meta — the same
+     single source the index tiles use — keeping any .proof-cta suffix. */
+  document.addEventListener('DOMContentLoaded', function(){
+    var meta = document.querySelector('meta[name="puzzle:tags"]');
+    var kicker = document.querySelector('p.kicker');
+    if (!meta || !kicker) return;
+    var cta = kicker.querySelector('.proof-cta');
+    kicker.textContent = meta.content;
+    if (cta) kicker.appendChild(cta);
+  });
 })();
