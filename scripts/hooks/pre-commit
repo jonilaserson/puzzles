@@ -3,6 +3,7 @@
 # tiles always reflect each puzzle's own h1 / rule / tags / emblem.
 # Installed as a symlink: .git/hooks/pre-commit -> ../../scripts/hooks/pre-commit
 python3 scripts/build_index.py || exit 1
+git add feed.xml
 git add index.html
 # The build also rewrites the share tags inside puzzle pages. Re-stage only
 # the pages you already staged, so unrelated work in progress is never swept in.

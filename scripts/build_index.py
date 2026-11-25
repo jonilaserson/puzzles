@@ -23,6 +23,7 @@ a puzzle's title/rule/tags/emblem to see the index update locally.
 import html
 import re
 import sys
+from xml.sax.saxutils import escape as xml_escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -177,11 +178,58 @@ def build_tile(slug, num):
       </li>"""
 
 
+# --- Atom feed ------------------------------------------------------------
+# feed.xml lists the puzzles newest first. A puzzle's entry date is its
+# <meta name="puzzle:date" content="YYYY-MM-DD"> (the day it was added). The
+# feed's own <updated> is the newest entry date, so rebuilding is idempotent.
+FEED = ROOT / "feed.xml"
+
+
+def feed_entry(slug, order):
+    page = (ROOT / "puzzles" / slug / "index.html").read_text(encoding="utf-8")
+    day = extract(r'<meta name="puzzle:date" content="(\d{4}-\d{2}-\d{2})"', page)
+    if day is None:
+        fail(f"{slug}: missing <meta name=\"puzzle:date\" content=\"YYYY-MM-DD\">")
+    return (day, order, slug,
+            plain(tile_title(page, slug)), sentence(plain(tile_rule(page, slug))))
+
+
+def write_feed(slugs):
+    entries = sorted((feed_entry(s, i) for i, s in enumerate(slugs)), reverse=True)
+    x = xml_escape
+    out = ['<?xml version="1.0" encoding="utf-8"?>',
+           '<feed xmlns="http://www.w3.org/2005/Atom">',
+           f"  <title>{x(SITE_NAME)}</title>",
+           "  <subtitle>Small mathematical puzzles, with proofs and playable simulators.</subtitle>",
+           f'  <link href="{SITE}"/>',
+           f'  <link rel="self" type="application/atom+xml" href="{SITE}feed.xml"/>',
+           f"  <id>{SITE}</id>",
+           f"  <updated>{entries[0][0]}T00:00:00Z</updated>",
+           "  <author><name>Jonathan Laserson</name></author>"]
+    for day, _, slug, title, rule in entries:
+        url = f"{SITE}puzzles/{slug}/"
+        out += ["  <entry>",
+                f"    <title>{x(title)}</title>",
+                f'    <link href="{url}"/>',
+                f"    <id>{url}</id>",
+                f"    <updated>{day}T00:00:00Z</updated>",
+                f"    <summary>{x(rule)}</summary>",
+                "  </entry>"]
+    out.append("</feed>")
+    text = "\n".join(out) + "\n"
+    old = FEED.read_text(encoding="utf-8") if FEED.exists() else None
+    if text != old:
+        FEED.write_text(text, encoding="utf-8")
+        print(f"build_index: wrote feed.xml ({len(entries)} entries)")
+
+
 def main():
     slugs = [ln.strip() for ln in ORDER.read_text(encoding="utf-8").splitlines()
              if ln.strip() and not ln.strip().startswith("#")]
     if not slugs:
         fail(f"{ORDER} lists no puzzles")
+
+    write_feed(slugs)
 
     tiles = "\n".join(build_tile(s, i) for i, s in enumerate(slugs, 1))
     index = INDEX.read_text(encoding="utf-8")

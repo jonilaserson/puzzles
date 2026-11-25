@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Puzzles by Jonathan Laserson</title>
+  <subtitle>Small mathematical puzzles, with proofs and playable simulators.</subtitle>
+  <link href="https://jonilaserson.github.io/puzzles/"/>
+  <link rel="self" type="application/atom+xml" href="https://jonilaserson.github.io/puzzles/feed.xml"/>
+  <id>https://jonilaserson.github.io/puzzles/</id>
+  <updated>2026-08-10T00:00:00Z</updated>
+  <author><name>Jonathan Laserson</name></author>
+  <entry>
+    <title>One Thousand Wine Barrels, Which One Is Poisoned?</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/poisoned-barrels/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/poisoned-barrels/</id>
+    <updated>2026-08-10T00:00:00Z</updated>
+    <summary>Let your ten prisoners sip and find out.</summary>
+  </entry>
+  <entry>
+    <title>Mark and Clear Rectangles</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/rectangle-eraser/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/rectangle-eraser/</id>
+    <updated>2026-08-10T00:00:00Z</updated>
+    <summary>Who would be forced to clear the last square?</summary>
+  </entry>
+  <entry>
+    <title>Conway's Soldiers</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/conways-soldiers/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/conways-soldiers/</id>
+    <updated>2026-08-07T00:00:00Z</updated>
+    <summary>Can you jump-over your way to the fifth row?</summary>
+  </entry>
+  <entry>
+    <title>Twelve Coins, One of Them Fake</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/counterfeit-coin/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/counterfeit-coin/</id>
+    <updated>2026-08-07T00:00:00Z</updated>
+    <summary>You have a scale and 3 weighings to find out which.</summary>
+  </entry>
+  <entry>
+    <title>Get the Last Stone</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/last-stone/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/last-stone/</id>
+    <updated>2026-08-07T00:00:00Z</updated>
+    <summary>But you can only take at most double the previous take.</summary>
+  </entry>
+  <entry>
+    <title>The Josephus Flavius Challenge</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/josephus/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/josephus/</id>
+    <updated>2026-08-07T00:00:00Z</updated>
+    <summary>Around the circle: every k-th person steps out.</summary>
+  </entry>
+  <entry>
+    <title>The One Rule of Dobble</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/dobble/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/dobble/</id>
+    <updated>2026-07-25T00:00:00Z</updated>
+    <summary>Every two cards share exactly one shape.</summary>
+  </entry>
+  <entry>
+    <title>The Frog Is Out There</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/invisible-frog/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/invisible-frog/</id>
+    <updated>2026-07-25T00:00:00Z</updated>
+    <summary>Aim at a pole. If the frog isn't there, it jumps to an adjacent pole.</summary>
+  </entry>
+  <entry>
+    <title>Fifteen Balls Always End at 1·2·3·4·5</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/fifteen-balls/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/fifteen-balls/</id>
+    <updated>2026-07-21T00:00:00Z</updated>
+    <summary>Take one ball from each pile and make a new one. Repeat.</summary>
+  </entry>
+  <entry>
+    <title>Emptying a Pole</title>
+    <link href="https://jonilaserson.github.io/puzzles/puzzles/emptying-poles/"/>
+    <id>https://jonilaserson.github.io/puzzles/puzzles/emptying-poles/</id>
+    <updated>2026-07-21T00:00:00Z</updated>
+    <summary>Move discs onto a pole only if it doubles.</summary>
+  </entry>
+</feed>

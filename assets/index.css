@@ -126,6 +126,15 @@ body{
   color:var(--ink);
   text-decoration-color:var(--ink);
 }
+.foot .more{margin:0}
+.foot .more a{
+  color:var(--ink-soft);
+  text-decoration:underline;
+  text-decoration-color:var(--line);
+  text-underline-offset:3px;
+  transition:.18s;
+}
+.foot .more a:hover{color:var(--ink); text-decoration-color:var(--ink)}
 
 @media (min-width:1200px){
   /* 2 cols × 640px tiles + 14px gap + 80px wrap padding */
