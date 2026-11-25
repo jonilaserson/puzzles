@@ -30,6 +30,15 @@ at commit time. Run `python3 scripts/build_index.py` by hand to preview sooner.
 If the hook is missing (fresh clone), reinstall it:
 `ln -s ../../scripts/hooks/pre-commit .git/hooks/pre-commit`
 
+## Share tags are generated too
+
+`scripts/build_index.py` also writes a block between `share:generated` markers
+in every puzzle page's `<head>`: description, canonical URL, Open Graph and a
+Twitter summary card. It is built from the page's own title and rule, so edit
+those, never the block. The index's own tags are static, in `index.html`. The
+pre-commit hook re-stages a puzzle page's block only if you had staged the page.
+There is no `og:image` yet; link previews are text-only cards.
+
 ## Working conventions
 
 - Several Claude sessions often share this working tree in parallel: make
