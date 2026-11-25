@@ -83,6 +83,17 @@ def tile_rule(page, slug):
     return re.sub(r"\s+", " ", rule).strip()
 
 
+def tile_original(page):
+    """<meta name="puzzle:original" content="..."> marks a page whose proof is
+    the author's own; the content becomes the badge's tooltip. None if absent."""
+    return extract(r'<meta name="puzzle:original" content="([^"]*)"', page)
+
+
+def tile_badge(page):
+    why = tile_original(page)
+    return f'<br><span class="orig" title="{why}">original proof</span>' if why else ""
+
+
 def tile_tags(page, slug):
     tags = extract(r'<meta name="puzzle:tags" content="([^"]*)"', page)
     if tags is None:
@@ -161,7 +172,7 @@ def build_tile(slug, num):
             <span class="title">{tile_title(page, slug)}</span>
             <span class="desc">{tile_rule(page, slug)}</span>
           </span>
-          <span class="tag">{tile_tags(page, slug)}</span>
+          <span class="tag">{tile_tags(page, slug)}{tile_badge(page)}</span>
         </a>
       </li>"""
 

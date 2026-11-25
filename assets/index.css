@@ -37,6 +37,7 @@ body{
   font-size:12px; letter-spacing:.06em;
   color:var(--ink-soft); margin:0;
 }
+.head .legend{margin-top:8px; font-size:11px}
 
 .list{list-style:none; padding:0; margin:0; display:grid; grid-template-columns:1fr; gap:14px}
 
@@ -95,6 +96,10 @@ body{
   white-space:nowrap;
   text-align:right;
 }
+
+.orig{color:var(--ink); font-weight:600; white-space:nowrap}
+.orig::before{content:"\25C6\00a0"; font-size:.8em}
+.tag .orig{display:inline-block; margin-top:4px}
 
 .foot{
   margin-top:48px;

@@ -23,6 +23,12 @@ carry entity-escaped markup (`&lt;em&gt;…`); the build script unescapes it.
 Tile order is `puzzles/order.txt`. To add a puzzle to the index: give its page
 the meta tag and emblem template above, then add its slug to `order.txt`.
 
+Proofs that are the author's own carry `<meta name="puzzle:original" content="...">`
+in their page head (the content is the tile badge's tooltip). The tile shows a
+◆ "original proof" badge and the index explains it in one line. Add the meta
+only where the page already credits the author's own argument; the credit line
+also goes inside the proof, above section 01, so it sits behind the curtain.
+
 A pre-commit hook rebuilds the index automatically on every commit
 (`.git/hooks/pre-commit`, a symlink to the versioned `scripts/hooks/pre-commit`).
 So: edit titles/rules/tags/emblems in the puzzle pages only — the index follows
