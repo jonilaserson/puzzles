@@ -36,6 +36,24 @@ def fail(msg):
     sys.exit(f"build_index: {msg}")
 
 
+SITE = "https://jonilaserson.github.io/puzzles/"
+SITE_NAME = "Puzzles by Jonathan Laserson"
+
+
+def plain(text):
+    """Tags stripped, entities decoded, whitespace collapsed."""
+    text = re.sub(r"<[^>]+>", "", text)
+    return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def sentence(text):
+    """Capitalised, with terminal punctuation (adds a full stop if missing)."""
+    text = text.strip()
+    if text[-1] not in ".?!":
+        text += "."
+    return text[0].upper() + text[1:]
+
+
 def extract(pattern, text, flags=re.S):
     m = re.search(pattern, text, flags)
     return m.group(1).strip() if m else None
